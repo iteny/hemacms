@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改用户</title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+</head>
+<body>
+<form id="hm-app" type="add" action="/intendant/site/editUserSubmit">
+    <input type="hidden" name="id" value="{{.user.Id}}">
+    <div class="frame_form_table">
+        <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+            <tbody>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userName]]&nbsp;:&nbsp;</td>
+                    <td width="160"><input class="easyui-validatebox length_5" name="username" value="{{.user.Username}}"></td>
+                    <!-- <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true" /></td> -->
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwd]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" /></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwdEd]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="passworded" /></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userNickname]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" value="{{.user.Nickname}}" /></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userEmail]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="email" value="{{.user.Email}}" /></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.remark]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.user.Remark}}" /></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userRoleGroup]]&nbsp;:&nbsp;</td>
+                    <td width="160"><input class="select length_3" name="role" value="{{.roleme.RoleId}}"></td>
+                </tr>
+                <tr>
+                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.isshow]]&nbsp;:&nbsp;</td>
+                    <td width="190"><input class="switch length_5" name="status" value="{{.user.Status}}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="hm_toolbar">
+        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
+        <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
+        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(meFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true">[[$store.state.language.ajaxEdit]]</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<link rel="stylesheet" href="/static/common/animate/animate.min.css">
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script>
+$('.easyui-validatebox[name=username]').validatebox({
+    required:true,
+    validType:'username',
+    missingMessage:hm.language.isUsername ? hm.language.isUsername : "Please enter the account!",
+});
+$('.easyui-validatebox[name=password]').validatebox({
+    required:true,
+    validType:'password',
+    missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
+});
+$('.easyui-validatebox[name=passworded]').validatebox({
+    required:true,
+    validType:"passworded['#pwd']",
+    missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
+});
+$('.easyui-validatebox[name=nickname]').validatebox({
+    required:true,
+    validType:'nickname',
+    missingMessage:hm.language.isNickname ? hm.language.isNickname : "Please enter the nickname!",
+});
+$('.easyui-validatebox[name=email]').validatebox({
+    required:true,
+    validType:'email',
+    missingMessage:hm.language.isEmail ? hm.language.isEmail : "Please enter the email!",
+});
+$('.easyui-validatebox[name=remark]').validatebox({
+    required:true,
+    validType:'remark',
+    missingMessage:hm.language.isRemark ? hm.language.isRemark : "Please enter the remark!",
+});
+var group = $.parseJSON({{.role}});
+$('.select[name=role]').combobox({
+    required: true,
+    valueField:'id',
+    textField:'name',
+    editable:false,
+    data: group
+});
+$('.switch[name=status]').switchbutton({
+    checked: true,
+    reversed: true,
+    onText: hm.language.on,
+    offText: hm.language.off,
+    onChange: function(checked) {
+        if(checked){
+            $('input[name=isshow]').val(1);
+        }else{
+            $('input[name=isshow]').val(0);
+        }
+
+    }
+});
+function meFunc(data){
+    var failed = hm.language.editFailed ? hm.language.editFailed : "Edit failed!",
+        success = hm.language.editSuccess ? hm.language.editSuccess : "Edit success!",
+        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
+        userCheckUsername = hm.language.userCheckUsername ? hm.language.userCheckUsername : "Account has already existed!",
+        userCheckNickname = hm.language.userCheckNickname ? hm.language.userCheckNickname : "Nickname has already existed!",
+        userCheckEmail = hm.language.userCheckEmail ? hm.language.userCheckEmail : "Email has already existed!",
+        usernameVali = hm.language.usernameVali ? hm.language.usernameVali : "Account must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
+        passwordVali = hm.language.passwordVali ? hm.language.passwordVali : "Password must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
+        passwordEdVali = hm.language.passwordEdVali ? hm.language.passwordEdVali : "Entered passwords differ!",
+        nicknameVali = hm.language.nicknameVali ? hm.language.nicknameVali : "Nicknames only allow Chinese characters, English letters, numbers, minus and underlines, and 2-80 bit characters",
+        emailVali = hm.language.easyuiEmailMessage ? hm.language.easyuiEmailMessage : "Please enter a valid email address!",
+        remarkVali = hm.language.remarkVali ? hm.language.remarkVali : "Remark only letters, numbers, English Chinese characters, minus, comma, period, exclamation and underline, 2-255 characters!",
+        userIsRole = hm.language.userIsRole ? hm.language.userIsRole : "Role number must be 1 to 8 positive integers!",
+        userIsStatus = hm.language.userIsStatus ? hm.language.userIsStatus : "Enabled, it must be 1 or 0!";
+    if (data.status == 21) {
+        parent.hm.notice("error", userCheckUsername + data.info);
+    } else if (data.status == 22) {
+        parent.hm.notice("error", userCheckNickname + data.info);
+    } else if (data.status == 23) {
+        parent.hm.notice("error", userCheckEmail + data.info);
+    } else if (data.status == 11) {
+        parent.hm.notice("error", usernameVali + data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("error", passwordVali + data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("error", nicknameVali + data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("error", emailVali + data.info);
+    } else if(data.status == 15){
+        parent.hm.notice("error", remarkVali + data.info);
+    } else if(data.status == 16){
+        parent.hm.notice("error", userIsRole + data.info);
+    } else if(data.status == 17){
+        parent.hm.notice("error", userIsStatus + data.info);
+    } else if(data.status == 18){
+        parent.hm.notice("error", passwordEdVali + data.info);
+    } else if(data.status == 4){
+        parent.hm.notice("error", failed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", success + data.info);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",unknownError+ data.info);
+    }
+}
+</script>
+</html>

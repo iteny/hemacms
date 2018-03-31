@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <style>
+    /*.hm-acmenu-btn{
+        text-align: left;
+        text-indent: 10px;
+    }*/
+    </style>
+</head>
+
+<body id="hm-layout">
+    <div id="hm-app" class="easyui-layout" data-options="fit:true" :class="$store.state.style">
+        <div id="hm-north" data-options="region:'north'" style="height:50px;">
+            <div id="hm-north-left">
+                <a class="hm-brand" href="#">HemaCms</a>
+                <a class="west-ct" href="#"><i class="fa fa-bars"></i></a>
+            </div>
+            <div id="hm-north-content">
+                <!-- <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">撒地方</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">风格</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">很高</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">撒地方</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">风格</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'fa fa-envelope-open',iconAlign:'top',plain:'true'">很高</a> -->
+            </div>
+            <div id="hm-north-right">
+                <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="menu:'#userop',iconCls:'icon-user-pic', duration:'5000'">{{.username}}</a>
+                <div id="userop" style="width:150px;">
+                    <div id="close_current_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
+                    <div id="close_else_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
+                    <div id="close_all_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
+                    <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeLast]]</div>
+                    <div id="log_out" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.userLogout]]</div>
+                </div>
+            </div>
+        </div>
+        <!-- 左侧手风琴菜单 -->
+        <div id="hm-west" data-options="region:'west'" style="width:230px;">
+        </div>
+        <div id="hm-center" data-options="region:'center'" style="background:#eee;">
+            <div id="hm-tabs" style="height:100%;border:0;">
+            </div>
+        </div>
+        <div id="tab-tools">
+            <a id="hm-refresh" href="#" class="easyui-linkbutton" plain="true" iconCls="icon-arrow_refresh">[[$store.state.language.refresh]]</a>
+            <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="menu:'#mm',iconCls:'icon-application_view_gallery'">[[$store.state.language.sop]]</a>
+            <div id="mm" style="width:150px;">
+                <div id="close_current_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
+                <div id="close_else_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
+                <div id="close_all_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
+                <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeLast]]</div>
+                <div onclick="$(this).trigger('pnotify.history-all');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeAll]]</div>
+            </div>
+            <a class="east-ct" data="1" href="#"><i class="fa fa-bars fa-rotate-90"></i></a>
+        </div>
+        <div id="hm_tab_right_click" class="easyui-menu">
+            <div data-options="name:1,iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
+            <div data-options="name:2,iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
+            <div data-options="name:3,iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<link rel="stylesheet" href="/static/common/animate/animate.min.css">
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script type="text/javascript">
+    //设置获取菜单配置
+    hm.menuCfgReset({
+        type: 'post',
+        url: '/intendant/site/getMenu',
+    });
+    //获取菜单数据，并保存到缓存中,并插入一级菜单
+    hm.getMenuData();
+    // console.log(JSON.parse(window.localStorage.getItem('hm_menu_data')));
+
+    //页面加载进度框
+    var loadMenuData = hm.language.loadMenuData ? hm.language.loadMenuData : 'Loading menu data!';
+    hm.openProgress(loadMenuData);
+    // document.onreadystatechange = hm.closeProgress; //当页面加载完毕执行
+    //点击一级菜单生成2，3级菜单
+    $('#hm-north-content').on("click", 'a.easyui-linkbutton', function(event) {
+        var that = $(this),
+            data = JSON.parse(window.localStorage.getItem('hm_menu_data')),
+            id = $(this).attr('data-id'),
+            second = '',
+            third = '',
+            config = hm.menuCfg;
+        $('#hm-north-content a').removeClass('active');
+        that.addClass('active');
+        if (config.url === undefined) {
+            that.notice('error',hm.language.menuDataUrl ? hm.language.menuDataUrl : 'Please configure the data source for the menu item【Url】');
+        }
+        if (id) {
+            if(data != null){
+                var lang = 'text';
+                switch ($.cookie('back-language')) {
+                    case 'cn':
+                        lang = 'text';
+                        break;
+                    case 'en':
+                        lang = 'en';
+                        break;
+                    default:
+                        lang = 'text';
+                        break;
+                }
+                for (var item in data) {
+                    if (data[item]['id'] == id) {
+                        if (data[item]['children'] === null) {
+                            $('#hm-west').html('<div style="width:100%;height:40px;line-height:40px;background:#d9534f;text-indent:25px;"><span style="color:white;">' + hm.language.sorry + '[' +
+                                data[item]['text'] + ']' + hm.language.isMenu + '</span></div>');
+                            hm.notice("error", hm.language.sorry + '[' + data[item][lang] + ']' + hm.language.isMenu);
+                            return false;
+                        }
+                        var scount = data[item]['children'].length,
+                            sdata = data[item]['children'];
+                        second += '<div id="hm-ac" class="easyui-accordion" style="">';
+                        for (var i = 0; i < scount; i++) {
+                            if(sdata[i]['children'] === null){
+                                second += '<div title="' + sdata[i][lang] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
+                                    second += '<a style="width: 204px;text-indent:5px;" border="false" data-id="" data-icon="" title="" href="javascript:void(0)" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
+                                    second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text" style="color:#d9534f;">' + hm.language.sorry + '[' + sdata[i][lang] + ']' + hm.language.isMenu + '</span><span class="l-btn-icon" style="left:0;"></span></span>';
+                                    second += '</a>';
+                            }else{
+                                second += '<div title="' + sdata[i][lang] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
+                                var tcount = sdata[i]['children'].length,
+                                    tdata = sdata[i]['children'];
+                                for (var t = 0; t < tcount; t++) {
+                                    second += '<a style="width: 204px;" border="false" data-id="' + tdata[t]["id"] + '" data-icon="' + tdata[t]["iconCls"] + '" title="' + tdata[t]["url"] +
+                                        '" href="javascript:void(0)" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
+                                    second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text">' + tdata[t][lang] + '</span><span class="l-btn-icon ' + tdata[t]["iconCls"] +
+                                        '"></span></span>';
+                                    second += '</a>';
+                                }
+                            }
+                            second += '</div>';
+                        }
+                        second += '</div>';
+                        $('#hm-west').html(second);
+                        $('#hm-ac').accordion({
+                            border: false,
+                        });
+
+                    }
+                }
+                hm.closeProgress(1);
+            }else {
+                //若未传入data参数 通过url方式获取
+                $.ajax({
+                    type: config.type,
+                    url: config.url,
+                    // async: false,
+                    dataType: 'json',
+                    success: function(result, status, xhr) {
+                        // 取得数据
+                        if(result == null){
+                            _that.notice('error',hm.language.getMenuData ? hm.language.getMenuData : 'Getting menu data failure');
+                        }else{
+                            if(result != null){
+                                window.localStorage.setItem('hm_menu_data', JSON.stringify(result));
+                                for (var item in result) {
+                                    if (result[item]['id'] == id) {
+                                        if (result[item]['children'] === null) {
+                                            $('#hm-west').html('<div style="width:100%;height:40px;line-height:40px;background:#d9534f;text-indent:25px;"><span style="color:white;">' + hm.language.sorry + '[' +
+                                                result[item]['text'] + ']' + hm.language.isMenu + '</span></div>');
+                                            hm.notice("error", hm.language.sorry + '[' + result[item]['text'] + ']' + hm.language.isMenu);
+                                            return false;
+                                        }
+                                        var scount = result[item]['children'].length,
+                                            sdata = result[item]['children'];
+                                        second += '<div id="hm-ac" class="easyui-accordion" style="">';
+                                        for (var i = 0; i < scount; i++) {
+                                            if(sdata[i]['children'] === null){
+                                                second += '<div title="' + sdata[i][lang] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
+                                                    second += '<a style="width: 204px;text-indent:5px;" border="false" data-id="" data-icon="" title="" href="javascript:void(0)" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
+                                                    second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text" style="color:#d9534f;">' + hm.language.sorry + '[' + sdata[i][lang] + ']' + hm.language.isMenu + '</span><span class="l-btn-icon" style="left:0;"></span></span>';
+                                                    second += '</a>';
+                                            }else{
+                                                second += '<div title="' + sdata[i][lang] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
+                                                var tcount = sdata[i]['children'].length,
+                                                    tdata = sdata[i]['children'];
+                                                for (var t = 0; t < tcount; t++) {
+                                                    second += '<a style="width: 204px;" border="false" data-id="' + tdata[t]["id"] + '" data-icon="' + tdata[t]["iconCls"] + '" title="' + tdata[t]["url"] +
+                                                        '" href="javascript:void(0)" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
+                                                    second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text">' + tdata[t][lang] + '</span><span class="l-btn-icon ' + tdata[t]["iconCls"] +
+                                                        '"></span></span>';
+                                                    second += '</a>';
+                                                }
+                                            }
+                                            second += '</div>';
+                                        }
+                                        second += '</div>';
+                                        $('#hm-west').html(second);
+                                        $('#hm-ac').accordion({
+                                            border: false,
+                                        });
+
+                                    }
+                                    hm.closeProgress(1);
+                                }
+                            }else{
+                                this.notice('error',hm.language.localStorageMenu ? hm.language.localStorageMenu : 'No menu data in the local cache');
+                                return false;
+                            }
+
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        _that.notice('error','hemacms Error: ' + error);
+                    },
+                    complete: function() {
+                        // _that.init();
+                    }
+                });
+            }
+        } else {
+            hm.notice('error', hm.language.menuPid ? hm.language.menuPid : 'Unable to obtain the specified parent ID');
+            return false;
+        }
+        // if (id) {
+        //     if (data != null) {
+        //         for (var item in data) {
+        //             if (data[item]['id'] == id) {
+        //                 if (data[item]['children'] === null) {
+        //                     $('#hm-west').html('<div style="width:100%;height:40px;line-height:40px;background:#d9534f;text-indent:25px;"><span style="color:white;">' + hm.language.sorry + '[' +
+        //                         data[item]['text'] + ']' + hm.language.isMenu + '</span></div>');
+        //                     hm.notice("error", hm.language.sorry + '[' + data[item]['text'] + ']' + hm.language.isMenu);
+        //                     return false;
+        //                 }
+        //                 var scount = data[item]['children'].length,
+        //                     sdata = data[item]['children'];
+        //                 second += '<div id="hm-ac" class="easyui-accordion" style="">';
+        //                 for (var i = 0; i < scount; i++) {
+        //                     second += '<div title="' + sdata[i]['text'] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
+        //                     var tcount = sdata[i]['children'].length,
+        //                         tdata = sdata[i]['children'];
+        //                     for (var t = 0; t < tcount; t++) {
+        //                         second += '<a style="width: 204px;" border="false" data-id="' + tdata[t]["id"] + '" data-icon="' + tdata[t]["iconCls"] + '" title="' + tdata[t]["url"] +
+        //                             '" href="#" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
+        //                         second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text">' + tdata[t]["text"] + '</span><span class="l-btn-icon fa ' + tdata[t]["iconCls"] +
+        //                             '"></span></span>';
+        //                         second += '</a>';
+        //                     }
+        //                     second += '</div>';
+        //                 }
+        //                 second += '</div>';
+        //                 $('#hm-west').html(second);
+        //                 $('#hm-ac').accordion({
+        //                     border: false,
+        //                 });
+        //             }
+        //         }
+        //     } else {
+        //         hm.notice('error', hm.language.localStorageMenu ? hm.language.localStorageMenu : 'No menu data in the local cache');
+        //         return false;
+        //     }
+        // } else {
+        //     hm.notice('error', hm.language.menuPid ? hm.language.menuPid : 'Unable to obtain the specified parent ID');
+        //     return false;
+        // }
+    });
+    //模拟点击第一个一级菜单
+    setTimeout(function() {
+        $('#hm-north-content>a').eq(0).click();
+    }, 100);
+
+    // 控制左侧west显示隐藏
+    $('.west-ct').on('click', function() {
+        var that = $(this);
+        if (that.attr('data')) {
+            that.attr('data', '');
+            $('.west-ct i').removeClass('fa-rotate-90');
+            that.removeClass('on');
+            $('.easyui-layout').layout('add', {
+                id: 'hm-west',
+                region: 'west',
+                width: '230px',
+                content: '<div>asdfas</div>',
+            });
+            $('#hm-layout').find('#hm-west').addClass('animated bounceInLeft');
+            $('#hm-north-content a.active').click();
+        } else {
+            that.attr('data', '1');
+            $('.west-ct i').addClass('fa-rotate-90');
+            that.addClass('on');
+
+            $('.easyui-layout').layout('remove', 'west');
+        }
+    });
+    //控制右侧east显示隐藏
+    $('.east-ct').on('click', function() {
+        var that = $(this),
+            lang = '',
+            styleDef = 'default',
+            styleMac = 'mac';
+        if (that.attr('data')) {
+            that.attr('data', '');
+            $('.east-ct i').removeClass('fa-rotate-90');
+            that.removeClass('on');
+            switch ($.cookie('back-language')) {
+                case 'cn':
+                    lang = '简体中文';
+                    break;
+                case 'en':
+                    lang = 'English';
+                    break;
+                default:
+                    lang = 'English';
+            }
+            var str = '';
+            str += '<div id="hm-east-content">';
+            str += '<a href="javascript:void(0)" id="set_language" style="width:100%;margin-bottom:15px;" class="easyui-menubutton" menu="#hm_set_language" iconCls="icon-lang-un" duration="5000">' + hm.language.currentLanguage + ':' + lang +
+                '</a>';
+            str += '<div id="hm_set_language" style="width:200px;min-height:300px;">';
+            switch ($.cookie('back-language')) {
+                case 'cn':
+                    str += '<div class="hm_change_language" iconCls="icon-lang-en" name="en">English</div>';
+                    break;
+                case 'en':
+                    str += '<div class="hm_change_language" iconCls="icon-lang-cn" name="cn">简体中文</div>';
+                    break;
+                default:
+                    str += '<div class="hm_change_language" iconCls="icon-lang-en" name="en">English</div>';
+                    break;
+            }
+            str += '</div>';
+
+            str += '<a href="#" class="easyui-linkbutton hm_change_style mr" name="default" iconCls="icon-chart_bar" iconAlign="top" plain="true">' + hm.language.styleDefault + '</a>';
+            str += '<a href="#" class="easyui-linkbutton hm_change_style" name="mac" iconCls="icon-chart_bar" iconAlign="top" plain="true">' +
+                hm.language.styleMac + '</a>';
+            str += '</div>';
+
+
+            $('.easyui-layout').layout('add', {
+                id: 'hm-east',
+                region: 'east',
+                width: '220px',
+                content: str,
+            });
+            $('#hm-layout').find('#hm-east').addClass('animated bounceInLeft');
+            // $('#hm-north-content a.active').click();
+        } else {
+            that.attr('data', '1');
+            $('.east-ct i').addClass('fa-rotate-90');
+            that.addClass('on');
+
+            $('.easyui-layout').layout('remove', 'east');
+        }
+    });
+    //切换语言
+    $("#hm-layout").on('click', '.hm_change_language', function() {
+        var that = $(this);
+        var lang = that.attr('name');
+        $.cookie('back-language', lang, {
+            expires: 30, //有限日期，可以是一个整数或一个日期(单位：天)。这个地方也要注意，如果不设置这个东西，浏览器关闭之后此cookie就失效了
+            // path: "/", //cookie值保存的路径，默认与创建页路径一致。
+            // domin: , //cookie域名属性，默认与创建页域名一样。这个地方要相当注意，跨域的概念，如果要主域名二级域名有效则要设置".xxx.com"
+            // secure: true //一个布尔值，表示传输cookie值时，是否需要一个安全协议。
+        });
+        hm.reloadPage();
+    });
+    //切换风格
+    $("#hm-layout").on('click', '.hm_change_style', function() {
+        var that = $(this);
+        var style = that.attr('name');
+        hm.changeStyle(style);
+    });
+    $('#hm-tabs').tabs({
+        fit: false, //全屏
+        border: false, //去除边框
+        plain: false, //去除tab背景
+        pill: false, //让tab像按钮
+        narrow: false, //删除tab之间的间隔
+        // justified: true, //让tab宽度自动计算，填满总宽度
+        closable: true, //是否可以关闭
+        showHeader: true, //显示tab标题名称
+        // tabWidth: 150, //tab宽度，单位像素值
+        tabHeight: 39, //tab高度，单位像素值
+        scrollIncrement: 200, //左右滚动tab的距离，单位像素值
+        scrollDuration: 200, //滚动的动画时间，单位毫秒
+        tools: '#tab-tools',
+        onContextMenu: function(e, title, index) { //对tab标签增加右键菜单
+            e.preventDefault();
+            if (index > 0) {
+                $('#hm_tab_right_click').menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                }).data("tabTitle", title);
+            }
+        }
+    });
+    //tab标签右键菜单的点击效果
+    $("#hm_tab_right_click").menu({
+        onClick: function(item) {
+            hm.closeTab(this, item.name);
+        }
+    });
+    //双击刷新tab
+    $('#hm-tabs').tabs('bindDblclick', function(index, title) {
+        var currentTab = $('#hm-tabs').tabs('getTab', title);
+        var url = $(currentTab.panel('options')).attr('href');
+        $('#hm-tabs').tabs('update', {
+            tab: currentTab,
+            options: {
+                href: url
+            }
+        });
+        currentTab.panel('refresh');
+    });
+    //增加home标签
+    setTimeout(function () {//解决请求2次的问题
+        $('#hm-tabs').tabs('add', {
+            title: hm.language.homePage ? hm.language.homePage : 'Home',
+            closable: false,
+            closed: true,
+            content: '<iframe name="hm_tab_home" scrolling="auto" src="home" frameborder="0" style="width:100%;height:100%;"></iframe>',
+            iconCls: 'icon-home',
+        });
+    }, 100);
+    //增加tab
+    $('#hm-layout').on('click', 'a.hm-acmenu-btn', function() {
+        $('.hm-acmenu-btn').removeClass('hm-acc');
+        $(this).addClass('hm-acc');
+        //获取组件的属性或内容
+        var title = $(this).text(),
+            href = $(this).attr("title"),
+            icon = $(this).attr("data-icon"),
+            id = $(this).attr("data-id");
+        if ($("#hm-tabs").tabs("exists", title)) {
+            $("#hm-tabs").tabs("select", title);
+        } else {
+            var tabCount = $('#hm-tabs').tabs('tabs').length;
+            if (tabCount > 3) {
+                hm.notice("warn", '对不起!你打开太多选项卡，会导致机器变慢', '提示信息');
+            }
+            $("#hm-tabs").tabs('add', {
+                title: title,
+                closable: true,
+                content: '<iframe name="hm_tab_' + id + '" scrolling="auto" src="' + href + '" frameborder="0" style="width:100%;height:100%;"></iframe>',
+                iconCls: 'fa ' + icon,
+            });
+        }
+    });
+    //刷新tab内容
+    $('#hm-refresh').click(function() {
+        var currentTab = $('#hm-tabs').tabs('getSelected');
+        var url = $(currentTab.panel('options')).attr('href');
+        $('#hm-tabs').tabs('update', {
+            tab: currentTab,
+            options: {
+                href: url
+            }
+        });
+        currentTab.panel('refresh');
+    });
+    //关闭当前选项卡
+    $('#close_current_tab').click(function() {
+        var currentTab = $('#hm-tabs').tabs('getSelected');
+        var currentIndex = currentTab.panel('options').index;
+        var index = $('#hm-tabs').tabs('getTabIndex', currentTab); //获取当前选中tabs的index
+        if (currentIndex !== 0) {
+            $('#hm-tabs').tabs('close', index); //关闭对应index的tabs
+        } else {
+            hm.notice('warn', hm.language.homePage + ' ' + hm.language.noShutdown)
+        }
+    });
+    //关闭其他选项卡
+    $('#close_else_tab').click(function() {
+        var currentTab = $('#hm-tabs').tabs('getSelected');
+        var currentTitle = currentTab.panel('options').title;
+        $(".tabs li").each(function(index, obj) {
+            //获取所有可关闭的选项卡
+            var tab = $(".tabs-closable", this).text();
+            if (tab !== currentTitle) {
+                $("#hm-tabs").tabs('close', tab);
+            }
+        });
+    });
+    //关闭全部选项卡
+    $('#close_all_tab').click(function() {
+        $(".tabs li").each(function(index, obj) {
+            //获取所有可关闭的选项卡
+            var tab = $(".tabs-closable", this).text();
+            $("#hm-tabs").tabs('close', tab);
+        });
+    });
+    //退出
+    $('#log_out').click(function(){
+        var prog = hm.language.logoutMsg ? hm.language.logoutMsg : "Waiting...,Log out for you!";
+        $.ajax({
+            url: '/intendant/loginOut',
+            dataType:'json',
+            type:'POST',
+            beforeSend: function(){
+                hm.openProgress(prog);
+            },
+            success: function(data){
+                if(!data.status){
+                    hm.notice("error", hm.language.logoutMsgFail+data.info);
+                } else {
+                    hm.notice("success", hm.language.logoutMsgSuccess);
+                }
+                setTimeout(function () {
+                    window.location.href='/intendant/login';
+                    hm.closeProgress(); //当页面加载完毕执行
+                }, 1000);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                hm.notice("error", 'status:'+XMLHttpRequest.status+',readyState:'+XMLHttpRequest.readyState+',textStatus:'+textStatus);
+                hm.closeProgress(); //当页面加载完毕执行
+            }
+        });
+    });
+</script>
+</html>

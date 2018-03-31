@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>set role authority</title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+</head>
+<body>
+<form id="hm-app" action="/intendant/site/sortMenu" method="post">
+    <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
+        <table id="hm_tree" style="" region="center"></table>
+    </div>
+    <div id="hm_toolbar">
+        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
+        <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
+        <a href="javascript:void(0)" onclick="hm.getTreeNodes(treeFunc,this)" data-url="/intendant/site/setRoleSubmit" data-id="{{.id}}" class="easyui-linkbutton" iconCls="icon-group_gear" plain="true">[[$store.state.language.ajaxAuth]]</a>
+    </div>
+</form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<link rel="stylesheet" href="/static/common/animate/animate.min.css">
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script>
+var data = $.parseJSON({{.json}});
+console.info(data);
+$('#hm_tree').tree({
+    data: data,
+    animate: true, //折叠动画效果
+    checkbox: true, //复选框
+    onlyLeafCheck: false, //是否只显示末尾的复选框
+    lines: true, //是否显示虚线
+    cascadeCheck: false,
+});
+function treeFunc(data){
+    var failed = hm.language.authFailed ? hm.language.authFailed : "Authorization failed!",
+        success = hm.language.authSuccess ? hm.language.authSuccess : "Authorization success!",
+        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
+        roleIds = hm.language.roleIds ? hm.language.roleIds : "Authorization id group is illegal!";
+    if(data.status == 11){
+        parent.hm.notice("error", roleIds + data.info);
+    } else if(data.status == 4){
+        parent.hm.notice("error", failed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", success + data.info);
+        hm.reloadPage();
+    } else{
+        parent.hm.notice("error",unknownError + data.info);
+    }
+}
+</script>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>后台登录</title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <style>
+    .window{
+        border-color: #ededed;
+        background-color: #f8f8f8;
+        background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));
+        background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);
+        background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);
+        background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
+        background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);
+        background: linear-gradient(top, #f8f8f8, #f2f2f2);
+        box-shadow: inset 0px 1px 1px #fff;
+    }
+    .window .window-header{
+        /*text-shadow: rgba(0,0,0,0.25) 0 -1px 0;
+        background: linear-gradient(#334556, #2C4257),#2A3F54;
+        box-shadow: rgba(0,0,0,0.25) 0 1px 0px, inset rgba(255,255,255,0.16) 0 1px 0;*/
+        background: white;
+        border-bottom: 0;
+        text-align: center;
+    }
+    .dialog-toolbar, .dialog-button{
+        background: white;
+        border: 0;
+        padding: 0 10px 15px 10px;
+        /*border-top: 1px solid red;*/
+    }
+    .dialog-button .l-btn{
+        margin-left: 0;
+        width: 100%;
+        padding: 4px 0;
+        background: #3498db;
+    }
+    .dialog-button .l-btn .l-btn-text{
+        color: white;
+        font-size: 14px;
+    }
+    .window-header .panel-title{
+        border-top-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        font-size: 16px;
+        color: #666;
+        /*text-align: center;*/
+    }
+    .window-header .panel-icon{
+        /*text-align: center;*/
+    }
+    .window-mask{
+        /*background: 0;
+        box-shadow: 0;
+        opacity: inherit;*/
+    }
+    .messager-window{
+        background: 0;
+        z-index: 9999;
+        border: 0;
+        box-shadow: inherit;
+    }
+
+    input{
+        height: 18px;
+        padding: 4px 8px;
+        font-size: 100%;
+        line-height: 15px;
+        border: 1px solid #ccc;
+        /*background-color: #fff;*/
+        box-shadow: 2px 2px 2px #f0f0f0 inset;
+        border-radius: 3px;
+        vertical-align: middle;
+        margin: 0;
+        font-family: inherit;
+    }
+    #hm_login{
+        padding: 15px 30px 10px 25px;
+    }
+    #hm_login .pp{
+        height: 22px;
+        line-height: 22px;
+        /*padding: 4px 0px 0 0;*/
+        margin-bottom: 15px;
+    }
+    #hm_login label{
+        width: 90px;
+        float: left;
+        font-size: 14px;
+        color: #666;
+    }
+    #hm_login input{
+        float: left;
+    }
+    body{
+        background-image: url("/static/admin/img/bg.jpg");
+        background-position: center 0;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        -webkit-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -ms-background-size: cover;
+    }
+    </style>
+</head>
+<body onkeydown="hm.shortcutKey();">
+    <div id="hm-app">
+        <div id="hm_login" class="hm_dialog">
+            <form name="hm_form_login" method="post" action="/intendant/login">
+                <div class="pp">
+                    <label for="name">[[$store.state.language.username]]&nbsp;:</label>
+                    <input class="easyui-validatebox length_3" type="text" name="username" />
+                </div>
+                <div class="pp">
+                    <label for="email">[[$store.state.language.password]]&nbsp;:</label>
+                    <input class="easyui-validatebox length_3" type="password" name="password" />
+                </div>
+                <div id="btn">
+                    <a href="#" id="hm_login_submit" class="easyui-linkbutton">[[$store.state.language.login]]</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<link rel="stylesheet" href="/static/common/animate/animate.min.css">
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script>
+$(function(){
+    var redirect = "/intendant/index";
+    $('#hm_login').dialog({
+        title:hm.language.backStageLogin ? hm.language.backStageLogin : "Back-stage management",
+        top:400,
+        modal:false,
+        closable: false, //去除右上角的X关闭按钮
+        draggable: false, //禁止拖动窗口
+        buttons:'#btn',
+    });
+    $('.easyui-validatebox[name=username]').validatebox({
+        required:true,
+        validType:'username',
+        missingMessage:hm.language.isUsername ? hm.language.isUsername : "Please enter the account!",
+        // invalidMessage:'用户名不能为空',
+    });
+    $('.easyui-validatebox[name=password]').validatebox({
+        required:true,
+        validType:'password',
+        missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
+    });
+    //添加或修改
+    $('#hm_login_submit').on('click', function (e) {
+        e.preventDefault();
+        var that = $(this),
+            form = $('form[name=hm_form_login]'),
+            vali = form.form('enableValidation').form('validate'),
+            loginMsg = hm.language.loginMsg ? hm.language.loginMsg : "Waiting...,Log in for you!",
+            loginSuccess = hm.language.loginSuccess ? hm.language.loginSuccess : "Login success, 3 seconds after you jump!",
+            loginPassFail = hm.language.loginPassFail ? hm.language.loginPassFail : "Account or password error!",
+            loginDisabled = hm.language.loginDisabled ? hm.language.loginDisabled : "This account has been disabled!",
+            usernameVali = hm.language.usernameVali ? hm.language.usernameVali : "Account must begin with a letter, 5-16 characters, alphanumeric underscore!",
+            passwordVali = hm.language.passwordVali ? hm.language.passwordVali : "Password must begin with a letter, 5-16 characters, alphanumeric underscore!";
+        if (that.linkbutton('options').disabled == true){
+            parent.hm.notice('warn',hm.language.easyuiResubmit ? hm.language.easyuiResubmit : 'Don‘t repeat the submit');
+        }else{
+            that.linkbutton('disable');
+            if(vali){
+                $.ajax({
+                    url: form.attr('action'),
+                    dataType:'json',
+                    type:'POST',
+                    data:form.serialize(),
+                    beforeSend: function(){
+                        hm.openProgress(loginMsg);
+                    },
+                    success: function(data){
+                        if(data.status == 4){
+                            hm.notice("error", loginPassFail+data.info);
+                        }else if(data.status == 11){
+                            hm.notice("warn", usernameVali+data.info);
+                        }else if(data.status == 12){
+                            hm.notice("warn", passwordVali+data.info);
+                        }else if(data.status == 5){
+                            hm.notice("error", loginPassFail+data.info);
+                        }else if(data.status == 7){
+                            hm.notice("error", loginDisabled+data.info);
+                        }else if(data.status == 1){
+                            hm.notice("success", loginSuccess+data.info);
+                            setTimeout(function(){parent.window.location.href=redirect}, 3000);
+                        }
+                        that.linkbutton('enable');
+                        if(data.status !== 1){
+                            setTimeout(function () {
+                                hm.closeProgress(); //当页面加载完毕执行
+                            }, 500);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        parent.hm.notice("error", 'status:'+XMLHttpRequest.status+',readyState:'+XMLHttpRequest.readyState+',textStatus:'+textStatus);
+                        that.linkbutton('enable');
+                        setTimeout(function () {
+                            parent.hm.closeProgress(); //当页面加载完毕执行
+                        }, 500);
+                    }
+                });
+            }else{
+                parent.hm.notice('warn',hm.language.easyuiRemoteMessage ? hm.language.easyuiRemoteMessage : 'Please fix this field.');
+                setTimeout(function () {
+                    that.linkbutton('enable');
+                }, 2000);
+            }
+        }
+    });
+});
+</script>
+</html>

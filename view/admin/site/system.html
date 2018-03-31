@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>系统设置</title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <style>
+        /*.datagrid-view{
+            margin: 0;
+        }*/
+    </style>
+</head>
+<body>
+    <form id="hm-app" action="/intendant/site/editSystem" method="post">
+        <div class="easyui-layout nomargin pg" style="padding:10px 0px 10px 10px;">
+            <table id="hm-pgrid"></table>
+        </div>
+        <div id="hm_toolbar">
+            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxPgrid(meFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true">[[$store.state.language.ajaxEdit]]</a>
+            <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
+        </div>
+    </form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<link rel="stylesheet" href="/static/common/animate/animate.min.css">
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script>
+var cfgRows = hm.language.cfgRows ? hm.language.cfgRows : "Rows",
+    cfgName = hm.language.cfgName ? hm.language.cfgName : "Config name",
+    cfgValue = hm.language.cfgValue ? hm.language.cfgValue : "Config value",
+    cfgRemark = hm.language.cfgRemark ? hm.language.cfgRemark : "Config remark",
+    cfgSql = hm.language.cfgSql ? hm.language.cfgSql : "Database configuration",
+    cfgServer = hm.language.cfgServer ? hm.language.cfgServer : "Server configuration",
+    cfgCookie = hm.language.cfgCookie ? hm.language.cfgCookie : "Cookie configuration",
+    cfgLanguage = hm.language.cfgLanguage ? hm.language.cfgLanguage : "Default language",
+    cfgUseWhatSql = hm.language.cfgUseWhatSql ? hm.language.cfgUseWhatSql : "Which database to use",
+    cfgPort = hm.language.cfgPort ? hm.language.cfgPort : "Port number",
+    cfgReadTimeout = hm.language.cfgReadTimeout ? hm.language.cfgReadTimeout : "Read out of time",
+    cfgWriteTimeout = hm.language.cfgWriteTimeout ? hm.language.cfgWriteTimeout : "Write out of time",
+    english = hm.language.english ? hm.language.english : "English",
+    chinese = hm.language.chinese ? hm.language.chinese : "Chinese";
+var rows = [
+    { "name": cfgUseWhatSql, "group": cfgSql,"key":'sqlType', "value": {{.sqlType}}, "editor": {"type": 'combobox', "options": {"valueField":"value","textField":"text","data":[{"value":"sqlite","text":"sqlite3"},{"value":"mysql","text":"mysql"}],editable:false,}}},
+    { "name": cfgPort, "group": cfgServer,"key":"port", "value": {{.port}},"editor":{"type":'validatebox',"options":{"required": true,"validType":'port'}}},
+    { "name": cfgReadTimeout, "group": cfgServer,"key":"readTimeout", "value": {{.readTimeout}},"editor":{"type":'validatebox',"options":{"required": true,"validType":'readTimeout'}}},
+    { "name": cfgWriteTimeout, "group": cfgServer,"key":"writeTimeout", "value": {{.writeTimeout}},"editor":{"type":'validatebox',"options":{"required": true,"validType":'writeTimeout'}}},
+    { "name": cfgLanguage, "group": cfgCookie,"key":'language', "value": {{.language}}, "editor": {"type": 'combobox', "options": {"data":[{"value":"cn","text":chinese},{"value":"en","text":english}],editable:false,}}},
+    // { "name": "读取超时", "group": "服务器配置", "field": "Role","value":"get","editor": {"type": 'combobox', "options": {"data":[{"value":"post","text":"post"},{"value":"get","text":"get"}],valueField:'value',textField:'text',editable:false,}}},
+    // { "name": "办公电话", "value": "", "group": "其它", "editor": {"type":"checkbox","options":{"on":"true","off":"false"}}},
+    // { "name": "移动电话", "group": "其它", "value": "", "field": "mobilePhone", "editor": { "type": 'validatebox', "options": { "required": true}} },
+    // { "name": "集团短号", "group": "其它", "editor": "text", "value": "", "field": "mobilePhoneShort" },
+    // { "name": "第二联系方式", "group": "其它", "value": "", "field": "phoneSecond", "editor": { "type": 'validatebox', "options": { "required": true}} },
+    // { "name": "备注", "group": "其它", "editor": "text", "value": "", "field": "remark" }
+];
+$('#hm-pgrid').propertygrid({
+    width: 'auto',
+    height: 'auto',
+    data: rows,
+    showGroup: true,
+    scrollbarSize: 0,
+    columns: [[
+            { field: 'name', title: cfgName, width: 50, resizable: true },
+            { field: 'value', title: cfgValue, width: 50, resizable: true },
+            { field: 'remark', title: cfgRemark, width: 100, resizable: true },
+    ]],
+    groupFormatter: function(value, rows){
+        return value + ' - <span style="color:#666">' + rows.length + cfgRows+'</span>';
+    }
+});
+function meFunc(data){
+    var failed = hm.language.editFailed ? hm.language.editFailed : "Edit failed!",
+        success = hm.language.editSuccess ? hm.language.editSuccess : "Edit success!",
+        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
+        noAuth = hm.language.noAuth ? hm.language.noAuth : "You have no authority",
+        sqlTypeVali = hm.language.sqlTypeVali ? hm.language.sqlTypeVali : "The database type can only be sqlite3, mysql!",
+        portVali = hm.language.portVali ? hm.language.portVali : "The port number must be 1-5 bits positive integers!",
+        readTimeoutVali = hm.language.readTimeoutVali ? hm.language.readTimeoutVali : "The readTimeout must be 1-3 bits positive integers!",
+        writeTimeoutVali = hm.language.writeTimeoutVali ? hm.language.writeTimeoutVali : "The writeTimeout must be 1-3 bits positive integers!",
+        cfgLanguageVali = hm.language.cfgLanguageVali ? hm.language.cfgLanguageVali : "Default language only allows English and spaces,2-80 characters!";
+    if (data.status == 4) {
+        parent.hm.notice("error", failed + data.info);
+    } else if(data.status == 11){
+        parent.hm.notice("error", sqlTypeVali + data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("error", portVali + data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("error", readTimeoutVali + data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("error", writeTimeoutVali + data.info);
+    } else if(data.status == 15){
+        parent.hm.notice("error", cfgLanguageVali + data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", noAuth);
+    } else if(data.status == 1){
+        parent.hm.notice("success", success + data.info);
+        parent.hm.refreshTab();
+    } else{
+        parent.hm.notice("error", unknownError+data.info);
+    }
+}
+</script>
+</html>
