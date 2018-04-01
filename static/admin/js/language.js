@@ -220,6 +220,7 @@ var language = {
         noAuth: "You have no authority",
         english: "English",
         chinese: "Chinese",
+        noAuthGetMenu: "You do not have permission to get the menu!",
         //通用提示结束
     },
     //简体中文,chinese
@@ -443,6 +444,7 @@ var language = {
         noAuth: "你没有相关权限",
         english: "英语",
         chinese: "简体中文",
+        noAuthGetMenu: "您没有权限获取菜单",
         //通用提示结束
     },
 };

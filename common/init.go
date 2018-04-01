@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/alexedwards/scs"
@@ -100,4 +101,19 @@ func (c *BaseCtrl) Sha1(s string) string {
 //Sha1 Plus Md5
 func (c *BaseCtrl) Sha1PlusMd5(s string) string {
 	return c.Sha1(c.Md5(s))
+}
+
+//格式化路由
+func (c *BaseCtrl) FormatUrl(s string) string {
+	uri := s
+	straddress := ""
+	for _, v := range uri { // i 是字符的字节位置，v 是字符的拷贝
+		ss := fmt.Sprintf("%c", v) // 输出单个字符
+		yz := Base().Regexp().Id(ss)
+		if yz == false {
+			straddress = straddress + ss
+		}
+	}
+	result := strings.TrimRight(straddress, "/")
+	return result
 }

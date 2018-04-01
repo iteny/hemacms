@@ -684,22 +684,25 @@ HmObj.prototype.notice = function(type, msg, title, time) {
 };
 // 获取菜单数据并插入一级菜单
 HmObj.prototype.getMenuData = function() {
-    var _that = this;
-    var _config = _that.menuCfg;
-    var data;
-    if (_config.url === undefined) {
+    var that = this,
+        config = that.menuCfg;
+    if (config.url === undefined) {
         that.notice('error', hm.language.menuDataUrl ? hm.language.menuDataUrl : 'Please configure the data source for the menu item【Url】');
     } else {
         //若未传入data参数 通过url方式获取
         $.ajax({
-            type: _config.type,
-            url: _config.url,
+            type: config.type,
+            url: config.url,
             // async: false,
             dataType: 'json',
             success: function(result, status, xhr) {
                 // 取得数据
                 if (result == null) {
-                    _that.notice('error', hm.language.getMenuData ? hm.language.getMenuData : 'Getting menu data failure');
+                    alert('1111');
+                    that.notice('error', hm.language.getMenuData ? hm.language.getMenuData : 'Getting menu data failure!');
+                } else if (result.status == 66) {
+                    that.notice('error', hm.language.noAuthGetMenu ? hm.language.noAuthGetMenu : 'You do not have permission to get the menu!');
+                    that.closeProgress(1);
                 } else {
                     if (result != null) {
                         window.localStorage.setItem('hm_menu_data', JSON.stringify(result));
@@ -723,14 +726,14 @@ HmObj.prototype.getMenuData = function() {
                         $('#hm-north-content').html(str);
                         $('.oneji').linkbutton();
                     } else {
-                        this.notice('error', hm.language.localStorageMenu ? hm.language.localStorageMenu : 'No menu data in the local cache');
+                        that.notice('error', hm.language.localStorageMenu ? hm.language.localStorageMenu : 'No menu data in the local cache');
                         return false;
                     }
 
                 }
             },
             error: function(xhr, status, error) {
-                _that.notice('error', 'hemacms Error: ' + error);
+                that.notice('error', 'hemacms Error: ' + error);
             },
             complete: function() {
                 // _that.init();

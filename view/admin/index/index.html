@@ -234,52 +234,11 @@
             hm.notice('error', hm.language.menuPid ? hm.language.menuPid : 'Unable to obtain the specified parent ID');
             return false;
         }
-        // if (id) {
-        //     if (data != null) {
-        //         for (var item in data) {
-        //             if (data[item]['id'] == id) {
-        //                 if (data[item]['children'] === null) {
-        //                     $('#hm-west').html('<div style="width:100%;height:40px;line-height:40px;background:#d9534f;text-indent:25px;"><span style="color:white;">' + hm.language.sorry + '[' +
-        //                         data[item]['text'] + ']' + hm.language.isMenu + '</span></div>');
-        //                     hm.notice("error", hm.language.sorry + '[' + data[item]['text'] + ']' + hm.language.isMenu);
-        //                     return false;
-        //                 }
-        //                 var scount = data[item]['children'].length,
-        //                     sdata = data[item]['children'];
-        //                 second += '<div id="hm-ac" class="easyui-accordion" style="">';
-        //                 for (var i = 0; i < scount; i++) {
-        //                     second += '<div title="' + sdata[i]['text'] + '" iconCls="fa ' + sdata[i]['iconCls'] + '" style="padding:10px;">';
-        //                     var tcount = sdata[i]['children'].length,
-        //                         tdata = sdata[i]['children'];
-        //                     for (var t = 0; t < tcount; t++) {
-        //                         second += '<a style="width: 204px;" border="false" data-id="' + tdata[t]["id"] + '" data-icon="' + tdata[t]["iconCls"] + '" title="' + tdata[t]["url"] +
-        //                             '" href="#" class="easyui-linkbutton hm-acmenu-btn l-btn l-btn-small easyui-fluid" group="" id="">';
-        //                         second += '<span class="l-btn-left l-btn-icon-left" style="margin-top: 0px;"><span class="l-btn-text">' + tdata[t]["text"] + '</span><span class="l-btn-icon fa ' + tdata[t]["iconCls"] +
-        //                             '"></span></span>';
-        //                         second += '</a>';
-        //                     }
-        //                     second += '</div>';
-        //                 }
-        //                 second += '</div>';
-        //                 $('#hm-west').html(second);
-        //                 $('#hm-ac').accordion({
-        //                     border: false,
-        //                 });
-        //             }
-        //         }
-        //     } else {
-        //         hm.notice('error', hm.language.localStorageMenu ? hm.language.localStorageMenu : 'No menu data in the local cache');
-        //         return false;
-        //     }
-        // } else {
-        //     hm.notice('error', hm.language.menuPid ? hm.language.menuPid : 'Unable to obtain the specified parent ID');
-        //     return false;
-        // }
     });
     //模拟点击第一个一级菜单
     setTimeout(function() {
         $('#hm-north-content>a').eq(0).click();
-    }, 100);
+    }, 300);
 
     // 控制左侧west显示隐藏
     $('.west-ct').on('click', function() {
@@ -438,25 +397,46 @@
     $('#hm-layout').on('click', 'a.hm-acmenu-btn', function() {
         $('.hm-acmenu-btn').removeClass('hm-acc');
         $(this).addClass('hm-acc');
-        //获取组件的属性或内容
-        var title = $(this).text(),
-            href = $(this).attr("title"),
-            icon = $(this).attr("data-icon"),
-            id = $(this).attr("data-id");
-        if ($("#hm-tabs").tabs("exists", title)) {
-            $("#hm-tabs").tabs("select", title);
-        } else {
-            var tabCount = $('#hm-tabs').tabs('tabs').length;
-            if (tabCount > 3) {
-                hm.notice("warn", '对不起!你打开太多选项卡，会导致机器变慢', '提示信息');
-            }
-            $("#hm-tabs").tabs('add', {
-                title: title,
-                closable: true,
-                content: '<iframe name="hm_tab_' + id + '" scrolling="auto" src="' + href + '" frameborder="0" style="width:100%;height:100%;"></iframe>',
-                iconCls: 'fa ' + icon,
-            });
-        }
+        var noAuth = hm.language.noAuth ? hm.language.noAuth : "You have no authority",
+            that = $(this),
+            //获取组件的属性或内容
+            title = that.text(),
+            href = that.attr("title"),
+            icon = that.attr("data-icon"),
+            id = that.attr("data-id");
+        $.ajax({
+            type: 'post',
+            url: '/intendant/tabNoAuth',
+            data:{'uri':'/intendant/'+href},
+            dataType: 'json',
+            success: function(data) {
+                if(data.status == 66){
+                    hm.notice("error", noAuth);
+                } else if(data.status == 67){
+                    window.location = '/intendant/login';
+                }else{
+                    if ($("#hm-tabs").tabs("exists", title)) {
+                        $("#hm-tabs").tabs("select", title);
+                    } else {
+                        var tabCount = $('#hm-tabs').tabs('tabs').length;
+                        if (tabCount > 3) {
+                            hm.notice("warn", '对不起!你打开太多选项卡，会导致机器变慢', '提示信息');
+                        }
+                        $("#hm-tabs").tabs('add', {
+                            title: title,
+                            closable: true,
+                            content: '<iframe name="hm_tab_' + id + '" scrolling="auto" src="' + href + '" frameborder="0" style="width:100%;height:100%;"></iframe>',
+                            iconCls: 'fa ' + icon,
+                        });
+                    }
+                }
+                return false;
+            },
+            error: function(xhr, status, error) {
+                hm.notice('error', 'Tab request Error: ' + error);
+            },
+        });
+
     });
     //刷新tab内容
     $('#hm-refresh').click(function() {

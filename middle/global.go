@@ -36,6 +36,10 @@ func LoginVerify(next http.Handler) http.Handler {
 			if userId != "" {
 				fmt.Fprint(w, "<script>parent.window.location = '/intendant/index';</script>")
 			}
+		case "/intendant/tabNoAuth":
+			if userId == "" {
+				fmt.Fprint(w, "{\"total\":0,\"rows\":[],\"status\":67}")
+			}
 		default:
 			if userId == "" {
 				if r.Method == "GET" {
@@ -76,7 +80,7 @@ func LoginVerify(next http.Handler) http.Handler {
 					common.Cache().CacheSetAlwaysTime("roleId"+userId, roleId)
 				}
 				rulerz := "false"
-				formatUri := formatUrl(uri)
+				formatUri := common.Base().FormatUrl(uri)
 				fmt.Println(formatUri)
 				for _, v := range rule {
 					if formatUri == "/intendant/"+v.Url {
@@ -142,16 +146,22 @@ func LoginVerify(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-func formatUrl(s string) string {
-	uri := s
-	straddress := ""
-	for _, v := range uri { // i 是字符的字节位置，v 是字符的拷贝
-		ss := fmt.Sprintf("%c", v) // 输出单个字符
-		yz := common.Regexp().Id(ss)
-		if yz == false {
-			straddress = straddress + ss
-		}
-	}
-	result := strings.TrimRight(straddress, "/")
-	return result
+
+//没有路由的情况下
+func NoFound(w http.ResponseWriter, r *http.Request) {
+	common.Base().Template(w, r, nil, "./view/admin/index/nofound.html")
 }
+
+// func formatUrl(s string) string {
+// 	uri := s
+// 	straddress := ""
+// 	for _, v := range uri { // i 是字符的字节位置，v 是字符的拷贝
+// 		ss := fmt.Sprintf("%c", v) // 输出单个字符
+// 		yz := common.Regexp().Id(ss)
+// 		if yz == false {
+// 			straddress = straddress + ss
+// 		}
+// 	}
+// 	result := strings.TrimRight(straddress, "/")
+// 	return result
+// }
