@@ -86,9 +86,6 @@ func adminRoutes() http.Handler {
 	login := admin.LoginCtrlObject()
 	r := chi.NewRouter()
 	r.Use(middle.LoginVerify)
-	// r.Get("/login", login.Index) //sign in page
-	// r.Post("/login", login.Login)
-	//
 	r.Get("/login", login.Login) //登录页
 	r.Post("/login", login.LoginSubmit)
 	r.Post("/loginOut", login.LoginOut)   //退出
