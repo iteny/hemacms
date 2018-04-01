@@ -23,7 +23,7 @@
         </div>
         <div id="hm_toolbar">
             <a href="javascript:void(0)" onclick="hm.ajaxSort(menuSort,this)" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true">[[$store.state.language.sort]]</a>
-            <a href="/intendant/site/addMenu/0" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.addTopMenu]]</a>
+            <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addMenu/0" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.addTopMenu]]</a>
             <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_menu','treegrid')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
         </div>
         <!-- <div id="hm_menu_tools">
@@ -131,9 +131,9 @@ $('#hm_menu').treegrid({
                     if(row.level > 3){
                         str = '<a href="javascript:void(0)" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add" onclick="disClick()" disabled>'+hm.language.addSubMenu+'</a>';
                     }else{
-                        str = '<a href="/intendant/site/addMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubMenu+'</a>';
+                        str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubMenu+'</a>';
                     }
-                    str += '<a href="/intendant/site/editMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
                     str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(menuDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delMenuSubmit" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
                     return str;
                 }

@@ -1165,6 +1165,36 @@ HmObj.prototype.getTreeNodes = function(externalFunc, me) {
 
     }
 };
+//验证get页面是否有权限
+HmObj.prototype.getVerify = function(me) {
+    var that = $(me),
+        url = that.attr('data-url');
+    if (url == "") {
+        parent.hm.notice("warn", hm.language.noUrl ? hm.language.noUrl : 'The address of the web page was not obtained!');
+    } else {
+        $.ajax({
+            type: 'post',
+            url: '/intendant/tabNoAuth',
+            data: {
+                'uri': url
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.status == 66) {
+                    parent.hm.notice("error", hm.language.noAuth ? hm.language.noAuth : 'You have no authority!');
+                } else if (data.status == 67) {
+                    parent.window.location = '/intendant/login';
+                } else {
+                    window.location = url;
+                }
+                return false;
+            },
+            error: function(xhr, status, error) {
+                hm.notice('error', 'Tab request Error: ' + error);
+            },
+        });
+    }
+};
 //添加或修改
 HmObj.prototype.ajaxAddEdit = function(externalFunc, me) {
     var that = $(me),
@@ -1247,6 +1277,7 @@ HmObj.prototype.ajaxDel = function(externalFunc, me) {
 //根据id批量删除
 HmObj.prototype.ajaxBatchDel = function(externalFunc, me) {
     var that = $(me),
+        url = that.attr('data-url'),
         title = hm.language.noticeTitle ? hm.language.noticeTitle : "Notice Message",
         msg = hm.language.confirmDel ? hm.language.confirmDel : "You confirm that you want to delete ";
     if (that.linkbutton('options').disabled == true) {
@@ -1273,7 +1304,7 @@ HmObj.prototype.ajaxBatchDel = function(externalFunc, me) {
             fn: function(r) {
                 if (r) {
                     $.ajax({
-                        url: that.attr('action'),
+                        url: url,
                         dataType: 'json',
                         type: 'POST',
                         data: {

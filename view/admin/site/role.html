@@ -22,8 +22,8 @@
         <table id="hm_data" style="" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.roleAdd]]</a>
-        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleBatchDel,this)" class="easyui-linkbutton" action="/intendant/site/batchDelRole" iconCls="icon-arrow_ns" plain="true">[[$store.state.language.roleBatchDel]]</a>
+        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.roleAdd]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleBatchDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true">[[$store.state.language.roleBatchDel]]</a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
     </div>
     <div id="hm_menu_tools">
@@ -121,12 +121,12 @@ $('#hm_data').datagrid({
             formatter: function(value, row, index) {
                 var str = '';
                 if(row.id == 1){
-                    str += '<a href="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
                     str += '<a href="#" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit" disabled>'+hm.language.ajaxEdit+'</a>';
                     str += '<a href="#" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" disabled>'+hm.language.ajaxDel+'</a>';
                 }else{
-                    str += '<a href="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
-                    str += '<a href="/intendant/site/editRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                    str += '<a  href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
+                    str += '<a  href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
                     str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(roleDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delRole" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
                 }
                 return str;

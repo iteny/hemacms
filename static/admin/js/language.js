@@ -217,10 +217,12 @@ var language = {
         //角色管理结束
         //通用提示开始
         name: " only allows Chinese characters, English letters and spaces, 1-80 characters!",
-        noAuth: "You have no authority",
+        noAuth: "You have no authority!",
         english: "English",
         chinese: "Chinese",
         noAuthGetMenu: "You do not have permission to get the menu!",
+        noUrl: "The address of the web page was not obtained!",
+        tantoTabs: "Sorry! You open too many tabs and it will cause the machine to slow down!",
         //通用提示结束
     },
     //简体中文,chinese
@@ -441,10 +443,12 @@ var language = {
         //角色管理结束
         //通用提示开始
         name: "只允许汉字、英文字母及空格、1-80位字符!",
-        noAuth: "你没有相关权限",
+        noAuth: "你没有相关权限!",
         english: "英语",
         chinese: "简体中文",
-        noAuthGetMenu: "您没有权限获取菜单",
+        noAuthGetMenu: "您没有权限获取菜单!",
+        noUrl: "没有获取到网页的地址!",
+        tantoTabs: "对不起!你打开太多选项卡，会导致机器变慢', '提示信息!",
         //通用提示结束
     },
 };

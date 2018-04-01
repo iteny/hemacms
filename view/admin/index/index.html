@@ -419,8 +419,8 @@
                         $("#hm-tabs").tabs("select", title);
                     } else {
                         var tabCount = $('#hm-tabs').tabs('tabs').length;
-                        if (tabCount > 3) {
-                            hm.notice("warn", '对不起!你打开太多选项卡，会导致机器变慢', '提示信息');
+                        if (tabCount > 6) {
+                            hm.notice("warn", this.language.tantoTabs ? this.language.tantoTabs : 'Sorry! You open too many tabs and it will cause the machine to slow down!');
                         }
                         $("#hm-tabs").tabs('add', {
                             title: title,

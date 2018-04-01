@@ -22,8 +22,8 @@
         <table id="hm_data" style="" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="/intendant/site/addUser" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.userAdd]]</a>
-        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxBatchDel(userBatchDel,this)" class="easyui-linkbutton" action="/intendant/site/batchDelUser" iconCls="icon-arrow_ns" plain="true">[[$store.state.language.userBatchDel]]</a>
+        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addUser" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.userAdd]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(userBatchDel,this)" data-url="/intendant/site/batchDelUser" class="easyui-linkbutton"  iconCls="icon-arrow_ns" plain="true">[[$store.state.language.userBatchDel]]</a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
     </div>
     <div id="hm_menu_tools">
@@ -161,7 +161,7 @@ $('#hm_data').datagrid({
                 if(row.id == 1){
                     str += '<a href="#" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-2012080404218">'+hm.language.userAdminIsNo+'</a>';
                 }else{
-                    str += '<a href="/intendant/site/editUser/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editUser/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
                     str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(userDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delUser" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
                 }
                 return str;
