@@ -13,8 +13,14 @@
 </head>
 <body>
 <form id="hm-app" action="/intendant/site/sortMenu" method="post">
-    <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
-        <table id="hm_tree" style="" region="center"></table>
+    <div class="easyui-layout" style="padding:10px 0px 55px 10px;">
+        <div style="border:3px solid #09c;border-right:0;">
+            <div id="tit" style="height:36px;line-height:36px;border-color: #ededed;background-color: #f8f8f8;background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
+    background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);background: linear-gradient(top, #f8f8f8, #f2f2f2);box-shadow: inset 0px 1px 1px #fff;border-bottom:1px solid #D4D4D4;text-indent:20px;color:#666;">新建角色</div>
+            <div style="padding:8px;">
+                <table id="hm_tree" style="" region="center"></table>
+            </div>
+        </div>
     </div>
     <div id="hm_toolbar">
         <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
@@ -33,14 +39,28 @@
 <script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var data = $.parseJSON({{.json}});
-console.info(data);
+var lang = '';
+switch ($.cookie('back-language')) {
+    case 'cn':
+        lang = 'text';
+        break;
+    case 'en':
+        lang = 'en';
+        break;
+    default:
+        lang = 'text';
+}
 $('#hm_tree').tree({
+    textField:lang,
     data: data,
     animate: true, //折叠动画效果
     checkbox: true, //复选框
     onlyLeafCheck: false, //是否只显示末尾的复选框
     lines: true, //是否显示虚线
     cascadeCheck: false,
+    formatter:function(node){
+		return node[lang];
+	}
 });
 function treeFunc(data){
     var failed = hm.language.authFailed ? hm.language.authFailed : "Authorization failed!",
@@ -58,5 +78,18 @@ function treeFunc(data){
         parent.hm.notice("error",unknownError + data.info);
     }
 }
+var lang = '',
+    currentRole = hm.language.currentRole ? hm.language.currentRole : 'Current role';
+switch ($.cookie('back-language')) {
+    case 'cn':
+        lang = {{.roleName}};
+        break;
+    case 'en':
+        lang = {{.roleEn}};
+        break;
+    default:
+        lang = {{.roleName}};
+}
+$('#tit').html(currentRole+"&nbsp;&nbsp;:&nbsp;&nbsp;"+lang);
 </script>
 </html>

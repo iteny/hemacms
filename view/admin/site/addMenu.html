@@ -17,27 +17,27 @@
             <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
                 <tbody>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.superiorMenu]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.superiorMenu]]&nbsp;:&nbsp;</td>
                         <td width="160"><input id="menuselect" class="length_3" name="pid" value="{{.pid}}"></td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuChinese]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuChinese]]&nbsp;:&nbsp;</td>
                         <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true,validType:'menuName'" /></td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuEnglish]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuEnglish]]&nbsp;:&nbsp;</td>
                         <td width="190"><input class="easyui-validatebox length_5" type="text" name="en" data-options="required:true,validType:'english'" /></td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuUrl]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuUrl]]&nbsp;:&nbsp;</td>
                         <td width="190"><input class="easyui-validatebox length_5" type="text" name="url" data-options="required:true,validType:'menuUrl'" /></td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuSort]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuSort]]&nbsp;:&nbsp;</td>
                         <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:'sort'" /></td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuIcon]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuIcon]]&nbsp;:&nbsp;</td>
                         <td>
                             <input id="hm_menu_icons_input" name="icon" type="hidden" value="icon-2012080404391">
                             <strong id="hm_menu_icons"><i class='icon-2012080404391'></i></strong>
@@ -45,7 +45,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.isshow]]&nbsp;:&nbsp;</td>
+                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.isshow]]&nbsp;:&nbsp;</td>
                         <td width="190"><input id="isshow"></td>
                         <input type="hidden" name="isshow" value="1">
                     </tr>
@@ -70,14 +70,29 @@
 <script type="text/javascript">
 var data = [];
 var menudata = $.parseJSON({{.json}});
-var topdata = '{"id":0,"url":"顶级","text":"'+hm.language.topMenu+'","pid":0,"isshow":1}';
+var topdata = '{"id":0,"url":"topMenu","text":"顶级菜单","pid":0,"isshow":1,"en":"Top menu","iconCls":"icon-eject_green"}';
 data.push(JSON.parse(topdata));
 $.each(menudata, function(index, obj) {
     data.push(obj);
 });
+var lang = '';
+switch ($.cookie('back-language')) {
+    case 'cn':
+        lang = 'text';
+        break;
+    case 'en':
+        lang = 'en';
+        break;
+    default:
+        lang = 'text';
+}
 $('#menuselect').combotree({
     required: true,
-    data: data
+    textField: lang,
+    data: data,
+    formatter:function(node){
+		return node[lang];
+	}
 });
 $('#isshow').switchbutton({
     checked: true,

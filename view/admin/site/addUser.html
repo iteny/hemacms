@@ -18,28 +18,27 @@
             <tbody>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userName]]&nbsp;:&nbsp;</td>
-                    <td width="160"><input class="easyui-validatebox length_5" name="username" value=""></td>
-                    <!-- <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true" /></td> -->
+                    <td width="160"><input class="easyui-validatebox length_5" name="username"  data-options="required:true,validType:'username'"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwd]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" /></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" data-options="required:true,validType:'password'"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwdEd]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="passworded" /></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="passworded" required="required" validType="passworded['#pwd']"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userNickname]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" /></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" data-options="required:true,validType:'nickname'"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userEmail]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="email" /></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="email" data-options="required:true,validType:'email'"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.remark]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" /></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" data-options="required:true,validType:'remark'"></td>
                 </tr>
                 <tr>
                     <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userRoleGroup]]&nbsp;:&nbsp;</td>
@@ -68,43 +67,27 @@
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
-$('.easyui-validatebox[name=username]').validatebox({
-    required:true,
-    validType:'username',
-    missingMessage:hm.language.isUsername ? hm.language.isUsername : "Please enter the account!",
-});
-$('.easyui-validatebox[name=password]').validatebox({
-    required:true,
-    validType:'password',
-    missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
-});
-$('.easyui-validatebox[name=passworded]').validatebox({
-    required:true,
-    validType:"passworded['#pwd']",
-    missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
-});
-$('.easyui-validatebox[name=nickname]').validatebox({
-    required:true,
-    validType:'nickname',
-    missingMessage:hm.language.isNickname ? hm.language.isNickname : "Please enter the nickname!",
-});
-$('.easyui-validatebox[name=email]').validatebox({
-    required:true,
-    validType:'email',
-    missingMessage:hm.language.isEmail ? hm.language.isEmail : "Please enter the email!",
-});
-$('.easyui-validatebox[name=remark]').validatebox({
-    required:true,
-    validType:'remark',
-    missingMessage:hm.language.isRemark ? hm.language.isRemark : "Please enter the remark!",
-});
 var group = $.parseJSON({{.role}});
+var lang = '';
+switch ($.cookie('back-language')) {
+    case 'cn':
+        lang = 'name';
+        break;
+    case 'en':
+        lang = 'en';
+        break;
+    default:
+        lang = 'name';
+}
 $('.select[name=role]').combobox({
     required: true,
     valueField:'id',
-    textField:'name',
+    textField:lang,
     editable:false,
-    data: group
+    data: group,
+    formatter:function(node){
+		return node[lang];
+	}
 });
 $('.switch[name=status]').switchbutton({
     checked: true,

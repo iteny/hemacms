@@ -223,6 +223,7 @@ var language = {
         noAuthGetMenu: "You do not have permission to get the menu!",
         noUrl: "The address of the web page was not obtained!",
         tantoTabs: "Sorry! You open too many tabs and it will cause the machine to slow down!",
+        currentRole: "Current role",
         //通用提示结束
     },
     //简体中文,chinese
@@ -449,6 +450,7 @@ var language = {
         noAuthGetMenu: "您没有权限获取菜单!",
         noUrl: "没有获取到网页的地址!",
         tantoTabs: "对不起!你打开太多选项卡，会导致机器变慢', '提示信息!",
+        currentRole: "当前角色",
         //通用提示结束
     },
 };

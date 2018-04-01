@@ -955,7 +955,7 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "roleId")
 	role := sql.AuthRole{}
-	if rows, found := c.Cache().CacheGet("allrole"); found {
+	if rows, found := c.Cache().CacheGet("role" + id); found {
 		role = rows.(sql.AuthRole)
 	} else {
 		sqls := "SELECT * FROM hm_auth_role WHERE id = ?"
@@ -964,7 +964,7 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("allrole", role)
+		c.Cache().CacheSetAlwaysTime("role"+id, role)
 	}
 	rule := []sql.AuthRule{}
 	if rows, found := c.Cache().CacheGet("allmenu"); found {
@@ -983,10 +983,8 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 		iss := 0
 		for _, iv := range ids {
 			vint, _ := strconv.Atoi(iv)
-
 			if vint == v.Id {
 				iss = 1
-				// rule[k].Checked = iss
 			}
 		}
 		rule[k].Checked = iss
@@ -1013,6 +1011,8 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["json"] = c.RowsJson(array)
 	data["id"] = id
+	data["roleName"] = role.Name
+	data["roleEn"] = role.En
 	c.Template(w, r, data, "./view/admin/site/setRole.html")
 }
 
@@ -1039,7 +1039,7 @@ func (c *SiteCtrl) SetRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			c.Cache().CacheDel("allrole")
+			c.Cache().CacheDel("role" + id)
 			c.Cache().CacheDel("auth" + id)
 			c.ResponseJson(1, "", w, r)
 		}
