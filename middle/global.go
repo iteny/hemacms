@@ -36,6 +36,7 @@ func LoginVerify(next http.Handler) http.Handler {
 			if userId != "" {
 				fmt.Fprint(w, "<script>parent.window.location = '/intendant/index';</script>")
 			}
+		case "/intendant":
 		case "/intendant/tabNoAuth":
 			if userId == "" {
 				fmt.Fprint(w, "{\"total\":0,\"rows\":[],\"status\":67}")

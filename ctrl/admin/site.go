@@ -1253,3 +1253,14 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+/**
+ * @description 修改角色提交
+ * @English	edit role submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) ColorSchemes(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/colorSchemes.html")
+}

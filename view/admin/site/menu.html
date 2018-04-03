@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>菜单设置</title>
+    <title>Menu site</title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
@@ -55,9 +55,9 @@
 <script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script type="text/javascript">
 parent.hm.openProgress();
+var mehigh = document.documentElement.clientHeight-80;
 $('#hm_menu').treegrid({
-    // title: '菜单',
-    // iconCls: 'icon-add',
+    height: mehigh,
     nowrap: true,
     emptyMsg: 'no records found',
     url: '/intendant/site/getMenu',
@@ -75,12 +75,12 @@ $('#hm_menu').treegrid({
                 width: 30,
                 align: 'center',
                 formatter: function(value, row, index) {
-                    return '<input name="' + row.id + '" value="' + value + '" class="easyui-validatebox" style="width:40px;text-align:center;border-radius:4px;"';
+                    return '<input name="' + row.id + '" value="' + value + '" class="easyui-validatebox" style="width:30px;text-align:center;border-radius:4px;"';
                 }
             },{
                 field: 'id',
                 title: 'ID',
-                width: 30,
+                width: 20,
                 align: 'center',
             },
             {

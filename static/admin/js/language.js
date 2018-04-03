@@ -224,6 +224,12 @@ var language = {
         noUrl: "The address of the web page was not obtained!",
         tantoTabs: "Sorry! You open too many tabs and it will cause the machine to slow down!",
         currentRole: "Current role",
+        jsCopyCss: "Copy color style ",
+        jsCopyRgb: "Copy color rgb code ",
+        jsCopySuccess: " success!",
+        jsCopyFailed: "Copy failed!",
+        jsCss: "Copy css",
+        jsRgb: "Copy rgb",
         //通用提示结束
     },
     //简体中文,chinese
@@ -451,6 +457,12 @@ var language = {
         noUrl: "没有获取到网页的地址!",
         tantoTabs: "对不起!你打开太多选项卡，会导致机器变慢', '提示信息!",
         currentRole: "当前角色",
+        jsCopyCss: "复制颜色样式",
+        jsCopyRgb: "复制颜色rgb编码",
+        jsCopySuccess: "成功!",
+        jsCopyFailed: "复制失败!",
+        jsCss: "复制Css",
+        jsRgb: "复制Rgb",
         //通用提示结束
     },
 };

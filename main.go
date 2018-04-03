@@ -86,6 +86,7 @@ func adminRoutes() http.Handler {
 	login := admin.LoginCtrlObject()
 	r := chi.NewRouter()
 	r.Use(middle.LoginVerify)
+	r.Get("/", index.Skip)       //跳转到登录页面
 	r.Get("/login", login.Login) //登录页
 	r.Post("/login", login.LoginSubmit)
 	r.Post("/loginOut", login.LoginOut)   //退出
@@ -132,6 +133,7 @@ func adminRoutes() http.Handler {
 			r.Get("/{roleId}", site.EditRole) //修改角色页面
 		})
 		r.Post("/editRoleSubmit", site.EditRoleSubmit) //修改角色提交
+		r.Get("/colorSchemes", site.ColorSchemes)      //配色方案
 	})
 
 	// r.Post("/login", admin.Login.Login) // sign in commit page

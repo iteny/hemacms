@@ -16,6 +16,9 @@ type IndexCtrl struct {
 func IndexCtrlObject() *IndexCtrl {
 	return &IndexCtrl{}
 }
+func (c *IndexCtrl) Skip(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/intendant/login", http.StatusFound)
+}
 func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	session := c.Sess().Load(r)
@@ -62,7 +65,7 @@ func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {
 	userId, err := session.GetString("uid")
 	c.Log().CheckErr("Session Get Error", err)
 	if userId == "" {
-		fmt.Fprint(w, "{\"total\":0,\"rows\":[],\"status\":67}")
+		// fmt.Fprint(w, "{\"total\":0,\"rows\":[],\"status\":67}")
 		return
 	} else if userId == "1" {
 		fmt.Fprint(w, "{\"total\":0,\"rows\":[],\"status\":88}")

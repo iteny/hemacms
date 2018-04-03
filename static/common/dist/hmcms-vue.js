@@ -261,7 +261,10 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
             password: hm.language.password ? hm.language.password : 'Password',
             login: hm.language.login ? hm.language.login : 'Log in',
             userLogout: hm.language.userLogout ? hm.language.userLogout : 'Log out',
-            noAuth: hm.language.noAuth ? hm.language.noAuth : 'You have no authority.'
+            noAuth: hm.language.noAuth ? hm.language.noAuth : 'You have no authority.',
+            jsCss: hm.language.jsCss ? hm.language.jsCss : 'Copy css',
+            jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb'
+
         },
         style: $.cookie('back-style') ? $.cookie('back-style') : 'hm_style_default'
         // language: {
