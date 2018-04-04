@@ -218,6 +218,7 @@ var language = {
         //通用提示开始
         name: " only allows Chinese characters, English letters and spaces, 1-80 characters!",
         noAuth: "You have no authority!",
+        noFound: "Sorry! The page you visited cannot be found...",
         english: "English",
         chinese: "Chinese",
         noAuthGetMenu: "You do not have permission to get the menu!",
@@ -451,6 +452,7 @@ var language = {
         //通用提示开始
         name: "只允许汉字、英文字母及空格、1-80位字符!",
         noAuth: "你没有相关权限!",
+        noFound: "抱歉!您访问的页面找不到哦...",
         english: "英语",
         chinese: "简体中文",
         noAuthGetMenu: "您没有权限获取菜单!",

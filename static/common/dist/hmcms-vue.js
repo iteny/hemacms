@@ -262,6 +262,7 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
             login: hm.language.login ? hm.language.login : 'Log in',
             userLogout: hm.language.userLogout ? hm.language.userLogout : 'Log out',
             noAuth: hm.language.noAuth ? hm.language.noAuth : 'You have no authority.',
+            noFound: hm.language.noFound ? hm.language.noFound : 'Sorry! The page you visited cannot be found...',
             jsCss: hm.language.jsCss ? hm.language.jsCss : 'Copy css',
             jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb'
 

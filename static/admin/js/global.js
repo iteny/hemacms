@@ -1452,52 +1452,52 @@ $(function() {
     //     }
     // });
     //删除单个
-    $('form').on('click', '.ajax_del', function(e) {
-        e.preventDefault();
-        var that = $(this),
-            name = that.attr('data-name'),
-            id = that.attr('data-id'),
-            title = hm.language.noticeTitle ? hm.language.noticeTitle : "Notice Message",
-            failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-            success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!";
-        msg = hm.language.confirmDel ? hm.language.confirmDel : "You confirm that you want to delete ";
-        parent.$.messager.confirm({
-            title: '&nbsp;&nbsp;&nbsp;&nbsp;' + title,
-            msg: msg + '[' + name + ']?',
-            closable: false, //去除右上角的X关闭按钮
-            draggable: false, //禁止拖动窗口
-            fn: function(r) {
-                if (r) {
-                    $.ajax({
-                        url: that.attr('href'),
-                        dataType: 'json',
-                        type: 'POST',
-                        data: {
-                            id: id
-                        },
-                        beforeSend: function() {
-                            parent.hm.openProgress();
-                        },
-                        success: function(data) {
-                            if (!data.status) {
-                                parent.hm.notice("error", failed + data.info);
-                            } else {
-                                parent.hm.notice("success", success + data.info);
-                                parent.hm.refreshTab();
-                            }
-                            that.linkbutton('enable');
-                            parent.hm.closeProgress(); //当页面加载完毕执行
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
-                            that.linkbutton('enable');
-                            parent.hm.closeProgress(); //当页面加载完毕执行
-                        }
-                    });
-                }
-            }
-        });
-    });
+    // $('form').on('click', '.ajax_del', function(e) {
+    //     e.preventDefault();
+    //     var that = $(this),
+    //         name = that.attr('data-name'),
+    //         id = that.attr('data-id'),
+    //         title = hm.language.noticeTitle ? hm.language.noticeTitle : "Notice Message",
+    //         failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
+    //         success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!";
+    //     msg = hm.language.confirmDel ? hm.language.confirmDel : "You confirm that you want to delete ";
+    //     parent.$.messager.confirm({
+    //         title: '&nbsp;&nbsp;&nbsp;&nbsp;' + title,
+    //         msg: msg + '[' + name + ']?',
+    //         closable: false, //去除右上角的X关闭按钮
+    //         draggable: false, //禁止拖动窗口
+    //         fn: function(r) {
+    //             if (r) {
+    //                 $.ajax({
+    //                     url: that.attr('href'),
+    //                     dataType: 'json',
+    //                     type: 'POST',
+    //                     data: {
+    //                         id: id
+    //                     },
+    //                     beforeSend: function() {
+    //                         parent.hm.openProgress();
+    //                     },
+    //                     success: function(data) {
+    //                         if (!data.status) {
+    //                             parent.hm.notice("error", failed + data.info);
+    //                         } else {
+    //                             parent.hm.notice("success", success + data.info);
+    //                             parent.hm.refreshTab();
+    //                         }
+    //                         that.linkbutton('enable');
+    //                         parent.hm.closeProgress(); //当页面加载完毕执行
+    //                     },
+    //                     error: function(XMLHttpRequest, textStatus, errorThrown) {
+    //                         parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
+    //                         that.linkbutton('enable');
+    //                         parent.hm.closeProgress(); //当页面加载完毕执行
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //     });
+    // });
     //propertygrid编辑
     // $('.ajax_pgrid').on('click', function(e) {
     //     e.preventDefault();
