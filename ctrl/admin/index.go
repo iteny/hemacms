@@ -5,8 +5,15 @@ import (
 	"hemacms/common"
 	"hemacms/common/sql"
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
+	"time"
+
+	cpuInfo "github.com/shirou/gopsutil/cpu"
+	diskInfo "github.com/shirou/gopsutil/disk"
+	hostInfo "github.com/shirou/gopsutil/host"
+	memInfo "github.com/shirou/gopsutil/mem"
 )
 
 type IndexCtrl struct {
@@ -28,35 +35,55 @@ func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	c.Template(w, r, data, "./view/admin/index/index.html")
 }
 func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
-	c.Template(w, r, nil, "./view/admin/index/home.html")
+	data := make(map[string]interface{})
+	session := c.Sess().Load(r)
+	username, err := session.GetString("username")
+	c.Log().CheckErr("Session Get Error", err)
+	rolename, err := session.GetString("rolename")
+	c.Log().CheckErr("Session Get Error", err)
+	data["username"] = username            //用户名
+	data["rolename"] = rolename            //角色名
+	data["arch"] = runtime.GOARCH          //系统架构
+	data["serverTime"] = time.Now().Unix() //服务器时间
+	host, _ := hostInfo.Info()
+	cpu, _ := cpuInfo.Info()
+	mem, _ := memInfo.VirtualMemory()
+	disk, _ := diskInfo.Usage("/")
+
+	data["uptime"] = host.BootTime - host.Uptime            //正常运行时间
+	data["hostname"] = host.Hostname                        //主机名
+	data["procs"] = host.Procs                              //进程号
+	data["os"] = host.Platform + " " + host.PlatformVersion //系统版本号
+	data["kernelVersion"] = host.KernelVersion              //内核版本
+	data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
+	data["serverTime"] = time.Now().Unix()                  //服务器时间
+	data["memTotal"] = mem.Total / 1024 / 1024 / 1024
+	data["memFree"] = mem.Free / 1024 / 1024 / 1024
+	data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
+	data["memUserdPercent"] = mem.UsedPercent
+	data["diskTotal"] = disk.Total / 1024 / 1024 / 1024
+	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
+	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
+	data["diskUserdPercent"] = disk.UsedPercent
+	c.Template(w, r, data, "./view/admin/index/home.html")
 }
 
-// func (c *IndexCtrl) GetMenu(w http.ResponseWriter, r *http.Request) {
-// 	// pid := r.PostFormValue("pid")
-// 	// intpid, _ := strconv.Atoi(pid)
-// 	sqls := "SELECT * FROM hm_auth_rule"
-// 	rule := []sql.AuthRule{}
-// 	err := c.Sql().Select(&rule, sqls)
-// 	if err != nil {
-// 		c.Log().Debug().Err(err).Msg("错误")
-// 		c.ResponseJson(4, err.Error(), w, r)
-// 	}
-// 	ar := sql.RecursiveMenu(rule, 0, 0)
-// 	// fmt.Println(rule)
-// 	// for k, v := range rule {
-// 	// 	srule := []sqlm.AuthRule{}
-// 	// 	err = c.Sql().Select(&srule, sqls, v.Id)
-// 	// 	if err != nil {
-// 	// 		c.Log().Debug().Err(err).Msg("错误")
-// 	// 		c.ResponseJson(4, err.Error(), w, r)
-// 	// 	}
-// 	// 	for tk, _ := range srule {
-// 	// 		rule[k].Children = append(rule[k].Children, srule[tk])
-// 	// 	}
-// 	// }
-// 	// fmt.Println(ar)
-// 	fmt.Fprint(w, c.RowsJson(ar))
-// }
+//轮询系统占用
+func (c *IndexCtrl) AjaxPolling(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	mem, _ := memInfo.VirtualMemory()
+	disk, _ := diskInfo.Usage("/")
+	data["serverTime"] = time.Now().Unix() //服务器时间
+	data["memTotal"] = mem.Total / 1024 / 1024 / 1024
+	data["memFree"] = mem.Free / 1024 / 1024 / 1024
+	data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
+	data["memUserdPercent"] = mem.UsedPercent
+	data["diskTotal"] = disk.Total / 1024 / 1024 / 1024
+	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
+	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
+	data["diskUserdPercent"] = disk.UsedPercent
+	fmt.Fprint(w, c.RowsJson(data))
+}
 
 //tab权限
 func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {

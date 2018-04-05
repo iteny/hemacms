@@ -105,6 +105,8 @@ func (c *LoginCtrl) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 					c.Log().CheckErr("Session Error", err)
 					err = session.PutString(w, "status", string(userone.Status))
 					c.Log().CheckErr("Session Error", err)
+					err = session.PutString(w, "rolename", string(role.Name))
+					c.Log().CheckErr("Session Error", err)
 					c.Cache().CacheSetAlwaysTime("roleId"+string(userone.Id), strconv.Itoa(role.Id))
 					c.Cache().CacheSetAlwaysTime("auth"+string(role.Id), role.Rules)
 					// fmt.Fprint(w, c.ResponseJson(1, "登录成功，3秒后为你跳转！"))

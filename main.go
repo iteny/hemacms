@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"hemacms/common"
 	"hemacms/ctrl/admin"
 	"hemacms/middle"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/shirou/gopsutil/mem"
 )
 
 type server struct {
@@ -25,8 +23,8 @@ type server struct {
 
 func main() {
 	//检测内存信息
-	v, _ := mem.VirtualMemory()
-	fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
+	// v, _ := mem.VirtualMemory()
+	// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 	server := &server{Addr: "80", ReadTimeout: 10, WriteTimeout: 10}
 	if servPort := common.Config().Value("servSet", "port"); servPort != "" {
 		server.Addr = servPort
@@ -89,10 +87,11 @@ func adminRoutes() http.Handler {
 	r.Get("/", index.Skip)       //跳转到登录页面
 	r.Get("/login", login.Login) //登录页
 	r.Post("/login", login.LoginSubmit)
-	r.Post("/loginOut", login.LoginOut)   //退出
-	r.Get("/index", index.Index)          //后台主页
-	r.Get("/home", index.Home)            //首页
-	r.Post("/tabNoAuth", index.TabNoAuth) //tab权限
+	r.Post("/loginOut", login.LoginOut)       //退出
+	r.Get("/index", index.Index)              //后台主页
+	r.Get("/home", index.Home)                //首页
+	r.Post("/ajaxPolling", index.AjaxPolling) //轮询
+	r.Post("/tabNoAuth", index.TabNoAuth)     //tab权限
 	r.Route("/site", func(r chi.Router) {
 		r.Get("/system", site.System)            //系统设置
 		r.Post("/editSystem", site.EditSystem)   //系统设置修改

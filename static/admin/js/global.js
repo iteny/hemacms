@@ -1029,6 +1029,21 @@ HmObj.prototype.clearSearch = function(me) {
     });
     that.parents("form[name=datagird_tools]").find("input").val(""); //找到form表单下的所有input标签并清空
 };
+//ajax轮询
+HmObj.prototype.ajaxPolling = function() {
+    $.ajax({
+        type: "post",
+        url: "/intendant/ajaxPolling",
+        dataType: "json",
+        success: function(data) {
+            $('#serverTime').html(hm.dateFormat(data.serverTime));
+            $('#hm_disk').html("硬盘总容量:" + data.diskTotal + "GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:" + data.diskUserd + "GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:" + data.diskFree + "GB");
+            $('#diskUserdPercent').progressbar('setValue', Math.round(data.diskUserdPercent));
+            $('#hm_mem').html("总物理内存:" + data.memTotal + "G&nbsp;&nbsp;,&nbsp;&nbsp;已用:" + data.memUserd + "G&nbsp;&nbsp;,&nbsp;&nbsp;空闲:" + data.memFree + "G");
+            $('#memUserdPercent').progressbar('setValue', Math.round(data.memUserdPercent));
+        }
+    });
+};
 //批量排序
 HmObj.prototype.ajaxSort = function(externalFunc, me) {
     var that = $(me),

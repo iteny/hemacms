@@ -20,42 +20,186 @@
 </head>
 <body>
 <div id="hm-app" class="easyui-layout" data-options="fit:true" style="width:100%;">
-    <div id="hm_home_box" data-options="region:'center'" style="height:800px;width:100%;padding:10px;background:#f2f2f2;">
-        <div class="hm_top_box">
+    <div id="hm_home_box" data-options="region:'center'" style="height:800px;width:100%;padding:10px;">
+        <div class="hm_top_box" style="">
             <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
-                <div class="hm_left"><i class="fa fa-life-ring"></i></div>
+                <div class="hm_left" style="background:#3498db;"><i class="fa fa-life-ring"></i></div>
                 <div class="hm_right">
                     <span class="nums">100</span>
                     <cite>待审核文章</cite>
                 </div>
             </a>
             <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
-                <div class="hm_left"><i class="larry-icon larry-neirongguanli1"></i></div>
+                <div class="hm_left" style="background:#e67e22;"><i class="fa fa-life-ring"></i></div>
                 <div class="hm_right">
                     <span class="nums">100</span>
                     <cite>待审核文章</cite>
                 </div>
             </a>
             <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
-                <div class="hm_left"><i class="larry-icon larry-neirongguanli1"></i></div>
+                <div class="hm_left" style="background:#9b59b6;"><i class="fa fa-life-ring"></i></div>
+                <div class="hm_right">
+                    <span class="nums">100</span>
+                    <cite>待审核文章</cite>
+                </div>
+            </a>
+            <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
+                <div class="hm_left" style="background:#1abc9c;"><i class="fa fa-life-ring"></i></div>
+                <div class="hm_right">
+                    <span class="nums">100</span>
+                    <cite>待审核文章</cite>
+                </div>
+            </a>
+            <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
+                <div class="hm_left" style="background:#f39c12;"><i class="fa fa-life-ring"></i></div>
+                <div class="hm_right">
+                    <span class="nums">100</span>
+                    <cite>待审核文章</cite>
+                </div>
+            </a>
+            <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
+                <div class="hm_left" style="background:#27ae60;"><i class="fa fa-life-ring"></i></div>
                 <div class="hm_right">
                     <span class="nums">100</span>
                     <cite>待审核文章</cite>
                 </div>
             </a>
         </div>
-        <div class="hm_panel">
-            <div class="easyui-panel" title="Basic Panel" data-options="iconCls:'icon-group_key'" style="width:100%;height:200px;">中文</div>
+        <div class="hm_panel_box">
+            <div class="hm_panel">
+                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>用户信息</div>
+                <div class="hm_panel_body hm_scrollbar_1">
+                    <div class="frame_form_table" style="margin:0;">
+                        <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td align="right" width="50">&nbsp;&nbsp;&nbsp;你好&nbsp;:&nbsp;</td>
+                                    <td width="180">{{.username}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;所属角色&nbsp;:&nbsp;</td>
+                                    <td>{{.rolename}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;项目作者&nbsp;:&nbsp;</td>
+                                    <td>河马叔叔[QQ:8192332][Email:iteny@icloud.com]</td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;产品名称&nbsp;:&nbsp;</td>
+                                    <td>河马内容管理系统[<a href="http://www.hemacms.com">访问官网</a>]</td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;项目托管&nbsp;:&nbsp;</td>
+                                    <td><a href="https://github.com/iteny/hemacms">github</a>&nbsp;&nbsp;<a href="https://gitee.com/iteny/hippocms">码云</a></td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;用户类型&nbsp;:&nbsp;</td>
+                                    <td>终身免费</td>
+                                </tr>
+                                <tr>
+                                    <td align="right">&nbsp;&nbsp;&nbsp;版本号&nbsp;:&nbsp;</td>
+                                    <td>1.0.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="hm_panel">
-            <div class="easyui-panel" title="asdf Panel" data-options="iconCls:'icon-group_key'" style="width:100%;height:200px;">英文</div>
+        <div class="hm_panel_box">
+            <div class="hm_panel">
+                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>系统信息</div>
+                <div class="hm_panel_body hm_scrollbar_2">
+                    <div class="frame_form_table" style="margin:0;">
+                        <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;服务器时间&nbsp;:&nbsp;</td>
+                                    <td width="200" id="serverTime"></td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;操作系统&nbsp;:&nbsp;</td>
+                                    <td>{{.os}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;系统架构&nbsp;:&nbsp;</td>
+                                    <td>{{.arch}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;CPU型号&nbsp;:&nbsp;</td>
+                                    <td>{{.cpuModelName}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;正常运行时间&nbsp;:&nbsp;</td>
+                                    <td id="uptime"></td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;主机名&nbsp;:&nbsp;</td>
+                                    <td>{{.hostname}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;进程号&nbsp;:&nbsp;</td>
+                                    <td>{{.procs}}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;内核版本&nbsp;:&nbsp;</td>
+                                    <td>{{.kernelVersion}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="hm_panel">
-            <div class="easyui-panel" title="Basic Panel" data-options="iconCls:'icon-group_key'" style="width:100%;height:200px;">中文</div>
+        <div class="hm_panel_box">
+            <div class="hm_panel">
+                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>服务器占用</div>
+                <div class="hm_panel_body hm_scrollbar_3">
+                    <div class="frame_form_table" style="margin:0;">
+                        <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况&nbsp;:&nbsp;</td>
+                                    <td width="200">暂时不支持</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>
+                                    <td width="400"><div id="hm_disk">硬盘总容量:{{.diskTotal}}GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:{{.diskUserd}}GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:{{.diskFree}}GB</div><div id="diskUserdPercent" class="easyui-progressbar" style="height:22px;width:400px;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>
+                                    <td width="400"><div id="hm_mem">总物理内存:{{.memTotal}}G&nbsp;&nbsp;,&nbsp;&nbsp;已用:{{.memUserd}}G&nbsp;&nbsp;,&nbsp;&nbsp;空闲:{{.memFree}}G</div><div id="memUserdPercent" class="easyui-progressbar" style="height:22px;width:400px;"></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="hm_panel">
-            <div class="easyui-panel" title="asdf Panel" data-options="iconCls:'icon-group_key'" style="width:100%;height:200px;">英文</div>
+        <div class="hm_panel_box">
+            <div class="hm_panel">
+                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>版本更新日志</div>
+                <div class="hm_panel_body hm_scrollbar_4">
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div><div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div><div style="width:100%:">asdfasd</div>
+                    <div style="width:100%:">asdfasd</div>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -70,4 +214,17 @@
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
+<script>
+var meWidth = document.documentElement.clientWidth;
+$('.hm_panel .panel').width(meWidth);
+$('#serverTime').html(hm.dateFormat({{.serverTime}}));
+$('#diskUserdPercent').progressbar({
+    value: Math.round({{.diskUserdPercent}}),
+});
+$('#memUserdPercent').progressbar({
+    value: Math.round({{.memUserdPercent}}),
+});
+$('#uptime').html(hm.dateFormat({{.uptime}}));
+setInterval('hm.ajaxPolling()',10000);//轮询执行，500ms一次
+</script>
 </html>
