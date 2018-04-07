@@ -264,7 +264,9 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
             noAuth: hm.language.noAuth ? hm.language.noAuth : 'You have no authority.',
             noFound: hm.language.noFound ? hm.language.noFound : 'Sorry! The page you visited cannot be found...',
             jsCss: hm.language.jsCss ? hm.language.jsCss : 'Copy css',
-            jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb'
+            jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb',
+            loginSearchUser: hm.language.loginSearchUser ? hm.language.loginSearchUser : 'Search account',
+            loginDelMonthLog: hm.language.loginDelMonthLog ? hm.language.loginDelMonthLog : 'Delete the logon log a month ago'
 
         },
         style: $.cookie('back-style') ? $.cookie('back-style') : 'hm_style_default'

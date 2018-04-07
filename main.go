@@ -133,6 +133,11 @@ func adminRoutes() http.Handler {
 		})
 		r.Post("/editRoleSubmit", site.EditRoleSubmit) //修改角色提交
 		r.Get("/colorSchemes", site.ColorSchemes)      //配色方案
+		r.Get("/loginLog", site.LoginLog)              //登录日志页面
+		r.Post("/getLoginLog", site.GetLoginLog)       //获取登录日志
+		r.Post("/delLoginLog", site.DelLoginLog)       //删除一个月前的登录日志
+		r.Get("/oprateLog", site.OprateLog)            //操作日志页面
+		r.Post("/getOprateLog", site.GetOprateLog)     //获取操作日志
 	})
 
 	// r.Post("/login", admin.Login.Login) // sign in commit page

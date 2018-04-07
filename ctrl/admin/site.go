@@ -1264,3 +1264,193 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) ColorSchemes(w http.ResponseWriter, r *http.Request) {
 	c.Template(w, r, nil, "./view/admin/site/colorSchemes.html")
 }
+
+/**
+ * @description 登录日志页面
+ * @English	Login log page
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) LoginLog(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/loginLog.html")
+}
+
+/**
+ * @description 获取登录日志
+ * @English	Get login log
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
+	jsonLog := ""
+	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
+	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
+	switch {
+	case isUsername == false && username != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+	case isDateFrom == false && dateFrom != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+		fmt.Println("datefrom")
+	case isDateTo == false && dateTo != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+		fmt.Println("dateto")
+	default:
+		ipage, _ := strconv.Atoi(page)
+		irow, _ := strconv.Atoi(row)
+		first := irow * (ipage - 1)
+		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
+		loc, _ := time.LoadLocation("Local") //重要：获取时区
+		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
+		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
+		fromTime, toTime := from.Unix(), to.Unix()
+		addsql := ""
+		if username != "" {
+			addsql = "username LIKE '%" + username + "%' AND "
+		}
+		if dateFrom != "" {
+			addsql = addsql + fmt.Sprintf("login_time>='%v' AND ", fromTime)
+		}
+		if dateTo != "" {
+			addsql = addsql + fmt.Sprintf("login_time<='%v' AND ", toTime)
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		if rows, found := c.Cache().CacheGet("allLoginLog"); found {
+			// array = rows.([]sql.User)
+			jsonLog = rows.(string)
+		} else {
+			logSql := "SELECT * FROM hm_login_log " + addsql + " ORDER BY id DESC Limit ?,?"
+			totalSql := "SELECT id FROM hm_login_log " + addsql + " ORDER BY id DESC"
+			log := []sql.LoginLog{}
+			total := []sql.LoginLog{}
+			err := c.Sql().Select(&log, logSql, first, row)
+			if err != nil {
+				c.Log().Debug().Err(err).Msg("Error")
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			err = c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.Log().Debug().Err(err).Msg("Error")
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count := len(total)
+			if count != 0 {
+				jsonLog = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(log) + "}"
+			} else {
+				jsonLog = "{\"total\":0,\"rows\":[]}"
+			}
+			// c.Cache().CacheSetAlwaysTime("allLoginLog", jsonLog)
+		}
+	}
+	fmt.Fprint(w, jsonLog)
+}
+
+/**
+ * @description 删除一个月前的登录日志
+ * @English	Delete the logon log a month ago
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) DelLoginLog(w http.ResponseWriter, r *http.Request) {
+	addsql := fmt.Sprintf("login_time<='%v'", time.Now().Unix()-86400*30)
+	delSql := "DELETE FROM hm_login_log WHERE " + addsql
+	tx := c.Sql().MustBegin()
+	tx.MustExec(delSql)
+	err := tx.Commit()
+	if err != nil {
+		c.Log().Debug().Err(err).Msg("Error")
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().CacheDel("allmenu")
+		c.ResponseJson(1, "", w, r)
+	}
+}
+
+/**
+ * @description 操作日志页面
+ * @English	Oprate log page
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) OprateLog(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/oprateLog.html")
+}
+
+/**
+ * @description 获取操作日志
+ * @English	Get oprate log
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
+	jsonLog := ""
+	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
+	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
+	switch {
+	case isUsername == false && username != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+	case isDateFrom == false && dateFrom != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+		fmt.Println("datefrom")
+	case isDateTo == false && dateTo != "":
+		jsonLog = "{\"total\":0,\"rows\":[]}"
+		fmt.Println("dateto")
+	default:
+		ipage, _ := strconv.Atoi(page)
+		irow, _ := strconv.Atoi(row)
+		first := irow * (ipage - 1)
+		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
+		loc, _ := time.LoadLocation("Local") //重要：获取时区
+		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
+		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
+		fromTime, toTime := from.Unix(), to.Unix()
+		addsql := ""
+		if username != "" {
+			addsql = "username LIKE '%" + username + "%' AND "
+		}
+		if dateFrom != "" {
+			addsql = addsql + fmt.Sprintf("oprate_time>='%v' AND ", fromTime)
+		}
+		if dateTo != "" {
+			addsql = addsql + fmt.Sprintf("oprate_time<='%v' AND ", toTime)
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		if rows, found := c.Cache().CacheGet("allLoginLog"); found {
+			// array = rows.([]sql.User)
+			jsonLog = rows.(string)
+		} else {
+			logSql := "SELECT * FROM hm_oprate_log " + addsql + " ORDER BY id DESC Limit ?,?"
+			totalSql := "SELECT id FROM hm_oprate_log " + addsql + " ORDER BY id DESC"
+			log := []sql.OprateLog{}
+			total := []sql.OprateLog{}
+			err := c.Sql().Select(&log, logSql, first, row)
+			if err != nil {
+				c.Log().Debug().Err(err).Msg("Error")
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			err = c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.Log().Debug().Err(err).Msg("Error")
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count := len(total)
+			if count != 0 {
+				jsonLog = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(log) + "}"
+			} else {
+				jsonLog = "{\"total\":0,\"rows\":[]}"
+			}
+			// c.Cache().CacheSetAlwaysTime("allLoginLog", jsonLog)
+		}
+	}
+	fmt.Fprint(w, jsonLog)
+}

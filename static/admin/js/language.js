@@ -232,6 +232,14 @@ var language = {
         jsCss: "Copy css",
         jsRgb: "Copy rgb",
         //通用提示结束
+        //日志开始
+        loginLogTime: "Login time",
+        loginLogIp: "Login ip",
+        loginStatus: "Login status",
+        loginUseragent: "Useragent",
+        loginSearchUser: "Search account",
+        loginDelMonthLog: "Delete the logon log a month ago",
+        //日志结束
     },
     //简体中文,chinese
     cn: {
@@ -466,5 +474,13 @@ var language = {
         jsCss: "复制Css",
         jsRgb: "复制Rgb",
         //通用提示结束
+        //日志开始
+        loginLogTime: "登录时间",
+        loginLogIp: "登录IP",
+        loginStatus: "登录状态",
+        loginUseragent: "用户浏览器信息",
+        loginSearchUser: "查询用户名",
+        loginDelMonthLog: "删除一个月前的登录日志",
+        //日志结束
     },
 };

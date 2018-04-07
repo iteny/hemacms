@@ -48,6 +48,31 @@ type AuthRule struct {
 	Children []AuthRule `json:"children"`
 }
 
+//登录日志
+type LoginLog struct {
+	Id        int    `json:"id"`
+	Username  string `json:"username"`
+	LoginTime int    `json:"login_time" db:"login_time"`
+	LoginIp   string `json:"login_ip" db:"login_ip"`
+	Status    int    `json:"status"`
+	Area      string `json:"area"`
+	Country   string `json:"country"`
+	Useragent string `json:"useragent"`
+	Uid       int    `json:"uid"`
+}
+
+//操作日志
+type OprateLog struct {
+	Id         int    `json:"id"`
+	Username   string `json:username`
+	OprateTime int    `json:"oprate_time" db:"oprate_time"`
+	OprateIp   string `json:"oprate_ip" db:"oprate_ip"`
+	Useragent  string `json:"useragent"`
+	Info       string `json:"info"`
+	Url        string `json:"url"`
+	Status     int    `json:"status"`
+}
+
 //递归重新排序无限极分类
 func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	array := make([]AuthRule, 0)

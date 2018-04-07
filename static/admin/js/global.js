@@ -1008,6 +1008,7 @@ HmObj.prototype.clearSearch = function(me) {
     var that = $(me);
     // $("#hm_data").datagrid("load", {}); //重新加载数据，无填写数据，向后台传递值则为空
     $('#hm_data').datagrid({
+        queryParams: {},
         onLoadSuccess: function(data) {
             if (data.status == 66) {
                 parent.window.location = '/intendant/login';
@@ -1027,7 +1028,7 @@ HmObj.prototype.clearSearch = function(me) {
             }
         }
     });
-    that.parents("form[name=datagird_tools]").find("input").val(""); //找到form表单下的所有input标签并清空
+    that.parents("#hm_search").find(".easyui-validatebox").val(''); //找到form表单下的所有input标签并清空
 };
 //ajax轮询
 HmObj.prototype.ajaxPolling = function() {
@@ -1253,13 +1254,19 @@ HmObj.prototype.ajaxDel = function(externalFunc, me) {
     var that = $(me),
         url = that.attr('data-url'),
         id = that.attr('data-id'),
+        selector = '',
         title = hm.language.noticeTitle ? hm.language.noticeTitle : "Notice Message",
         failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
         success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
         msg = hm.language.confirmDel ? hm.language.confirmDel : "You confirm that you want to delete ";
+    if (id) {
+        selector = 'ID&nbsp;<span style="color:red;">[' + id + ']</span>&nbsp;'
+    } else {
+        selector = '';
+    }
     parent.$.messager.confirm({
         title: '&nbsp;&nbsp;&nbsp;&nbsp;' + title,
-        msg: msg + 'ID&nbsp;<span style="color:red;">[' + id + ']</span>&nbsp;?',
+        msg: msg + selector + '?',
         closable: false, //去除右上角的X关闭按钮
         draggable: false, //禁止拖动窗口
         fn: function(r) {

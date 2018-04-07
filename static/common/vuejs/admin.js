@@ -80,6 +80,8 @@ const store = new Vuex.Store({
             noFound: hm.language.noFound ? hm.language.noFound : 'Sorry! The page you visited cannot be found...',
             jsCss: hm.language.jsCss ? hm.language.jsCss : 'Copy css',
             jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb',
+            loginSearchUser: hm.language.loginSearchUser ? hm.language.loginSearchUser : 'Search account',
+            loginDelMonthLog: hm.language.loginDelMonthLog ? hm.language.loginDelMonthLog : 'Delete the logon log a month ago',
 
         },
         style: $.cookie('back-style') ? $.cookie('back-style') : 'hm_style_default',

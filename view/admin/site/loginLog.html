@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>role management</title>
+    <title>Login log</title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
@@ -17,15 +17,16 @@
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.roleAdd]]</a>
-        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleBatchDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true">[[$store.state.language.roleBatchDel]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(loginLogDel,this)" data-url="/intendant/site/delLoginLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.loginDelMonthLog]]</a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
     </div>
     <div id="hm_menu_tools">
         <form name="datagird_tools">
             <div id="hm_search">
-                [[$store.state.language.roleSearch]]: <input type="text" name="name" class="easyui-validatebox"></input>
-                <a href="#" onclick="hm.ajaxSearch(roleSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
+                [[$store.state.language.loginSearchUser]]: <input type="text" name="username" class="easyui-validatebox"></input>
+                [[$store.state.language.userCreateTime]]: <input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
+                [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
+                <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
                 <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true">[[$store.state.language.clearSearch]]</a>
             </div>
         </form>
@@ -47,7 +48,7 @@ $('#hm_data').datagrid({
     // striped: true, //斑马线效果
     nowrap: false, //数据列是否显示为一行
     emptyMsg: hm.language.noData ? hm.language.noData : "no records data found",
-    url:'/intendant/site/getRole',
+    url:'/intendant/site/getLoginLog',
     fitColumns: true, //宽度自适应窗口
     rownumbers: false, //是否显示行号
     singleSelect: false,
@@ -55,80 +56,56 @@ $('#hm_data').datagrid({
     remoteSort: false, //不以服务器端排序
     queryParams: null,//额外提交参数
     showHeader: true, //显示行头
-    showFooter: true, //显示行尾
+    // showFooter: true, //显示行尾
     pagination: true,
     pageSize: 20,             //分页大小
     pageNumber:1,             //从第几页开始显示（默认第一页，可以省略）
     pageList: [10, 20, 30, 40, 50],   //设置每页记录条数的列表
     pagePosition: 'bottom',
     toolbar: '#hm_menu_tools',
-    // rowStyler:function(index,row){//返回选定行的样式
-    //     if(row.id == 1){
-    //         return {class:'hm_datagrid_hl'};
-    //     }
-    // },
     columns:[[
         {
-            field: 'ck',
-            checkbox: true,
-            width: 10,//百分比
-            align: 'center',
-        },{
             field: 'id',
             title: 'ID',
             width: 20,
             align: 'center',
             sortable: true,
         },{
-            field: 'name',
-            title: hm.language.roleName ? hm.language.roleName : 'Role name',
+            field: 'username',
+            title: hm.language.userName ? hm.language.userName : 'Account',
             width: 60,
             align: 'center',
-            formatter: function(value, row, index) {
-                var lang = '';
-                switch ($.cookie('back-language')) {
-                    case 'cn':
-                        lang = value;
-                        break;
-                    case 'en':
-                        lang = row.en;
-                        break;
-                    default:
-                        lang = value;
-                }
-                return lang;
-            }
         },{
-            field: 'remark',
-            title: hm.language.remark ? hm.language.remark : 'Remark',
-            width: 40,
+            field: 'status',
+            title: hm.language.loginStatus ? hm.language.loginStatus : 'Login status',
+            width: 30,
             align: 'center',
-            formatter: function(value,row,index){
+            formatter: function(value, row, index) {
                 if(value){
-                    return '<a title="'+value+'" class="easyui-tooltip">'+hm.language.seeRemark+'</a>';
+                    return '<i class="fa fa-check" style="color:white;background-color:green;border-radius:25px;padding:2px;"></i>';
                 }else{
-                    return '<a title="'+hm.language.noRemark+'" class="easyui-tooltip">'+hm.language.seeRemark+'</a>';
+                    return '<i class="fa fa-remove" style="color:white;background-color:red;border-radius:25px;padding:2px;"></i>';
                 }
             }
         },{
-            field: 'cz',
-            title: hm.language.manageOperat ? hm.language.manageOperat : 'Management operation',
-            width: 120,
+            field: 'useragent',
+            title: hm.language.userName ? hm.language.userName : 'Account',
+            width: 150,
             align: 'center',
-            formatter: function(value, row, index) {
-                var str = '';
-                if(row.id == 1){
-                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
-                    str += '<a href="#" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit" disabled>'+hm.language.ajaxEdit+'</a>';
-                    str += '<a href="#" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" disabled>'+hm.language.ajaxDel+'</a>';
-                }else{
-                    str += '<a  href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/setRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-group_edit">'+hm.language.ajaxSetAuth+'</a>';
-                    str += '<a  href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editRole/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
-                    str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(roleDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delRole" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
-                }
-                return str;
-            }
-        }
+        },{
+            field: 'login_time',
+            title: hm.language.loginLogTime ? hm.language.loginLogTime : 'Login time',
+            width: 75,
+            align: 'center',
+            formatter: function(value, row, index){
+                return hm.dateFormat(value)
+            },
+        },{
+            field: 'login_ip',
+            title: hm.language.loginLogIp ? hm.language.loginLogIp : 'Login ip',
+            width: 75,
+            align: 'center',
+        },
     ]],
     onLoadSuccess: function(data) {
         if (data.status == 66) {
@@ -146,53 +123,29 @@ $('#hm_data').datagrid({
                     });
                 }
             });
+
         }
     }
 });
 hm.datagridWidthResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
-function roleBatchDel(data){
+function loginLogDel(data){
+    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
+        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
+        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!";
+    if(data.status == 4){
+        parent.hm.notice("error", failed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", success + data.info);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error", unknownError+data.info);
+    }
+}
+function logSearch(data){
     var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
         success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
         unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
         userIdGroup = hm.language.userIdGroup ? hm.language.userIdGroup : "Account ID array is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
-    if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
-    } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
-    } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
-    }else{
-        parent.hm.notice("error", unknownError+data.info);
-    }
-}
-function roleDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
-    if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
-    } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
-    } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
-    }else{
-        parent.hm.notice("error", unknownError+data.info);
-    }
-}
-function roleSearch(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
         userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
         parent.hm.notice("error", userIdGroup + data.info);

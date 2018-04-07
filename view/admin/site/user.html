@@ -10,16 +10,11 @@
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
-    <style>
-    .datagrid-view{
-        margin-top: 54px;
-    }
-    </style>
 </head>
 <body onkeydown="hm.searchKey();">
 <form action="" id="hm-app">
     <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
-        <table id="hm_data" style="" region="center"></table>
+        <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
         <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addUser" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.userAdd]]</a>
@@ -29,7 +24,7 @@
     <div id="hm_menu_tools">
         <form name="datagird_tools">
             <div id="hm_search">
-                [[$store.state.language.userSearch]]: <input type="text" name="username" class="easyui-textbox"></input>
+                [[$store.state.language.userSearch]]: <input type="text" name="username" class="easyui-validatebox"></input>
                 [[$store.state.language.userCreateTime]]: <input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
                 [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
                 <a href="#" onclick="hm.ajaxSearch(userSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
@@ -48,7 +43,9 @@
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
+var mehigh = document.documentElement.clientHeight-80;
 $('#hm_data').datagrid({
+    height: mehigh,
     // striped: true, //斑马线效果
     nowrap: false, //数据列是否显示为一行
     emptyMsg: hm.language.noData ? hm.language.noData : "no records data found",
