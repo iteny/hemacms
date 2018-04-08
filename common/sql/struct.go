@@ -64,10 +64,11 @@ type LoginLog struct {
 //操作日志
 type OprateLog struct {
 	Id         int    `json:"id"`
-	Username   string `json:username`
+	Username   string `json:"username"`
 	OprateTime int    `json:"oprate_time" db:"oprate_time"`
 	OprateIp   string `json:"oprate_ip" db:"oprate_ip"`
 	Useragent  string `json:"useragent"`
+	Detail     string `json:"detail"`
 	Info       string `json:"info"`
 	Url        string `json:"url"`
 	Status     int    `json:"status"`

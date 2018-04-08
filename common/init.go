@@ -9,6 +9,8 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -68,7 +70,25 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 		ip = "127.0.0.1"
 	}
 	ExcuteTime := c.TimeString(r, "ExcuteTime")
-	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Msg("Response Json")
+	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Str("[Info]", info.(string)).Msg("Response Json")
+	var infos string = info.(string)
+	detail := ""
+	if infos == "" {
+		infos = "no problem"
+	}
+	pc, file, line, ok := runtime.Caller(1)
+	if ok {
+		f := runtime.FuncForPC(pc)
+
+		detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line) + "<span style='color:#e74c3c'>&nbsp;&nbsp;&nbsp;Type:&nbsp;</span>" + r.Method
+	}
+	session := c.Sess().Load(r)
+	username, err := session.GetString("username")
+	c.Log().CheckErr("Session Get Error", err)
+	logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,status) VALUES(?,?,?,?,?,?,?,?)"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, status)
+	err = tx.Commit()
 	m := make(map[string]interface{})
 	m["status"] = status
 	m["info"] = info

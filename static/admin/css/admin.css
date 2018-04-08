@@ -645,6 +645,14 @@ a.east-ct i{
 #hm_search{
     padding-left: 10px;
 }
+#hm_search .easyui-validatebox{
+    height: 20px;
+    line-height: 20px;
+    border-width: 1px;
+    /*border-style: inherit;*/
+    border-color: #d4d4d4;
+    border-radius: 4px;
+}
 .datagrid-view{margin-top: 43px;min-height: 59px;}
 .nomargin .datagrid-view{margin-top: 0;}
 .datagrid .datagrid-pager{border-width: 0px 1px 1px 1px;border-radius: 0px 0px 0px 4px;}

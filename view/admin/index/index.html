@@ -420,7 +420,7 @@
                     } else {
                         var tabCount = $('#hm-tabs').tabs('tabs').length;
                         if (tabCount > 6) {
-                            hm.notice("warn", this.language.tantoTabs ? this.language.tantoTabs : 'Sorry! You open too many tabs and it will cause the machine to slow down!');
+                            hm.notice("warn", hm.language.tantoTabs ? hm.language.tantoTabs : 'Sorry! You open too many tabs and it will cause the machine to slow down!');
                         }
                         $("#hm-tabs").tabs('add', {
                             title: title,

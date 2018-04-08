@@ -1366,7 +1366,7 @@ func (c *SiteCtrl) DelLoginLog(w http.ResponseWriter, r *http.Request) {
 		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		c.Cache().CacheDel("allmenu")
+		// c.Cache().CacheDel("allmenu")
 		c.ResponseJson(1, "", w, r)
 	}
 }
@@ -1425,7 +1425,8 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		if addsql != "" {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
-		if rows, found := c.Cache().CacheGet("allLoginLog"); found {
+		fmt.Println(addsql)
+		if rows, found := c.Cache().CacheGet("allOprateLog"); found {
 			// array = rows.([]sql.User)
 			jsonLog = rows.(string)
 		} else {
@@ -1449,8 +1450,30 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			} else {
 				jsonLog = "{\"total\":0,\"rows\":[]}"
 			}
-			// c.Cache().CacheSetAlwaysTime("allLoginLog", jsonLog)
+			// c.Cache().CacheSetAlwaysTime("allOprateLog", jsonLog)
 		}
 	}
 	fmt.Fprint(w, jsonLog)
+}
+
+/**
+ * @description 删除一个月前的操作日志
+ * @English	Delete the oprate log a month ago
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) DelOprateLog(w http.ResponseWriter, r *http.Request) {
+	addsql := fmt.Sprintf("oprate_time<='%v'", time.Now().Unix()-86400*30)
+	delSql := "DELETE FROM hm_oprate_log WHERE " + addsql
+	tx := c.Sql().MustBegin()
+	tx.MustExec(delSql)
+	err := tx.Commit()
+	if err != nil {
+		c.Log().Debug().Err(err).Msg("Error")
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		// c.Cache().CacheDel("allmenu")
+		c.ResponseJson(1, "", w, r)
+	}
 }

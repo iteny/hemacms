@@ -138,6 +138,7 @@ func adminRoutes() http.Handler {
 		r.Post("/delLoginLog", site.DelLoginLog)       //删除一个月前的登录日志
 		r.Get("/oprateLog", site.OprateLog)            //操作日志页面
 		r.Post("/getOprateLog", site.GetOprateLog)     //获取操作日志
+		r.Post("/delOprateLog", site.DelOprateLog)     //删除一个月前的操作日志
 	})
 
 	// r.Post("/login", admin.Login.Login) // sign in commit page
