@@ -23,7 +23,7 @@
     <div id="hm_menu_tools">
         <form name="datagird_tools">
             <div id="hm_search">
-                状态:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="isshow" value="1">&nbsp;&nbsp;
+                状态:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1">&nbsp;&nbsp;
                 [[$store.state.language.loginSearchUser]]:&nbsp;<input type="text" name="username" class="easyui-validatebox"></input>&nbsp;&nbsp;
                 [[$store.state.language.userCreateTime]]:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
                 [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
@@ -91,6 +91,32 @@ $('#hm_data').datagrid({
             title: '操作信息',
             width: 80,
             align: 'center',
+            styler:function(index,row){//返回选定行的样式
+                if(row.info == "no problem"){
+                    return {class:'hm_datagrid_success'};
+                }
+            },
+        },{
+            field: 'method',
+            title: '请求方式',
+            width: 40,
+            align: 'center',
+            styler:function(index,row){//返回选定行的样式
+                if(row.info == "no problem"){
+                    return {class:'hm_datagrid_post'};
+                }
+            },
+        },{
+            field: 'excute_time',
+            title: '执行时间',
+            width: 40,
+            align: 'center',
+            formatter: function(value){
+                var str = value;
+                strone = str.substr(0, str.indexOf('.'));
+                strtwo = str.substr(str.length-2)
+                return strone+strtwo;
+            }
         },{
             field: 'status',
             title: 'Status',
@@ -149,9 +175,9 @@ $('#status').switchbutton({
     offText: hm.language.off,
     onChange: function(checked) {
         if(checked == true){
-            $('input[name=isshow]').val(1);
+            $('input[name=status]').val(1);
         }else{
-            $('input[name=isshow]').val(0);
+            $('input[name=status]').val(0);
         }
     }
 });

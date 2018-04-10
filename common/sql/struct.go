@@ -71,6 +71,8 @@ type OprateLog struct {
 	Detail     string `json:"detail"`
 	Info       string `json:"info"`
 	Url        string `json:"url"`
+	Method     string `json:"method"`
+	ExcuteTime string `json:"excute_time" db:"excute_time"`
 	Status     int    `json:"status"`
 }
 
@@ -143,6 +145,6 @@ func RecursiveMenuId(arr []AuthRule, id string) string {
 			}
 		}
 	}
-	ids := strings.Trim(bf.String(), ",")
+	ids := strings.TrimRight(bf.String(), ",")
 	return ids
 }

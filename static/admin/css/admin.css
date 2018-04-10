@@ -690,6 +690,12 @@ a.east-ct i{
 .hm_datagrid_hl .datagrid-cell{
      color: white;
 }
+.hm_datagrid_success .datagrid-cell{
+    color: green;
+}
+.hm_datagrid_post .datagrid-cell{
+    color: #3498db;
+}
 .datagrid .panel-header, .panel-body{
     border: 0;
 }

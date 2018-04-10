@@ -69,26 +69,36 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 	if ip == "::1" {
 		ip = "127.0.0.1"
 	}
-	ExcuteTime := c.TimeString(r, "ExcuteTime")
-	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Str("[Info]", info.(string)).Msg("Response Json")
 	var infos string = info.(string)
-	detail := ""
 	if infos == "" {
 		infos = "no problem"
 	}
-	pc, file, line, ok := runtime.Caller(1)
-	if ok {
-		f := runtime.FuncForPC(pc)
-
-		detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line) + "<span style='color:#e74c3c'>&nbsp;&nbsp;&nbsp;Type:&nbsp;</span>" + r.Method
+	ExcuteTime := c.TimeString(r, "ExcuteTime")
+	terminalLog := c.Config().Value("common", "terminalLog")
+	if terminalLog == "on" {
+		path := ""
+		_, file, line, ok := runtime.Caller(1)
+		if ok {
+			path = file + " " + strconv.Itoa(line)
+		}
+		defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Str("[Path]", path).Str("[Info]", info.(string)).Msg("Response Json")
 	}
-	session := c.Sess().Load(r)
-	username, err := session.GetString("username")
-	c.Log().CheckErr("Session Get Error", err)
-	logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,status) VALUES(?,?,?,?,?,?,?,?)"
-	tx := c.Sql().MustBegin()
-	tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, status)
-	err = tx.Commit()
+	sqlLog := c.Config().Value("common", "sqlLog")
+	if sqlLog == "on" {
+		detail := ""
+		pc, file, line, ok := runtime.Caller(1)
+		if ok {
+			f := runtime.FuncForPC(pc)
+			detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line)
+		}
+		session := c.Sess().Load(r)
+		username, err := session.GetString("username")
+		c.Log().CheckErr("Session Get Error", err)
+		logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,method,excute_time,status) VALUES(?,?,?,?,?,?,?,?,?,?)"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, ExcuteTime, status)
+		err = tx.Commit()
+	}
 	m := make(map[string]interface{})
 	m["status"] = status
 	m["info"] = info
