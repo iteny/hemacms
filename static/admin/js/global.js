@@ -1038,10 +1038,35 @@ HmObj.prototype.ajaxPolling = function() {
         dataType: "json",
         success: function(data) {
             $('#serverTime').html(hm.dateFormat(data.serverTime));
-            $('#hm_disk').html("硬盘总容量:" + data.diskTotal + "GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:" + data.diskUserd + "GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:" + data.diskFree + "GB");
-            $('#diskUserdPercent').progressbar('setValue', Math.round(data.diskUserdPercent));
-            $('#hm_mem').html("总物理内存:" + data.memTotal + "G&nbsp;&nbsp;,&nbsp;&nbsp;已用:" + data.memUserd + "G&nbsp;&nbsp;,&nbsp;&nbsp;空闲:" + data.memFree + "G");
-            $('#memUserdPercent').progressbar('setValue', Math.round(data.memUserdPercent));
+            var str = '';
+            //cpu监控
+            $.each(data.cpuUserd, function(k, v) {
+                console.info(v);
+                str += '<tr>';
+                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
+                str += '<td width="400">';
+                str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
+                str += '</td>';
+                str += '</tr>';
+            });
+            //硬盘监控
+            str += '<tr>';
+            str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
+            str += '<td width="400">';
+            str += '<div>硬盘总容量:' + data.diskTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.diskUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.diskFree + 'GB</div>';
+            str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.diskUserdPercent) + '" style="height:22px;width:400px;"></div>';
+            str += '</td>';
+            str += '</tr>';
+            //内存监控
+            str += '<tr>';
+            str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
+            str += '<td width="400">';
+            str += '<div>硬盘总容量:' + data.memTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.memUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.memFree + 'GB</div>';
+            str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.memUserdPercent) + '" style="height:22px;width:400px;"></div>';
+            str += '</td>';
+            str += '</tr>';
+            $('#hm_system_monitor').html(str);
+            $('.easyui-progressbar').progressbar();
         }
     });
 };

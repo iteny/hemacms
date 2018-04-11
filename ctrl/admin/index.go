@@ -47,9 +47,10 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	data["serverTime"] = time.Now().Unix() //服务器时间
 	host, _ := hostInfo.Info()
 	cpu, _ := cpuInfo.Info()
+	cpuUserd, _ := cpuInfo.Percent(time.Second, false)
 	mem, _ := memInfo.VirtualMemory()
 	disk, _ := diskInfo.Usage("/")
-
+	data["cpuUserd"] = cpuUserd
 	data["uptime"] = host.BootTime - host.Uptime            //正常运行时间
 	data["hostname"] = host.Hostname                        //主机名
 	data["procs"] = host.Procs                              //进程号
@@ -73,6 +74,8 @@ func (c *IndexCtrl) AjaxPolling(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	mem, _ := memInfo.VirtualMemory()
 	disk, _ := diskInfo.Usage("/")
+	cpuUserd, _ := cpuInfo.Percent(time.Second, false)
+	data["cpuUserd"] = cpuUserd
 	data["serverTime"] = time.Now().Unix() //服务器时间
 	data["memTotal"] = mem.Total / 1024 / 1024 / 1024
 	data["memFree"] = mem.Free / 1024 / 1024 / 1024
@@ -100,17 +103,17 @@ func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//获取所有菜单
 		rule := []sql.AuthRule{}
-		if rows, found := c.Cache().CacheGet("allmenu"); found {
+		if rows, found := c.Cache().Get("allmenu"); found {
 			rule = rows.([]sql.AuthRule)
 		} else {
 			sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
 			err := c.Sql().Select(&rule, sqls)
 			c.Log().CheckErr("Sql Error", err)
-			c.Cache().CacheSetAlwaysTime("allmenu", rule)
+			c.Cache().SetAlwaysTime("allmenu", rule)
 		}
 		//获取用户的用户组id
 		roleId := ""
-		if roleIdRow, roleIdFound := c.Cache().CacheGet("roleId" + userId); roleIdFound {
+		if roleIdRow, roleIdFound := c.Cache().Get("roleId" + userId); roleIdFound {
 			roleId = roleIdRow.(string)
 		} else {
 			access := sql.AuthRoleAccess{}
@@ -118,7 +121,7 @@ func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {
 			err := c.Sql().Get(&access, accessSql, userId)
 			c.Log().CheckErr("Sql Error", err)
 			roleId = strconv.Itoa(access.RoleId)
-			c.Cache().CacheSetAlwaysTime("roleId"+userId, roleId)
+			c.Cache().SetAlwaysTime("roleId"+userId, roleId)
 		}
 		rulerz := "false"
 		formatUri := c.FormatUrl(uri)
@@ -127,7 +130,7 @@ func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {
 				rulerz = "true"
 				//获取用户权限id组
 				auths := ""
-				if row, fd := c.Cache().CacheGet("auth" + roleId); fd {
+				if row, fd := c.Cache().Get("auth" + roleId); fd {
 					auths = row.(string)
 				} else {
 					role := sql.AuthRole{}
@@ -135,7 +138,7 @@ func (c *IndexCtrl) TabNoAuth(w http.ResponseWriter, r *http.Request) {
 					err = c.Sql().Get(&role, roleSql, roleId)
 					c.Log().CheckErr("Sql Error", err)
 					auths = role.Rules
-					c.Cache().CacheSetAlwaysTime("auth"+roleId, auths)
+					c.Cache().SetAlwaysTime("auth"+roleId, auths)
 				}
 				rules := strings.Split(auths, ",")
 				renzheng := "false"

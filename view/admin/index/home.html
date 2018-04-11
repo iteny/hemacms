@@ -157,19 +157,7 @@
                 <div class="hm_panel_body hm_scrollbar_3">
                     <div class="frame_form_table" style="margin:0;">
                         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况&nbsp;:&nbsp;</td>
-                                    <td width="200">暂时不支持</td>
-                                </tr>
-                                <tr>
-                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>
-                                    <td width="400"><div id="hm_disk">硬盘总容量:{{.diskTotal}}GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:{{.diskUserd}}GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:{{.diskFree}}GB</div><div id="diskUserdPercent" class="easyui-progressbar" style="height:22px;width:400px;"></div></td>
-                                </tr>
-                                <tr>
-                                    <td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>
-                                    <td width="400"><div id="hm_mem">总物理内存:{{.memTotal}}G&nbsp;&nbsp;,&nbsp;&nbsp;已用:{{.memUserd}}G&nbsp;&nbsp;,&nbsp;&nbsp;空闲:{{.memFree}}G</div><div id="memUserdPercent" class="easyui-progressbar" style="height:22px;width:400px;"></div></td>
-                                </tr>
+                            <tbody id="hm_system_monitor">
                             </tbody>
                         </table>
                     </div>
@@ -218,13 +206,35 @@
 var meWidth = document.documentElement.clientWidth;
 $('.hm_panel .panel').width(meWidth);
 $('#serverTime').html(hm.dateFormat({{.serverTime}}));
-$('#diskUserdPercent').progressbar({
-    value: Math.round({{.diskUserdPercent}}),
-});
-$('#memUserdPercent').progressbar({
-    value: Math.round({{.memUserdPercent}}),
-});
 $('#uptime').html(hm.dateFormat({{.uptime}}));
+var str = '';
+//cpu监控
+$.each({{.cpuUserd}}, function(k, v) {
+    str += '<tr>';
+    str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
+    str += '<td width="400">';
+    str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
+    str += '</td>';
+    str += '</tr>';
+});
+//硬盘监控
+str += '<tr>';
+str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
+str += '<td width="400">';
+str += '<div>硬盘总容量:' + {{.diskTotal}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + {{.diskUserd}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + {{.diskFree}} + 'GB</div>';
+str += '<div class="easyui-progressbar" data-options="value:' + Math.round({{.diskUserdPercent}}) + '" style="height:22px;width:400px;"></div>';
+str += '</td>';
+str += '</tr>';
+//内存监控
+str += '<tr>';
+str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
+str += '<td width="400">';
+str += '<div>硬盘总容量:' + {{.memTotal}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + {{.memUserd}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + {{.memFree}} + 'GB</div>';
+str += '<div class="easyui-progressbar" data-options="value:' + Math.round({{.memUserdPercent}}) + '" style="height:22px;width:400px;"></div>';
+str += '</td>';
+str += '</tr>';
+$('#hm_system_monitor').html(str);
+$('.easyui-progressbar').progressbar();
 setInterval('hm.ajaxPolling()',10000);//轮询执行，500ms一次
 </script>
 </html>

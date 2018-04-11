@@ -27,7 +27,7 @@ func (c *LoginCtrl) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 	b.WriteString("errored")
 	b.WriteString(username)
 	s := b.String()
-	fod, foundd := c.Cache().CacheGet(s)
+	fod, foundd := c.Cache().Get(s)
 	if foundd {
 		if fod.(int) > 2 {
 			// fmt.Fprint(w, c.ResponseJson(4, "密码错误3次，需要等待1分钟后再登录，谢谢！"))
@@ -59,11 +59,11 @@ func (c *LoginCtrl) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 			b.WriteString("errored")
 			b.WriteString(username)
 			s := b.String()
-			fo, found := c.Cache().CacheGet(s)
+			fo, found := c.Cache().Get(s)
 			if found {
 				errored = fo.(int) + errored
 			}
-			c.Cache().CacheSetConfineTime(s, errored)
+			c.Cache().SetConfineTime(s, errored)
 			// fmt.Fprint(w, c.ResponseJson(4, "用户名或密码错误！"))
 			c.ResponseJson(4, "", w, r)
 		} else {
@@ -107,8 +107,8 @@ func (c *LoginCtrl) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 					c.Log().CheckErr("Session Error", err)
 					err = session.PutString(w, "rolename", string(role.Name))
 					c.Log().CheckErr("Session Error", err)
-					c.Cache().CacheSetAlwaysTime("roleId"+string(userone.Id), strconv.Itoa(role.Id))
-					c.Cache().CacheSetAlwaysTime("auth"+string(role.Id), role.Rules)
+					c.Cache().SetAlwaysTime("roleId"+string(userone.Id), strconv.Itoa(role.Id))
+					c.Cache().SetAlwaysTime("auth"+string(role.Id), role.Rules)
 					// fmt.Fprint(w, c.ResponseJson(1, "登录成功，3秒后为你跳转！"))
 					c.ResponseJson(1, "", w, r)
 					return

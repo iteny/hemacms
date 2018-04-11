@@ -44,7 +44,7 @@ func (c *SiteCtrl) Menu(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) GetMenu(w http.ResponseWriter, r *http.Request) {
 	rule := []sql.AuthRule{}
-	if rows, found := c.Cache().CacheGet("allmenu"); found {
+	if rows, found := c.Cache().Get("allmenu"); found {
 		rule = rows.([]sql.AuthRule)
 	} else {
 		sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
@@ -53,7 +53,7 @@ func (c *SiteCtrl) GetMenu(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("allmenu", rule)
+		c.Cache().SetAlwaysTime("allmenu", rule)
 	}
 	ar := sql.RecursiveMenu(rule, 0, 0)
 	fmt.Fprint(w, c.RowsJson(ar))
@@ -113,7 +113,7 @@ func (c *SiteCtrl) SortMenu(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		c.ResponseJson(4, ""+err.Error(), w, r)
 	} else {
-		c.Cache().CacheDel("allmenu")
+		c.Cache().Del("allmenu")
 		c.ResponseJson(1, "", w, r)
 	}
 }
@@ -154,7 +154,7 @@ func (c *SiteCtrl) IconsCls(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) AddMenu(w http.ResponseWriter, r *http.Request) {
 	rule := []sql.AuthRule{}
-	if rows, found := c.Cache().CacheGet("allmenu"); found {
+	if rows, found := c.Cache().Get("allmenu"); found {
 		rule = rows.([]sql.AuthRule)
 	} else {
 		sqls := "SELECT * FROM hm_auth_rule"
@@ -163,7 +163,7 @@ func (c *SiteCtrl) AddMenu(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("allmenu", rule)
+		c.Cache().SetAlwaysTime("allmenu", rule)
 	}
 	data := make(map[string]interface{})
 	ar := sql.RecursiveMenuLevel(rule, 0, 0)
@@ -221,7 +221,7 @@ func (c *SiteCtrl) AddMenuSubmit(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().CacheDel("allmenu")
+				c.Cache().Del("allmenu")
 				c.ResponseJson(1, "", w, r)
 			}
 		} else {
@@ -260,7 +260,7 @@ func (c *SiteCtrl) EditMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	data["menu"] = ruleSingle
 	allrule := []sql.AuthRule{}
-	if rows, found := c.Cache().CacheGet("allmenu"); found {
+	if rows, found := c.Cache().Get("allmenu"); found {
 		allrule = rows.([]sql.AuthRule)
 	} else {
 		sqls := "SELECT * FROM hm_auth_rule"
@@ -269,7 +269,7 @@ func (c *SiteCtrl) EditMenu(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("allmenu", allrule)
+		c.Cache().SetAlwaysTime("allmenu", allrule)
 	}
 	ar := sql.RecursiveMenuLevel(allrule, 0, 0)
 	data["json"] = c.RowsJson(ar)
@@ -327,7 +327,7 @@ func (c *SiteCtrl) EditMenuSubmit(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().CacheDel("allmenu")
+				c.Cache().Del("allmenu")
 				c.ResponseJson(1, "", w, r)
 			}
 		} else {
@@ -363,7 +363,7 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		rule := []sql.AuthRule{}
-		if rows, found := c.Cache().CacheGet("allmenu"); found {
+		if rows, found := c.Cache().Get("allmenu"); found {
 			rule = rows.([]sql.AuthRule)
 		} else {
 			sqls := "SELECT * FROM hm_auth_rule"
@@ -372,7 +372,7 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("错���")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
-			c.Cache().CacheSetAlwaysTime("allmenu", rule)
+			c.Cache().SetAlwaysTime("allmenu", rule)
 		}
 		ids := sql.RecursiveMenuId(rule, id)
 		delSql := fmt.Sprintf("DELETE FROM hm_auth_rule WHERE id IN(%v)", ids)
@@ -383,7 +383,7 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			c.Cache().CacheDel("allmenu")
+			c.Cache().Del("allmenu")
 			c.ResponseJson(1, "", w, r)
 		}
 	}
@@ -521,7 +521,7 @@ func (c *SiteCtrl) GetUser(w http.ResponseWriter, r *http.Request) {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
 		fmt.Println(addsql)
-		if rows, found := c.Cache().CacheGet("allUser"); found {
+		if rows, found := c.Cache().Get("allUser"); found {
 			// array = rows.([]sql.User)
 			jsonUser = rows.(string)
 		} else {
@@ -636,7 +636,7 @@ func (c *SiteCtrl) BatchDelUser(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			c.Cache().CacheDel("allUser")
+			c.Cache().Del("allUser")
 			c.ResponseJson(1, "", w, r)
 		}
 	}
@@ -725,7 +725,7 @@ func (c *SiteCtrl) AddUserSubmit(w http.ResponseWriter, r *http.Request) {
 					c.Log().Debug().Err(err).Msg("Error")
 					c.ResponseJson(4, err.Error(), w, r)
 				} else {
-					c.Cache().CacheDel("allUser")
+					c.Cache().Del("allUser")
 					c.ResponseJson(1, "", w, r)
 				}
 			} else {
@@ -844,7 +844,7 @@ func (c *SiteCtrl) EditUserSubmit(w http.ResponseWriter, r *http.Request) {
 					c.Log().Debug().Err(err).Msg("Error")
 					c.ResponseJson(4, err.Error(), w, r)
 				} else {
-					c.Cache().CacheDel("allUser")
+					c.Cache().Del("allUser")
 					c.ResponseJson(1, "", w, r)
 				}
 			} else {
@@ -922,7 +922,7 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 			}
 
 		}
-		if rows, found := c.Cache().CacheGet("allRole"); found {
+		if rows, found := c.Cache().Get("allRole"); found {
 			// array = rows.([]sql.User)
 			jsonRole = rows.(string)
 		} else {
@@ -955,7 +955,7 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "roleId")
 	role := sql.AuthRole{}
-	if rows, found := c.Cache().CacheGet("role" + id); found {
+	if rows, found := c.Cache().Get("role" + id); found {
 		role = rows.(sql.AuthRole)
 	} else {
 		sqls := "SELECT * FROM hm_auth_role WHERE id = ?"
@@ -964,10 +964,10 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("role"+id, role)
+		c.Cache().SetAlwaysTime("role"+id, role)
 	}
 	rule := []sql.AuthRule{}
-	if rows, found := c.Cache().CacheGet("allmenu"); found {
+	if rows, found := c.Cache().Get("allmenu"); found {
 		rule = rows.([]sql.AuthRule)
 	} else {
 		sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
@@ -976,7 +976,7 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
-		c.Cache().CacheSetAlwaysTime("allmenu", rule)
+		c.Cache().SetAlwaysTime("allmenu", rule)
 	}
 	ids := strings.Split(role.Rules, ",")
 	for k, v := range rule {
@@ -1039,8 +1039,8 @@ func (c *SiteCtrl) SetRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			c.Cache().CacheDel("role" + id)
-			c.Cache().CacheDel("auth" + id)
+			c.Cache().Del("role" + id)
+			c.Cache().Del("auth" + id)
 			c.ResponseJson(1, "", w, r)
 		}
 	}
@@ -1071,7 +1071,7 @@ func (c *SiteCtrl) DelRole(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().CacheDel("allrole")
+				c.Cache().Del("allrole")
 				c.ResponseJson(1, "", w, r)
 			}
 		}
@@ -1106,7 +1106,7 @@ func (c *SiteCtrl) BatchDelRole(w http.ResponseWriter, r *http.Request) {
 			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			c.Cache().CacheDel("allrole")
+			c.Cache().Del("allrole")
 			c.ResponseJson(1, "", w, r)
 		}
 	}
@@ -1158,7 +1158,7 @@ func (c *SiteCtrl) AddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().CacheDel("allrole")
+				c.Cache().Del("allrole")
 				c.ResponseJson(1, "", w, r)
 			}
 		} else {
@@ -1236,7 +1236,7 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().CacheDel("allrole")
+				c.Cache().Del("allrole")
 				c.ResponseJson(1, "", w, r)
 			}
 		} else {
@@ -1319,7 +1319,7 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 		if addsql != "" {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
-		if rows, found := c.Cache().CacheGet("allLoginLog"); found {
+		if rows, found := c.Cache().Get("allLoginLog"); found {
 			// array = rows.([]sql.User)
 			jsonLog = rows.(string)
 		} else {
@@ -1454,13 +1454,19 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		count := len(total)
-		fmt.Printf("%T", log)
+		// fmt.Printf("%T", log)
 		if count != 0 {
 			data["total"] = strconv.Itoa(count)
 			data["rows"] = log
 			// jsonLog = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(log) + "}"
 		} else {
 			data["status"], data["info"], data["rows"] = 15, "no found data", log
+		}
+		meme := c.Cache().Items()
+		for k, v := range meme {
+			if strings.Contains(k, "all") {
+				fmt.Println(v)
+			}
 		}
 		// c.Cache().CacheSetAlwaysTime("allOprateLog", jsonLog)
 		// }

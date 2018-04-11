@@ -60,17 +60,17 @@ func LoginVerify(next http.Handler) http.Handler {
 				//获取所有菜单
 				fmt.Println("你的id", userId)
 				rule := []sql.AuthRule{}
-				if rows, found := common.Cache().CacheGet("allmenu"); found {
+				if rows, found := common.Cache().Get("allmenu"); found {
 					rule = rows.([]sql.AuthRule)
 				} else {
 					sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
 					err := common.Sql().Select(&rule, sqls)
 					common.Log().CheckErr("Sql Error", err)
-					common.Cache().CacheSetAlwaysTime("allmenu", rule)
+					common.Cache().SetAlwaysTime("allmenu", rule)
 				}
 				//获取用户的用户组id
 				roleId := ""
-				if roleIdRow, roleIdFound := common.Cache().CacheGet("roleId" + userId); roleIdFound {
+				if roleIdRow, roleIdFound := common.Cache().Get("roleId" + userId); roleIdFound {
 					roleId = roleIdRow.(string)
 				} else {
 					access := sql.AuthRoleAccess{}
@@ -78,7 +78,7 @@ func LoginVerify(next http.Handler) http.Handler {
 					err := common.Sql().Get(&access, accessSql, userId)
 					common.Log().CheckErr("Sql Error", err)
 					roleId = strconv.Itoa(access.RoleId)
-					common.Cache().CacheSetAlwaysTime("roleId"+userId, roleId)
+					common.Cache().SetAlwaysTime("roleId"+userId, roleId)
 				}
 				rulerz := "false"
 				formatUri := common.Base().FormatUrl(uri)
@@ -89,7 +89,7 @@ func LoginVerify(next http.Handler) http.Handler {
 						rulerz = "true"
 						//获取用户权限id组
 						auths := ""
-						if row, fd := common.Cache().CacheGet("auth" + roleId); fd {
+						if row, fd := common.Cache().Get("auth" + roleId); fd {
 							auths = row.(string)
 							fmt.Println(auths)
 
@@ -100,7 +100,7 @@ func LoginVerify(next http.Handler) http.Handler {
 							err = common.Sql().Get(&role, roleSql, roleId)
 							common.Log().CheckErr("Sql Error", err)
 							auths = role.Rules
-							common.Cache().CacheSetAlwaysTime("auth"+roleId, auths)
+							common.Cache().SetAlwaysTime("auth"+roleId, auths)
 						}
 						rules := strings.Split(auths, ",")
 						renzheng := "false"
