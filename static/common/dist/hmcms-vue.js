@@ -265,8 +265,14 @@ const store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
             noFound: hm.language.noFound ? hm.language.noFound : 'Sorry! The page you visited cannot be found...',
             jsCss: hm.language.jsCss ? hm.language.jsCss : 'Copy css',
             jsRgb: hm.language.jsRgb ? hm.language.jsRgb : 'Copy rgb',
+            status: hm.language.status ? hm.language.status : 'Status',
             loginSearchUser: hm.language.loginSearchUser ? hm.language.loginSearchUser : 'Search account',
-            loginDelMonthLog: hm.language.loginDelMonthLog ? hm.language.loginDelMonthLog : 'Delete the logon log a month ago'
+            loginDelMonthLog: hm.language.loginDelMonthLog ? hm.language.loginDelMonthLog : 'Delete the logon log a month ago',
+            oprateExcuteTime: hm.language.oprateExcuteTime ? hm.language.oprateExcuteTime : 'Excute time',
+            oprateMillisecond: hm.language.oprateMillisecond ? hm.language.oprateMillisecond : 'Millisecond',
+            oprateDelMonthLog: hm.language.oprateDelMonthLog ? hm.language.oprateDelMonthLog : 'Delete the oprate log a month ago',
+            oprateDelAllLog: hm.language.oprateDelAllLog ? hm.language.oprateDelAllLog : 'Delete all operat logs',
+            oprateTime: hm.language.oprateTime ? hm.language.oprateTime : 'Oprate time'
 
         },
         style: $.cookie('back-style') ? $.cookie('back-style') : 'hm_style_default'

@@ -164,6 +164,10 @@ var language = {
         cfgCookie: "Cookie configuration",
         cfgLanguage: "Default language",
         cfgLanguageVali: "Default language only allows English and spaces,2-80 characters!",
+        cfgCommon: "Common configuration",
+        cfgTerminalLog: "Terminal print operation log switch",
+        cfgSqlLog: "Database operation log switch",
+        cfgAjaxPolling: "Get system occupancy",
         //配置文件结束
         //用户管理开始
         userAdd: "Add account",
@@ -231,14 +235,25 @@ var language = {
         jsCopyFailed: "Copy failed!",
         jsCss: "Copy css",
         jsRgb: "Copy rgb",
+        status: "Status",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
         loginLogIp: "Login ip",
-        loginStatus: "Login status",
         loginUseragent: "Useragent",
         loginSearchUser: "Search account",
-        loginDelMonthLog: "Delete the logon log a month ago",
+        loginDelMonthLog: "Delete the login log a month ago",
+        oprateDetail: "Oprate detail",
+        oprateUrl: "Request url",
+        oprateInfo: "Oprate info",
+        oprateMethod: "Method",
+        oprateLogTime: "Oprate time",
+        oprateLogIp: "Oprate ip",
+        oprateExcuteTime: "Excute time",
+        oprateMillisecond: "Millisecond",
+        oprateDelMonthLog: "Delete the oprate log a month ago",
+        oprateDelAllLog: "Delete all operat logs",
+        oprateTime: "Oprate time",
         //日志结束
     },
     //简体中文,chinese
@@ -406,6 +421,10 @@ var language = {
         cfgCookie: "Cookie配置",
         cfgLanguage: "默认语言",
         cfgLanguageVali: "默认语言只允许英文和空格,2-80位字符!",
+        cfgCommon: "公共配置",
+        cfgTerminalLog: "终端打印操作日志开关",
+        cfgSqlLog: "数据库操作日志开关",
+        cfgAjaxPolling: "获取系统占用",
         //配置文件结束
         //用户管理开始
         userAdd: "添加用户",
@@ -473,14 +492,25 @@ var language = {
         jsCopyFailed: "复制失败!",
         jsCss: "复制Css",
         jsRgb: "复制Rgb",
+        status: "状态",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
         loginLogIp: "登录IP",
-        loginStatus: "登录状态",
         loginUseragent: "用户浏览器信息",
         loginSearchUser: "查询用户名",
         loginDelMonthLog: "删除一个月前的登录日志",
+        oprateDetail: "操作明细",
+        oprateUrl: "请求地址",
+        oprateInfo: "操作信息",
+        oprateMethod: "请求方式",
+        oprateLogTime: "操作时间",
+        oprateLogIp: "操作IP",
+        oprateExcuteTime: "执行时间",
+        oprateMillisecond: "毫秒",
+        oprateDelMonthLog: "删除一个月前的操作日志",
+        oprateDelAllLog: "删除全部操作日志",
+        oprateTime: "操作时间",
         //日志结束
     },
 };

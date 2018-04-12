@@ -113,6 +113,42 @@ func (c *regexpCtrl) Status(string string) bool {
 }
 
 /**
+ * @description 验证是否为on或off，只要不是on和off都返回false
+ * @param string 需要验证的字符串
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-02-18
+ */
+func (c *regexpCtrl) OnOff(string string) bool {
+	switch string {
+	case "on":
+		return true
+	case "off":
+		return true
+	default:
+		return false
+	}
+}
+
+/**
+ * @description 验证是否为60000或600000，只要不是60000和600000都返回false
+ * @param string 需要验证的字符串
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-02-18
+ */
+func (c *regexpCtrl) AjaxPolling(string string) bool {
+	switch string {
+	case "60000":
+		return true
+	case "600000":
+		return true
+	default:
+		return false
+	}
+}
+
+/**
  * @description 匹配数据库类型配置
  * @param string 需要验证的字符串
  * @homepage    http://www.hemacms.com/

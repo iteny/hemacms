@@ -964,6 +964,24 @@ HmObj.prototype.dateFormat = function(time) {
     // // Wed, 18 Jun 2014 02:33:24 GMT
     // console.log(newDate.toUTCString());
 };
+//毫秒转换成小时分钟秒
+HmObj.prototype.MillisecondToDate = function(msd) {
+    var time = parseFloat(msd) / 1000;
+    if (null != time && "" != time) {
+        if (time > 60 && time < 60 * 60) {
+            time = parseInt(time / 60.0) + "分钟" + parseInt((parseFloat(time / 60.0) -
+                parseFloat(time / 60.0)) * 60) + "秒";
+        } else if (time >= 60 * 60 && time < 60 * 60 * 24) {
+            time = parseInt(time / 3600.0) + "小时" + parseInt((parseFloat(time / 3600.0) -
+                    parseInt(time / 3600.0)) * 60) + "分钟" +
+                parseInt((parseFloat((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60) -
+                    parseInt((parseFloat(time / 3600.0) - parseFloat(time / 3600.0)) * 60)) * 60) + "秒";
+        } else {
+            time = parseFloat(time) + "秒";
+        }
+    }
+    return time;
+};
 //序列化元素
 HmObj.prototype.serializeObject = function(params) { /*将form表单内的元素序列化为对象，扩展Jquery的一个方法*/
     var o = {};
@@ -1037,36 +1055,39 @@ HmObj.prototype.ajaxPolling = function() {
         url: "/intendant/ajaxPolling",
         dataType: "json",
         success: function(data) {
-            $('#serverTime').html(hm.dateFormat(data.serverTime));
-            var str = '';
-            //cpu监控
-            $.each(data.cpuUserd, function(k, v) {
-                console.info(v);
+            if (data.status == 66) {
+                parent.window.location = '/intendant/login';
+            } else {
+                $('#serverTime').html(hm.dateFormat(data.serverTime));
+                var str = '';
+                //cpu监控
+                $.each(data.cpuUserd, function(k, v) {
+                    str += '<tr>';
+                    str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
+                    str += '<td width="400">';
+                    str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
+                    str += '</td>';
+                    str += '</tr>';
+                });
+                //硬盘监控
                 str += '<tr>';
-                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
+                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
                 str += '<td width="400">';
-                str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
+                str += '<div>硬盘总容量:' + data.diskTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.diskUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.diskFree + 'GB</div>';
+                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.diskUserdPercent) + '" style="height:22px;width:400px;"></div>';
                 str += '</td>';
                 str += '</tr>';
-            });
-            //硬盘监控
-            str += '<tr>';
-            str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
-            str += '<td width="400">';
-            str += '<div>硬盘总容量:' + data.diskTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.diskUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.diskFree + 'GB</div>';
-            str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.diskUserdPercent) + '" style="height:22px;width:400px;"></div>';
-            str += '</td>';
-            str += '</tr>';
-            //内存监控
-            str += '<tr>';
-            str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
-            str += '<td width="400">';
-            str += '<div>硬盘总容量:' + data.memTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.memUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.memFree + 'GB</div>';
-            str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.memUserdPercent) + '" style="height:22px;width:400px;"></div>';
-            str += '</td>';
-            str += '</tr>';
-            $('#hm_system_monitor').html(str);
-            $('.easyui-progressbar').progressbar();
+                //内存监控
+                str += '<tr>';
+                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
+                str += '<td width="400">';
+                str += '<div>总物理内存:' + data.memTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.memUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.memFree + 'GB</div>';
+                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.memUserdPercent) + '" style="height:22px;width:400px;"></div>';
+                str += '</td>';
+                str += '</tr>';
+                $('#hm_system_monitor').html(str);
+                $('.easyui-progressbar').progressbar();
+            }
         }
     });
 };

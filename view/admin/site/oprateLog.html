@@ -17,15 +17,17 @@
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.loginDelMonthLog]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.oprateDelMonthLog]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delAllOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.oprateDelAllLog]]</a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
     </div>
     <div id="hm_menu_tools">
         <form name="datagird_tools">
             <div id="hm_search">
-                状态:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1">&nbsp;&nbsp;
+                [[$store.state.language.status]]:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1">&nbsp;&nbsp;
                 [[$store.state.language.loginSearchUser]]:&nbsp;<input type="text" name="username" class="easyui-validatebox"></input>&nbsp;&nbsp;
-                [[$store.state.language.userCreateTime]]:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
+                [[$store.state.language.oprateExcuteTime]]([[$store.state.language.oprateMillisecond]]):&nbsp;<input type="text" name="excuteTime" class="easyui-validatebox" style="width:60px;"></input>&nbsp;&nbsp;
+                [[$store.state.language.oprateTime]]:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
                 [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
                 <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
                 <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true">[[$store.state.language.clearSearch]]</a>
@@ -52,7 +54,7 @@ $('#hm_data').datagrid({
     url:'/intendant/site/getOprateLog',
     fitColumns: true, //宽度自适应窗口
     rownumbers: false, //是否显示行号
-    singleSelect: false,
+    singleSelect: true,
     scrollbarSize: 0, //去除滚动条，否则右边最后一列会自动多处一块
     remoteSort: false, //不以服务器端排序
     queryParams: null,//额外提交参数
@@ -78,17 +80,17 @@ $('#hm_data').datagrid({
             align: 'center',
         },{
             field: 'detail',
-            title: '操作明细',
+            title: hm.language.oprateDetail ? hm.language.oprateDetail : 'Oprate detail',
             width: 200,
             align: 'left',
         },{
             field: 'url',
-            title: '请求地址',
+            title: hm.language.oprateUrl ? hm.language.oprateUrl : 'Request url',
             width: 100,
             align: 'center',
         },{
             field: 'info',
-            title: '操作信息',
+            title: hm.language.oprateInfo ? hm.language.oprateInfo : 'Oprate info',
             width: 80,
             align: 'center',
             styler:function(index,row){//返回选定行的样式
@@ -98,7 +100,7 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'method',
-            title: '请求方式',
+            title: hm.language.oprateMethod ? hm.language.oprateMethod : 'Method',
             width: 40,
             align: 'center',
             styler:function(index,row){//返回选定行的样式
@@ -108,43 +110,43 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'excute_time',
-            title: '执行时间',
-            width: 40,
+            title: hm.language.oprateExcuteTime ? hm.language.oprateExcuteTime : 'Excute time',
+            width: 60,
             align: 'center',
             formatter: function(value){
-                var str = value;
-                strone = str.substr(0, str.indexOf('.'));
-                strtwo = str.substr(str.length-2)
-                return strone+strtwo;
+                // var str = value;
+                // strone = str.substr(0, str.indexOf('.'));
+                // strtwo = str.substr(str.length-2)
+                return hm.MillisecondToDate(value);
             }
         },{
             field: 'status',
-            title: 'Status',
+            title: hm.language.status ? hm.language.status : 'Status',
             width: 30,
             align: 'center',
             formatter: function(value, row, index) {
-                if(value){
-                    return '<i class="fa fa-check" style="color:white;background-color:green;border-radius:25px;padding:2px;"></i>';
+                if(value == 1){
+                    return '<i class="fa fa-check hm_fa_ok"></i>';
                 }else{
-                    return '<i class="fa fa-remove" style="color:white;background-color:red;border-radius:25px;padding:2px;"></i>';
+                    return '<i class="fa fa-remove hm_fa_no"></i>';
                 }
             }
         },{
             field: 'useragent',
-            title: hm.language.userName ? hm.language.userName : 'Account',
+            title: hm.language.loginUseragent ? hm.language.loginUseragent : 'Useragent',
             width: 120,
             align: 'center',
         },{
             field: 'oprate_time',
-            title: hm.language.loginLogTime ? hm.language.loginLogTime : 'Login time',
+            title: hm.language.oprateLogTime ? hm.language.oprateLogTime : 'Oprate time',
             width: 75,
             align: 'center',
             formatter: function(value, row, index){
-                return hm.dateFormat(value)
+                return hm.dateFormat(value)+"【"+value+"】";
             },
         },{
             field: 'oprate_ip',
-            title: hm.language.loginLogIp ? hm.language.loginLogIp : 'Login ip',
+            title: hm.language.oprateLogIp ? hm.language.oprateLogIp : 'Oprate ip',
             width: 75,
             align: 'center',
         },

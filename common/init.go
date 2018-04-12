@@ -44,22 +44,23 @@ func (c *BaseCtrl) Template(w io.Writer, r *http.Request, data interface{}, file
 	if ip == "::1" {
 		ip = "127.0.0.1"
 	}
-	ExcuteTime := c.TimeString(r, "ExcuteTime")
-	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Msg("Get Template")
+	excuteTime := c.TimeString(r, "excuteTime")
+	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", excuteTime).Msg("Get Template")
 	t, err := template.ParseFiles(filenames...)
 	c.Log().CheckErr("Template Error", err)
 	err = t.Execute(w, data)
 	c.Log().CheckErr("Template Error", err)
 }
 func (c *BaseCtrl) TimeString(r *http.Request, contextName string) string {
-	contextValue := r.Context().Value("ExcuteTime")
+	contextValue := r.Context().Value("excuteTime")
 	if contextValue != nil {
-		timetype := time.Unix(r.Context().Value("ExcuteTime").(int64), 0)
+		timetype := time.Unix(r.Context().Value("excuteTime").(int64), 0)
 		now := time.Now()
 		duration := now.Sub(timetype)
-		return duration.String()
+		excuteTime := strconv.Itoa(int(duration.Nanoseconds() / 1000 / 1000))
+		return excuteTime
 	} else {
-		return "0ms"
+		return "0"
 	}
 }
 
@@ -73,15 +74,15 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 	if infos == "" {
 		infos = "no problem"
 	}
-	ExcuteTime := c.TimeString(r, "ExcuteTime")
+	excuteTime := c.TimeString(r, "excuteTime")
 	terminalLog := c.Config().Value("common", "terminalLog")
 	if terminalLog == "on" {
 		path := ""
 		_, file, line, ok := runtime.Caller(1)
 		if ok {
-			path = file + " " + strconv.Itoa(line)
+			path = file + " Line:" + strconv.Itoa(line)
 		}
-		defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", ExcuteTime).Str("[Path]", path).Str("[Info]", info.(string)).Msg("Response Json")
+		defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", excuteTime).Str("[Path]", path).Str("[Info]", info.(string)).Msg("Response Json")
 	}
 	sqlLog := c.Config().Value("common", "sqlLog")
 	if sqlLog == "on" {
@@ -96,8 +97,18 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 		c.Log().CheckErr("Session Get Error", err)
 		logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,method,excute_time,status) VALUES(?,?,?,?,?,?,?,?,?,?)"
 		tx := c.Sql().MustBegin()
-		tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, ExcuteTime, status)
+		tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, excuteTime, status)
 		err = tx.Commit()
+		if err != nil {
+			c.Log().CheckErr("Sql Error", err)
+		} else {
+			clearOprateLog := c.Cache().Items()
+			for k, _ := range clearOprateLog {
+				if strings.Contains(k, "oprateLog") {
+					c.Cache().Del(k)
+				}
+			}
+		}
 	}
 	m := make(map[string]interface{})
 	m["status"] = status
@@ -105,7 +116,66 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 	mData, err := json.Marshal(m)
 	c.Log().CheckErr("Json Error", err)
 	fmt.Fprint(w, string(mData))
-	// return string(mData)
+}
+
+//响应数据
+func (c *BaseCtrl) ResponseData(data interface{}, w io.Writer, r *http.Request) {
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if ip == "::1" {
+		ip = "127.0.0.1"
+	}
+	dt := data.(map[string]interface{})
+	infos := dt["info"].(string)
+	if infos == "" {
+		infos = "no problem"
+	}
+	status := dt["status"]
+	excuteTime := c.TimeString(r, "excuteTime")
+	terminalLog := c.Config().Value("common", "terminalLog")
+	if terminalLog == "on" {
+		path := ""
+		_, file, line, ok := runtime.Caller(1)
+		if ok {
+			path = file + " Line:" + strconv.Itoa(line)
+		}
+		defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", excuteTime).Str("[Path]", path).Str("[Info]", infos).Msg("Response Data")
+	}
+	sqlLog := c.Config().Value("common", "sqlLog")
+	if sqlLog == "on" {
+		if r.RequestURI == "/intendant/site/getOprateLog" {
+		} else if r.RequestURI == "/intendant/ajaxPolling" {
+		} else {
+			detail := ""
+			pc, file, line, ok := runtime.Caller(1)
+			if ok {
+				f := runtime.FuncForPC(pc)
+				detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line)
+			}
+			session := c.Sess().Load(r)
+			username, err := session.GetString("username")
+			c.Log().CheckErr("Session Get Error", err)
+			logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,method,excute_time,status) VALUES(?,?,?,?,?,?,?,?,?,?)"
+			tx := c.Sql().MustBegin()
+			tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, excuteTime, status)
+			err = tx.Commit()
+			if err != nil {
+				c.Log().CheckErr("Sql Error", err)
+			} else {
+				clearOprateLog := c.Cache().Items()
+				for k, _ := range clearOprateLog {
+					if strings.Contains(k, "oprateLog") {
+						c.Cache().Del(k)
+					}
+				}
+			}
+		}
+	}
+	// m := make(map[string]interface{})
+	// m["status"] = status
+	// m["info"] = info
+	mData, err := json.Marshal(dt)
+	c.Log().CheckErr("Json Data Error", err)
+	fmt.Fprint(w, string(mData))
 }
 
 //return rows json

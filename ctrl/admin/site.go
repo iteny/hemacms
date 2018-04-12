@@ -403,6 +403,9 @@ func (c *SiteCtrl) System(w http.ResponseWriter, r *http.Request) {
 	data["readTimeout"] = c.Config().Int("servSet", "readTimeout")
 	data["writeTimeout"] = c.Config().Int("servSet", "writeTimeout")
 	data["language"] = c.Config().Value("cookie", "language")
+	data["terminalLog"] = c.Config().Value("common", "terminalLog")
+	data["sqlLog"] = c.Config().Value("common", "sqlLog")
+	data["ajaxPolling"] = c.Config().Value("common", "ajaxPolling")
 	c.Template(w, r, data, "./view/admin/site/system.html")
 }
 
@@ -416,8 +419,12 @@ func (c *SiteCtrl) System(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) EditSystem(w http.ResponseWriter, r *http.Request) {
 	sqlType, port, language := r.PostFormValue("sqlType"), r.PostFormValue("port"), r.PostFormValue("language")
 	readTimeout, writeTimeout := r.PostFormValue("readTimeout"), r.PostFormValue("writeTimeout")
+	terminalLog, sqlLog := r.PostFormValue("terminalLog"), r.PostFormValue("sqlLog")
+	ajaxPolling := r.PostFormValue("ajaxPolling")
 	isSqlType, isPort, isLanguage := c.Regexp().SqlType(sqlType), c.Regexp().Port(port), c.Regexp().English(language)
 	isReadTimeout, isWriteTimeout := c.Regexp().ReadTimeout(readTimeout), c.Regexp().WriteTimeout(writeTimeout)
+	isTerminalLog, isSqlLog := c.Regexp().OnOff(terminalLog), c.Regexp().OnOff(sqlLog)
+	isAjaxPolling := c.Regexp().AjaxPolling(ajaxPolling)
 	switch false {
 	case isSqlType:
 		c.ResponseJson(11, "", w, r)
@@ -434,12 +441,24 @@ func (c *SiteCtrl) EditSystem(w http.ResponseWriter, r *http.Request) {
 	case isLanguage:
 		c.ResponseJson(15, "", w, r)
 		return
+	case isTerminalLog:
+		c.ResponseJson(16, "", w, r)
+		return
+	case isSqlLog:
+		c.ResponseJson(17, "", w, r)
+		return
+	case isAjaxPolling:
+		c.ResponseJson(18, "", w, r)
+		return
 	default:
 		c.Config().SetValue("sql", "sqlType", sqlType)
 		c.Config().SetValue("servSet", "port", port)
 		c.Config().SetValue("servSet", "readTimeout", readTimeout)
 		c.Config().SetValue("servSet", "writeTimeout", writeTimeout)
 		c.Config().SetValue("cookie", "language", language)
+		c.Config().SetValue("common", "terminalLog", terminalLog)
+		c.Config().SetValue("common", "sqlLog", sqlLog)
+		c.Config().SetValue("common", "ajaxPolling", ajaxPolling)
 		err := c.Config().Save("./ini/hemacms.ini")
 		if err != nil {
 			c.Log().Debug().Err(err).Msg("Error")
@@ -1393,11 +1412,10 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	page, row, status := r.PostFormValue("page"), r.PostFormValue("rows"), r.PostFormValue("status")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	excuteTime := r.PostFormValue("excuteTime")
 	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
-	isStatus := c.Regexp().Status(status)
-	// var ss []string
+	isStatus, isExcuteTime := c.Regexp().Status(status), c.Regexp().Id(excuteTime)
 	data["total"], data["rows"] = 0, []string{}
-	// fmt.Println(data["rows"])
 	switch {
 	case isUsername == false && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
@@ -1407,12 +1425,14 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		data["status"], data["info"] = 13, "Invalid dateFrom"
 	case isDateTo == false && dateTo != "":
 		data["status"], data["info"] = 14, "Invalid dateTo"
+	case isExcuteTime == false && excuteTime != "":
+		data["status"], data["info"] = 15, "Invalid excuteTime"
 	default:
 		ipage, _ := strconv.Atoi(page)
 		irow, _ := strconv.Atoi(row)
 		first := irow * (ipage - 1)
 		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
-		loc, _ := time.LoadLocation("Local") //重要：获取时区
+		loc, _ := time.LoadLocation("Local") //重要：获取时���
 		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
 		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
 		fromTime, toTime := from.Unix(), to.Unix()
@@ -1426,6 +1446,9 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		if status == "0" {
 			addsql = "status <> 1 AND "
 		}
+		if excuteTime != "" {
+			addsql = "excute_time >= '" + excuteTime + "' AND "
+		}
 		if dateFrom != "" {
 			addsql = addsql + fmt.Sprintf("oprate_time>='%v' AND ", fromTime)
 		}
@@ -1435,43 +1458,40 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		if addsql != "" {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
-		fmt.Println(addsql)
-		// if rows, found := c.Cache().CacheGet("allOprateLog"); found {
-		// 	data["rows"] = rows.([]sql.OprateLog)
-		// } else {
-		logSql := "SELECT * FROM hm_oprate_log " + addsql + " ORDER BY id DESC Limit ?,?"
-		totalSql := "SELECT id FROM hm_oprate_log " + addsql + " ORDER BY id DESC"
+		count := 0
+		if rows, found := c.Cache().Get("oprateLogCount" + username + status + dateFrom + dateTo + excuteTime); found {
+			count = rows.(int)
+		} else {
+			totalSql := "SELECT id FROM hm_oprate_log " + addsql
+			total := []sql.OprateLog{}
+			err := c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count = len(total)
+			c.Cache().SetAlwaysTime("oprateLogCount"+username+status+dateFrom+dateTo+excuteTime, count)
+		}
 		log := []sql.OprateLog{}
-		total := []sql.OprateLog{}
-		err := c.Sql().Select(&log, logSql, first, row)
-		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
-			c.ResponseJson(4, err.Error(), w, r)
+		if rows, found := c.Cache().Get("oprateLog" + username + status + dateFrom + dateTo + excuteTime); found {
+			log = rows.([]sql.OprateLog)
+		} else {
+			logSql := "SELECT * FROM hm_oprate_log " + addsql + " ORDER BY id DESC Limit ?,?"
+			err := c.Sql().Select(&log, logSql, first, row)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("oprateLog"+username+status+dateFrom+dateTo+excuteTime, log)
 		}
-		err = c.Sql().Select(&total, totalSql)
-		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
-			c.ResponseJson(4, err.Error(), w, r)
-		}
-		count := len(total)
-		// fmt.Printf("%T", log)
 		if count != 0 {
 			data["total"] = strconv.Itoa(count)
 			data["rows"] = log
-			// jsonLog = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(log) + "}"
+			data["status"] = 1
+			data["info"] = ""
 		} else {
 			data["status"], data["info"], data["rows"] = 15, "no found data", log
 		}
-		meme := c.Cache().Items()
-		for k, v := range meme {
-			if strings.Contains(k, "all") {
-				fmt.Println(v)
-			}
-		}
-		// c.Cache().CacheSetAlwaysTime("allOprateLog", jsonLog)
-		// }
 	}
-	fmt.Fprint(w, c.RowsJson(data))
+	c.ResponseData(data, w, r)
 }
 
 /**
@@ -1488,10 +1508,39 @@ func (c *SiteCtrl) DelOprateLog(w http.ResponseWriter, r *http.Request) {
 	tx.MustExec(delSql)
 	err := tx.Commit()
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		// c.Cache().CacheDel("allmenu")
+		clearOprateLog := c.Cache().Items()
+		for k, _ := range clearOprateLog {
+			if strings.Contains(k, "oprateLog") {
+				c.Cache().Del(k)
+			}
+		}
+		c.ResponseJson(1, "", w, r)
+	}
+}
+
+/**
+ * @description 删除全部操作日志
+ * @English	Delete all oprate log
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) DelAllOprateLog(w http.ResponseWriter, r *http.Request) {
+	delSql := "DELETE FROM hm_oprate_log"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(delSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		clearOprateLog := c.Cache().Items()
+		for k, _ := range clearOprateLog {
+			if strings.Contains(k, "oprateLog") {
+				c.Cache().Del(k)
+			}
+		}
 		c.ResponseJson(1, "", w, r)
 	}
 }

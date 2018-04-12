@@ -41,31 +41,32 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	c.Log().CheckErr("Session Get Error", err)
 	rolename, err := session.GetString("rolename")
 	c.Log().CheckErr("Session Get Error", err)
-	data["username"] = username            //用户名
-	data["rolename"] = rolename            //角色名
+	data["username"] = username //用户名
+	data["rolename"] = rolename //角色名
+	data["ajaxPolling"] = c.Config().Value("common", "ajaxPolling")
 	data["arch"] = runtime.GOARCH          //系统架构
 	data["serverTime"] = time.Now().Unix() //服务器时间
 	host, _ := hostInfo.Info()
-	cpu, _ := cpuInfo.Info()
-	cpuUserd, _ := cpuInfo.Percent(time.Second, false)
-	mem, _ := memInfo.VirtualMemory()
-	disk, _ := diskInfo.Usage("/")
-	data["cpuUserd"] = cpuUserd
-	data["uptime"] = host.BootTime - host.Uptime            //正常运行时间
-	data["hostname"] = host.Hostname                        //主机名
-	data["procs"] = host.Procs                              //进程号
-	data["os"] = host.Platform + " " + host.PlatformVersion //系统版本号
-	data["kernelVersion"] = host.KernelVersion              //内核版本
-	data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
-	data["serverTime"] = time.Now().Unix()                  //服务器时间
-	data["memTotal"] = mem.Total / 1024 / 1024 / 1024
-	data["memFree"] = mem.Free / 1024 / 1024 / 1024
-	data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
-	data["memUserdPercent"] = mem.UsedPercent
-	data["diskTotal"] = disk.Total / 1024 / 1024 / 1024
-	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
-	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
-	data["diskUserdPercent"] = disk.UsedPercent
+	// cpu, _ := cpuInfo.Info()
+	// cpuUserd, _ := cpuInfo.Percent(time.Second, false)
+	// mem, _ := memInfo.VirtualMemory()
+	// disk, _ := diskInfo.Usage("/")
+	// data["cpuUserd"] = cpuUserd
+	data["uptime"] = host.BootTime - host.Uptime //正常运行时间
+	// data["hostname"] = host.Hostname                        //主机名
+	// data["procs"] = host.Procs                              //进程号
+	// data["os"] = host.Platform + " " + host.PlatformVersion //系统版本号
+	// data["kernelVersion"] = host.KernelVersion              //内核版本
+	// data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
+	// data["serverTime"] = time.Now().Unix()                  //服务器时间
+	// data["memTotal"] = mem.Total / 1024 / 1024 / 1024
+	// data["memFree"] = mem.Free / 1024 / 1024 / 1024
+	// data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
+	// data["memUserdPercent"] = mem.UsedPercent
+	// data["diskTotal"] = disk.Total / 1024 / 1024 / 1024
+	// data["diskFree"] = disk.Free / 1024 / 1024 / 1024
+	// data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
+	// data["diskUserdPercent"] = disk.UsedPercent
 	c.Template(w, r, data, "./view/admin/index/home.html")
 }
 
@@ -85,7 +86,8 @@ func (c *IndexCtrl) AjaxPolling(w http.ResponseWriter, r *http.Request) {
 	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
 	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
 	data["diskUserdPercent"] = disk.UsedPercent
-	fmt.Fprint(w, c.RowsJson(data))
+	data["status"], data["info"] = 1, ""
+	c.ResponseData(data, w, r)
 }
 
 //tab权限
