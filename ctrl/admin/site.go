@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	vali "github.com/iteny/hmgo/validator"
 )
 
 type SiteCtrl struct {
@@ -1413,41 +1414,36 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 	page, row, status := r.PostFormValue("page"), r.PostFormValue("rows"), r.PostFormValue("status")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
 	excuteTime := r.PostFormValue("excuteTime")
-	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
-	isStatus, isExcuteTime := c.Regexp().Status(status), c.Regexp().Id(excuteTime)
 	data["total"], data["rows"] = 0, []string{}
 	switch {
-	case isUsername == false && username != "":
+	case vali.English(username) == false && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
-	case isStatus == false && status != "":
+	case vali.Numeric(status) == false && vali.Length(status, 1, 1) && status != "":
 		data["status"], data["info"] = 12, "Invalid status"
-	case isDateFrom == false && dateFrom != "":
+	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
 		data["status"], data["info"] = 13, "Invalid dateFrom"
-	case isDateTo == false && dateTo != "":
+	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
 		data["status"], data["info"] = 14, "Invalid dateTo"
-	case isExcuteTime == false && excuteTime != "":
+	case vali.Numeric(excuteTime) == false && vali.Length(excuteTime, 1, 8) == false && excuteTime != "":
 		data["status"], data["info"] = 15, "Invalid excuteTime"
+	case vali.NumericNoHeadZero(page) == false || vali.NumericNoHeadZero(row) == false:
+		data["status"], data["info"] = 16, "Invalid pagination"
 	default:
-		ipage, _ := strconv.Atoi(page)
-		irow, _ := strconv.Atoi(row)
-		first := irow * (ipage - 1)
-		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
-		loc, _ := time.LoadLocation("Local") //重要：获取时���
-		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
-		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
-		fromTime, toTime := from.Unix(), to.Unix()
+		pageNum := c.Pagination(page, row)
+		fromTime, toTime := c.DateToTimestamp(dateFrom, vali.RF3339Js), c.DateToTimestamp(dateTo, vali.RF3339Js)
 		addsql := ""
 		if username != "" {
-			addsql = "username LIKE '%" + username + "%' AND "
+			addsql = addsql + "username LIKE '%" + username + "%' AND "
 		}
 		if status == "1" {
-			addsql = "status =" + status + " AND "
+			addsql = addsql + "status =" + status + " AND "
+			fmt.Println("到这里来了")
 		}
 		if status == "0" {
-			addsql = "status <> 1 AND "
+			addsql = addsql + "status <> 1 AND "
 		}
 		if excuteTime != "" {
-			addsql = "excute_time >= '" + excuteTime + "' AND "
+			addsql = addsql + "excute_time >= '" + excuteTime + "' AND "
 		}
 		if dateFrom != "" {
 			addsql = addsql + fmt.Sprintf("oprate_time>='%v' AND ", fromTime)
@@ -1476,7 +1472,7 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			log = rows.([]sql.OprateLog)
 		} else {
 			logSql := "SELECT * FROM hm_oprate_log " + addsql + " ORDER BY id DESC Limit ?,?"
-			err := c.Sql().Select(&log, logSql, first, row)
+			err := c.Sql().Select(&log, logSql, pageNum, row)
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
 			}
@@ -1486,9 +1482,8 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			data["total"] = strconv.Itoa(count)
 			data["rows"] = log
 			data["status"] = 1
-			data["info"] = ""
 		} else {
-			data["status"], data["info"], data["rows"] = 15, "no found data", log
+			data["status"], data["info"], data["rows"] = 17, "no found data", log
 		}
 	}
 	c.ResponseData(data, w, r)

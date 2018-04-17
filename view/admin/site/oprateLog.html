@@ -198,11 +198,9 @@ function oprateLogDel(data){
     }
 }
 function logSearch(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userIdGroup = hm.language.userIdGroup ? hm.language.userIdGroup : "Account ID array is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
+    var failed = hm.language.delFailed,
+        success = hm.language.delSuccess,
+        unknownError = hm.language.unknownError;
     if (data.status == 11) {
         parent.hm.notice("error", userIdGroup + data.info);
     } else if(data.status == 12){
@@ -213,6 +211,41 @@ function logSearch(data){
         parent.hm.notice("success", success + data.info);
         parent.hm.refreshTab();
     }else{
+        parent.hm.notice("error", unknownError+data.info);
+    }
+    if (data.status == 66) {
+        parent.window.location = '/intendant/login';
+    } else if(data.status == 11){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 15){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 16){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 17){
+        parent.hm.notice("error", data.info);
+    }else if(data.status == 4){
+        parent.hm.notice("error", failed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", success + data.info);
+        $('.easyui-linkbutton').linkbutton();
+        $('.easyui-tooltip').tooltip({
+            position: 'bottom',
+            onShow: function() {
+                $(this).tooltip('tip').css({
+                    backgroundColor: '#f39c12',
+                    borderColor: '#f39c12',
+                    color: '#fff',
+                    size: '18px',
+                });
+            }
+        });
+    } else {
         parent.hm.notice("error", unknownError+data.info);
     }
 }

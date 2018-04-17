@@ -47,18 +47,18 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	data["arch"] = runtime.GOARCH          //系统架构
 	data["serverTime"] = time.Now().Unix() //服务器时间
 	host, _ := hostInfo.Info()
-	// cpu, _ := cpuInfo.Info()
+	cpu, _ := cpuInfo.Info()
 	// cpuUserd, _ := cpuInfo.Percent(time.Second, false)
 	// mem, _ := memInfo.VirtualMemory()
 	// disk, _ := diskInfo.Usage("/")
 	// data["cpuUserd"] = cpuUserd
-	data["uptime"] = host.BootTime - host.Uptime //正常运行时间
-	// data["hostname"] = host.Hostname                        //主机名
-	// data["procs"] = host.Procs                              //进程号
-	// data["os"] = host.Platform + " " + host.PlatformVersion //系统版本号
-	// data["kernelVersion"] = host.KernelVersion              //内核版本
-	// data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
-	// data["serverTime"] = time.Now().Unix()                  //服务器时间
+	data["uptime"] = host.BootTime - host.Uptime            //正常运行时间
+	data["hostname"] = host.Hostname                        //主机名
+	data["procs"] = host.Procs                              //进程号
+	data["os"] = host.Platform + " " + host.PlatformVersion //系统版本号
+	data["kernelVersion"] = host.KernelVersion              //内核版本
+	data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
+	data["serverTime"] = time.Now().Unix()                  //服务器时间
 	// data["memTotal"] = mem.Total / 1024 / 1024 / 1024
 	// data["memFree"] = mem.Free / 1024 / 1024 / 1024
 	// data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
@@ -86,7 +86,7 @@ func (c *IndexCtrl) AjaxPolling(w http.ResponseWriter, r *http.Request) {
 	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
 	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
 	data["diskUserdPercent"] = disk.UsedPercent
-	data["status"], data["info"] = 1, ""
+	// data["status"], data["info"] = 1, ""
 	c.ResponseData(data, w, r)
 }
 

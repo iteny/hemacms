@@ -45,7 +45,10 @@ func (c *BaseCtrl) Template(w io.Writer, r *http.Request, data interface{}, file
 		ip = "127.0.0.1"
 	}
 	excuteTime := c.TimeString(r, "excuteTime")
-	defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", excuteTime).Msg("Get Template")
+	terminalLog := c.Config().Value("common", "terminalLog")
+	if terminalLog == "on" {
+		defer Log().Debug().Str("[Method]", r.Method).Str("[Addr]", r.RequestURI).Str("[Ip]", ip).Str("[Status]", "200").Str("[ExcuteTime]", excuteTime).Msg("Get Template")
+	}
 	t, err := template.ParseFiles(filenames...)
 	c.Log().CheckErr("Template Error", err)
 	err = t.Execute(w, data)
@@ -86,26 +89,29 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 	}
 	sqlLog := c.Config().Value("common", "sqlLog")
 	if sqlLog == "on" {
-		detail := ""
-		pc, file, line, ok := runtime.Caller(1)
-		if ok {
-			f := runtime.FuncForPC(pc)
-			detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line)
-		}
-		session := c.Sess().Load(r)
-		username, err := session.GetString("username")
-		c.Log().CheckErr("Session Get Error", err)
-		logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,method,excute_time,status) VALUES(?,?,?,?,?,?,?,?,?,?)"
-		tx := c.Sql().MustBegin()
-		tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, excuteTime, status)
-		err = tx.Commit()
-		if err != nil {
-			c.Log().CheckErr("Sql Error", err)
+		if r.RequestURI == "/intendant/login" {
 		} else {
-			clearOprateLog := c.Cache().Items()
-			for k, _ := range clearOprateLog {
-				if strings.Contains(k, "oprateLog") {
-					c.Cache().Del(k)
+			detail := ""
+			pc, file, line, ok := runtime.Caller(1)
+			if ok {
+				f := runtime.FuncForPC(pc)
+				detail = "<span style='color:#3498db'>Package&nbsp;:&nbsp;</span>" + f.Name() + "<br/>" + "<span style='color:#e67e22'>File&nbsp;:&nbsp;</span>" + file + "<br/>" + "<span style='color:#9b59b6'>Line&nbsp;:&nbsp;</span>" + strconv.Itoa(line)
+			}
+			session := c.Sess().Load(r)
+			username, err := session.GetString("username")
+			c.Log().CheckErr("Session Get Error", err)
+			logSql := "INSERT INTO hm_oprate_log(username,oprate_time,oprate_ip,useragent,detail,info,url,method,excute_time,status) VALUES(?,?,?,?,?,?,?,?,?,?)"
+			tx := c.Sql().MustBegin()
+			tx.MustExec(logSql, username, time.Now().Unix(), ip, r.UserAgent(), detail, infos, r.RequestURI, r.Method, excuteTime, status)
+			err = tx.Commit()
+			if err != nil {
+				c.Log().CheckErr("Sql Error", err)
+			} else {
+				clearOprateLog := c.Cache().Items()
+				for k, _ := range clearOprateLog {
+					if strings.Contains(k, "oprateLog") {
+						c.Cache().Del(k)
+					}
 				}
 			}
 		}
@@ -125,11 +131,21 @@ func (c *BaseCtrl) ResponseData(data interface{}, w io.Writer, r *http.Request) 
 		ip = "127.0.0.1"
 	}
 	dt := data.(map[string]interface{})
-	infos := dt["info"].(string)
-	if infos == "" {
+	var infos string
+	if _, ok := dt["info"]; ok {
+		infos = dt["info"].(string)
+		if infos == "" {
+			infos = "no problem"
+		}
+	} else {
 		infos = "no problem"
 	}
-	status := dt["status"]
+	var status interface{}
+	if _, ok := dt["status"]; ok {
+		status = dt["status"]
+	} else {
+		status = "1"
+	}
 	excuteTime := c.TimeString(r, "excuteTime")
 	terminalLog := c.Config().Value("common", "terminalLog")
 	if terminalLog == "on" {
@@ -216,4 +232,19 @@ func (c *BaseCtrl) FormatUrl(s string) string {
 	}
 	result := strings.TrimRight(straddress, "/")
 	return result
+}
+
+//分页
+func (c *BaseCtrl) Pagination(page, row string) int {
+	ipage, _ := strconv.Atoi(page)
+	irow, _ := strconv.Atoi(row)
+	first := irow * (ipage - 1)
+	return first
+}
+
+//date转化时间戳
+func (c *BaseCtrl) DateToTimestamp(date, format string) int64 {
+	loc, _ := time.LoadLocation("Local") //重要：获取时���
+	from, _ := time.ParseInLocation(format, date, loc)
+	return from.Unix()
 }

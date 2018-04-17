@@ -998,28 +998,23 @@ HmObj.prototype.serializeObject = function(params) { /*将form表单内的元素
 HmObj.prototype.ajaxSearch = function(externalFunc, me) {
     var that = $(me),
         form = that.parents('form'),
-        params = form.serializeArray();
-    $('#hm_data').datagrid({
-        queryParams: this.serializeObject(params),
-        onLoadSuccess: function(data) {
-            if (data.status == 66) {
-                parent.window.location = '/intendant/login';
-            } else {
-                $('.easyui-linkbutton').linkbutton();
-                $('.easyui-tooltip').tooltip({
-                    position: 'bottom',
-                    onShow: function() {
-                        $(this).tooltip('tip').css({
-                            backgroundColor: '#f39c12',
-                            borderColor: '#f39c12',
-                            color: '#fff',
-                            size: '18px',
-                        });
-                    }
-                });
-            }
+        params = form.serializeArray(),
+        vali = form.form('enableValidation').form('validate');
+    if (that.linkbutton('options').disabled == true) {
+        parent.hm.notice('warn', hm.language.easyuiResubmit);
+    } else {
+        that.linkbutton('disable');
+        if (vali) {
+            $('#hm_data').datagrid({
+                queryParams: this.serializeObject(params),
+                onLoadSuccess: function(data) {
+                    externalFunc(data)
+                    that.linkbutton('enable');
+
+                }
+            });
         }
-    });
+    }
 }
 //清空查询
 HmObj.prototype.clearSearch = function(me) {
