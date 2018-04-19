@@ -107,18 +107,13 @@ func (c *BaseCtrl) ResponseJson(status interface{}, info interface{}, w io.Write
 			if err != nil {
 				c.Log().CheckErr("Sql Error", err)
 			} else {
-				clearOprateLog := c.Cache().Items()
-				for k, _ := range clearOprateLog {
-					if strings.Contains(k, "oprateLog") {
-						c.Cache().Del(k)
-					}
-				}
+				c.Cache().ScanDel("oprateLog")
 			}
 		}
 	}
 	m := make(map[string]interface{})
-	m["status"] = status
-	m["info"] = info
+	m["status"], m["info"] = status, info
+	m["total"], m["rows"] = 0, []string{}
 	mData, err := json.Marshal(m)
 	c.Log().CheckErr("Json Error", err)
 	fmt.Fprint(w, string(mData))
@@ -177,12 +172,7 @@ func (c *BaseCtrl) ResponseData(data interface{}, w io.Writer, r *http.Request) 
 			if err != nil {
 				c.Log().CheckErr("Sql Error", err)
 			} else {
-				clearOprateLog := c.Cache().Items()
-				for k, _ := range clearOprateLog {
-					if strings.Contains(k, "oprateLog") {
-						c.Cache().Del(k)
-					}
-				}
+				c.Cache().ScanDel("oprateLog")
 			}
 		}
 	}

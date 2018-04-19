@@ -1,6 +1,7 @@
 package common
 
 import (
+	"strings"
 	"time"
 
 	gocache "github.com/patrickmn/go-cache"
@@ -34,6 +35,14 @@ func (c *CacheCtrl) Get(key string) (interface{}, bool) {
 }
 func (c *CacheCtrl) Del(key string) {
 	cache.Delete(key)
+}
+func (c *CacheCtrl) ScanDel(key string) {
+	clearCache := cache.Items()
+	for k, _ := range clearCache {
+		if strings.Contains(k, key) {
+			cache.Delete(k)
+		}
+	}
 }
 func (c *CacheCtrl) Items() map[string]gocache.Item {
 	return cache.Items()

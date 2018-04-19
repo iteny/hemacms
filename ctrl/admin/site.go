@@ -1304,31 +1304,24 @@ func (c *SiteCtrl) LoginLog(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
-	jsonLog := ""
+	data := make(map[string]interface{}, 4)
 	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
-	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
 	switch {
-	case isUsername == false && username != "":
-		jsonLog = "{\"total\":0,\"rows\":[]}"
-	case isDateFrom == false && dateFrom != "":
-		jsonLog = "{\"total\":0,\"rows\":[]}"
-		fmt.Println("datefrom")
-	case isDateTo == false && dateTo != "":
-		jsonLog = "{\"total\":0,\"rows\":[]}"
-		fmt.Println("dateto")
+	case vali.English(username) == false && vali.Length(username, 5, 15) && username != "":
+		data["status"], data["info"] = 11, "Invalid account"
+	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
+		data["status"], data["info"] = 12, "Invalid dateFrom"
+	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
+		data["status"], data["info"] = 13, "Invalid dateTo"
+	case vali.NumericNoHeadZero(page) == false || vali.NumericNoHeadZero(row) == false:
+		data["status"], data["info"] = 14, "Invalid pagination"
 	default:
-		ipage, _ := strconv.Atoi(page)
-		irow, _ := strconv.Atoi(row)
-		first := irow * (ipage - 1)
-		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
-		loc, _ := time.LoadLocation("Local") //重要：获取时区
-		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
-		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
-		fromTime, toTime := from.Unix(), to.Unix()
+		pageNum := c.Pagination(page, row)
+		fromTime, toTime := c.DateToTimestamp(dateFrom, vali.RF3339Js), c.DateToTimestamp(dateTo, vali.RF3339Js)
 		addsql := ""
 		if username != "" {
-			addsql = "username LIKE '%" + username + "%' AND "
+			addsql = addsql + "username LIKE '%" + username + "%' AND "
 		}
 		if dateFrom != "" {
 			addsql = addsql + fmt.Sprintf("login_time>='%v' AND ", fromTime)
@@ -1339,34 +1332,39 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 		if addsql != "" {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
-		if rows, found := c.Cache().Get("allLoginLog"); found {
-			// array = rows.([]sql.User)
-			jsonLog = rows.(string)
+		count := 0
+		if rows, found := c.Cache().Get("loginLogCount" + username + dateFrom + dateTo + page + row); found {
+			count = rows.(int)
+		} else {
+			totalSql := "SELECT id FROM hm_login_log " + addsql
+			total := []sql.OprateLog{}
+			err := c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count = len(total)
+			c.Cache().SetAlwaysTime("loginLogCount"+username+dateFrom+dateTo+page+row, count)
+		}
+		log := []sql.LoginLog{}
+		if rows, found := c.Cache().Get("loginLog" + username + dateFrom + dateTo + page + row); found {
+			log = rows.([]sql.LoginLog)
 		} else {
 			logSql := "SELECT * FROM hm_login_log " + addsql + " ORDER BY id DESC Limit ?,?"
-			totalSql := "SELECT id FROM hm_login_log " + addsql + " ORDER BY id DESC"
-			log := []sql.LoginLog{}
-			total := []sql.LoginLog{}
-			err := c.Sql().Select(&log, logSql, first, row)
+			err := c.Sql().Select(&log, logSql, pageNum, row)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
-			err = c.Sql().Select(&total, totalSql)
-			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
-				c.ResponseJson(4, err.Error(), w, r)
-			}
-			count := len(total)
-			if count != 0 {
-				jsonLog = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(log) + "}"
-			} else {
-				jsonLog = "{\"total\":0,\"rows\":[]}"
-			}
-			// c.Cache().CacheSetAlwaysTime("allLoginLog", jsonLog)
+			c.Cache().SetAlwaysTime("loginLog"+username+dateFrom+dateTo+page+row, log)
+		}
+		if count != 0 {
+			data["total"] = strconv.Itoa(count)
+			data["rows"] = log
+			data["status"] = 1
+		} else {
+			data["status"], data["info"], data["rows"] = 17, "no found data", log
 		}
 	}
-	fmt.Fprint(w, jsonLog)
+	c.ResponseData(data, w, r)
 }
 
 /**
@@ -1386,7 +1384,7 @@ func (c *SiteCtrl) DelLoginLog(w http.ResponseWriter, r *http.Request) {
 		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		// c.Cache().CacheDel("allmenu")
+		c.Cache().ScanDel("loginLog")
 		c.ResponseJson(1, "", w, r)
 	}
 }
@@ -1410,13 +1408,13 @@ func (c *SiteCtrl) OprateLog(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
+	data := make(map[string]interface{}, 4)
 	page, row, status := r.PostFormValue("page"), r.PostFormValue("rows"), r.PostFormValue("status")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
 	excuteTime := r.PostFormValue("excuteTime")
 	data["total"], data["rows"] = 0, []string{}
 	switch {
-	case vali.English(username) == false && username != "":
+	case vali.English(username) == false && vali.Length(status, 5, 15) && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
 	case vali.Numeric(status) == false && vali.Length(status, 1, 1) && status != "":
 		data["status"], data["info"] = 12, "Invalid status"
@@ -1455,7 +1453,7 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
 		count := 0
-		if rows, found := c.Cache().Get("oprateLogCount" + username + status + dateFrom + dateTo + excuteTime); found {
+		if rows, found := c.Cache().Get("oprateLogCount" + username + status + dateFrom + dateTo + excuteTime + page + row); found {
 			count = rows.(int)
 		} else {
 			totalSql := "SELECT id FROM hm_oprate_log " + addsql
@@ -1465,10 +1463,10 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			count = len(total)
-			c.Cache().SetAlwaysTime("oprateLogCount"+username+status+dateFrom+dateTo+excuteTime, count)
+			c.Cache().SetAlwaysTime("oprateLogCount"+username+status+dateFrom+dateTo+excuteTime+page+row, count)
 		}
 		log := []sql.OprateLog{}
-		if rows, found := c.Cache().Get("oprateLog" + username + status + dateFrom + dateTo + excuteTime); found {
+		if rows, found := c.Cache().Get("oprateLog" + username + status + dateFrom + dateTo + excuteTime + page + row); found {
 			log = rows.([]sql.OprateLog)
 		} else {
 			logSql := "SELECT * FROM hm_oprate_log " + addsql + " ORDER BY id DESC Limit ?,?"
@@ -1476,7 +1474,7 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
 			}
-			c.Cache().SetAlwaysTime("oprateLog"+username+status+dateFrom+dateTo+excuteTime, log)
+			c.Cache().SetAlwaysTime("oprateLog"+username+status+dateFrom+dateTo+excuteTime+page+row, log)
 		}
 		if count != 0 {
 			data["total"] = strconv.Itoa(count)
@@ -1505,12 +1503,7 @@ func (c *SiteCtrl) DelOprateLog(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		clearOprateLog := c.Cache().Items()
-		for k, _ := range clearOprateLog {
-			if strings.Contains(k, "oprateLog") {
-				c.Cache().Del(k)
-			}
-		}
+		c.Cache().ScanDel("oprateLog")
 		c.ResponseJson(1, "", w, r)
 	}
 }
@@ -1530,12 +1523,7 @@ func (c *SiteCtrl) DelAllOprateLog(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		clearOprateLog := c.Cache().Items()
-		for k, _ := range clearOprateLog {
-			if strings.Contains(k, "oprateLog") {
-				c.Cache().Del(k)
-			}
-		}
+		c.Cache().ScanDel("oprateLog")
 		c.ResponseJson(1, "", w, r)
 	}
 }

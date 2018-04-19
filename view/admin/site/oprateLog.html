@@ -75,22 +75,22 @@ $('#hm_data').datagrid({
             sortable: true,
         },{
             field: 'username',
-            title: hm.language.userName ? hm.language.userName : 'Account',
+            title: hm.language.userName,
             width: 60,
             align: 'center',
         },{
             field: 'detail',
-            title: hm.language.oprateDetail ? hm.language.oprateDetail : 'Oprate detail',
+            title: hm.language.oprateDetail,
             width: 200,
             align: 'left',
         },{
             field: 'url',
-            title: hm.language.oprateUrl ? hm.language.oprateUrl : 'Request url',
+            title: hm.language.oprateUrl,
             width: 100,
             align: 'center',
         },{
             field: 'info',
-            title: hm.language.oprateInfo ? hm.language.oprateInfo : 'Oprate info',
+            title: hm.language.oprateInfo,
             width: 80,
             align: 'center',
             styler:function(index,row){//返回选定行的样式
@@ -100,7 +100,7 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'method',
-            title: hm.language.oprateMethod ? hm.language.oprateMethod : 'Method',
+            title: hm.language.oprateMethod,
             width: 40,
             align: 'center',
             styler:function(index,row){//返回选定行的样式
@@ -110,7 +110,7 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'excute_time',
-            title: hm.language.oprateExcuteTime ? hm.language.oprateExcuteTime : 'Excute time',
+            title: hm.language.oprateExcuteTime,
             width: 60,
             align: 'center',
             formatter: function(value){
@@ -121,7 +121,7 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'status',
-            title: hm.language.status ? hm.language.status : 'Status',
+            title: hm.language.status,
             width: 30,
             align: 'center',
             formatter: function(value, row, index) {
@@ -133,12 +133,12 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'useragent',
-            title: hm.language.loginUseragent ? hm.language.loginUseragent : 'Useragent',
+            title: hm.language.loginUseragent,
             width: 120,
             align: 'center',
         },{
             field: 'oprate_time',
-            title: hm.language.oprateLogTime ? hm.language.oprateLogTime : 'Oprate time',
+            title: hm.language.oprateLogTime,
             width: 75,
             align: 'center',
             formatter: function(value, row, index){
@@ -146,7 +146,7 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'oprate_ip',
-            title: hm.language.oprateLogIp ? hm.language.oprateLogIp : 'Oprate ip',
+            title: hm.language.oprateLogIp,
             width: 75,
             align: 'center',
         },
@@ -185,34 +185,16 @@ $('#status').switchbutton({
 });
 hm.datagridWidthResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
 function oprateLogDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!";
     if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.delFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.delSuccess + data.info);
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError+data.info);
     }
 }
 function logSearch(data){
-    var failed = hm.language.delFailed,
-        success = hm.language.delSuccess,
-        unknownError = hm.language.unknownError;
-    if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
-    } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
-    } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
-    }else{
-        parent.hm.notice("error", unknownError+data.info);
-    }
     if (data.status == 66) {
         parent.window.location = '/intendant/login';
     } else if(data.status == 11){
@@ -230,9 +212,9 @@ function logSearch(data){
     } else if(data.status == 17){
         parent.hm.notice("error", data.info);
     }else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.searchFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.searchSuccess + data.info);
         $('.easyui-linkbutton').linkbutton();
         $('.easyui-tooltip').tooltip({
             position: 'bottom',
@@ -246,7 +228,7 @@ function logSearch(data){
             }
         });
     } else {
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError+data.info);
     }
 }
 </script>

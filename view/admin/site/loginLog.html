@@ -72,12 +72,12 @@ $('#hm_data').datagrid({
             sortable: true,
         },{
             field: 'username',
-            title: hm.language.userName ? hm.language.userName : 'Account',
+            title: hm.language.userName,
             width: 60,
             align: 'center',
         },{
             field: 'status',
-            title: hm.language.loginStatus ? hm.language.loginStatus : 'Login status',
+            title: hm.language.status,
             width: 30,
             align: 'center',
             formatter: function(value, row, index) {
@@ -89,12 +89,12 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'useragent',
-            title: hm.language.userName ? hm.language.userName : 'Account',
+            title: hm.language.loginUseragent,
             width: 150,
             align: 'center',
         },{
             field: 'login_time',
-            title: hm.language.loginLogTime ? hm.language.loginLogTime : 'Login time',
+            title: hm.language.loginLogTime,
             width: 75,
             align: 'center',
             formatter: function(value, row, index){
@@ -102,7 +102,7 @@ $('#hm_data').datagrid({
             },
         },{
             field: 'login_ip',
-            title: hm.language.loginLogIp ? hm.language.loginLogIp : 'Login ip',
+            title: hm.language.loginLogIp,
             width: 75,
             align: 'center',
         },
