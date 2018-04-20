@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home page</title>
+    <title language="html:backstageHome">Home page</title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
-    <style>
-    /*.hm-acmenu-btn{
-        text-align: left;
-        text-indent: 10px;
-    }*/
-    </style>
 </head>
-
-<body id="hm-layout">
-    <div id="hm-app" class="easyui-layout" data-options="fit:true" :class="$store.state.style">
+<body id="hm-layout" class="hm_style_default">
+    <div class="easyui-layout" data-options="fit:true">
         <div id="hm-north" data-options="region:'north'" style="height:50px;">
             <div id="hm-north-left">
                 <a class="hm-brand" href="#">HemaCms</a>
@@ -37,11 +29,11 @@
             <div id="hm-north-right">
                 <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="menu:'#userop',iconCls:'icon-user-pic'">{{.username}}</a>
                 <div id="userop" style="width:150px;">
-                    <div id="close_current_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
-                    <div id="close_else_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
-                    <div id="close_all_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
-                    <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeLast]]</div>
-                    <div id="log_out" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.userLogout]]</div>
+                    <div id="close_current_tab" data-options="iconCls:'icon-01'" language="html:closeCurrentTab"></div>
+                    <div id="close_else_tab" data-options="iconCls:'icon-01'" language="html:closeElseTab"></div>
+                    <div id="close_all_tab" data-options="iconCls:'icon-01'" language="html:closeAllTab"></div>
+                    <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'" language="html:noticeLast"></div>
+                    <div id="log_out" data-options="iconCls:'icon-newspaper_go'" language="html:userLogout"></div>
                 </div>
             </div>
         </div>
@@ -53,25 +45,24 @@
             </div>
         </div>
         <div id="tab-tools">
-            <a id="hm-refresh" href="#" class="easyui-linkbutton" plain="true" iconCls="icon-arrow_refresh">[[$store.state.language.refresh]]</a>
-            <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="menu:'#mm',iconCls:'icon-application_view_gallery'">[[$store.state.language.sop]]</a>
+            <a id="hm-refresh" href="#" class="easyui-linkbutton" plain="true" iconCls="icon-arrow_refresh" language="html:refresh"></a>
+            <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="menu:'#mm',iconCls:'icon-application_view_gallery'" language="html:sop"></a>
             <div id="mm" style="width:150px;">
-                <div id="close_current_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
-                <div id="close_else_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
-                <div id="close_all_tab" data-options="iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
-                <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeLast]]</div>
-                <div onclick="$(this).trigger('pnotify.history-all');" data-options="iconCls:'icon-newspaper_go'">[[$store.state.language.noticeAll]]</div>
+                <div id="close_current_tab" data-options="iconCls:'icon-01'" language="html:closeCurrentTab"></div>
+                <div id="close_else_tab" data-options="iconCls:'icon-01'" language="html:closeElseTab"></div>
+                <div id="close_all_tab" data-options="iconCls:'icon-01'" language="html:closeAllTab"></div>
+                <div onclick="$(this).trigger('pnotify.history-last');" data-options="iconCls:'icon-newspaper_go'" language="html:noticeLast"></div>
+                <div onclick="$(this).trigger('pnotify.history-all');" data-options="iconCls:'icon-newspaper_go'" language="html:noticeAll"></div>
             </div>
             <a class="east-ct" data="1" href="#"><i class="fa fa-bars fa-rotate-90"></i></a>
         </div>
         <div id="hm_tab_right_click" class="easyui-menu">
-            <div data-options="name:1,iconCls:'icon-01'">[[$store.state.language.closeCurrentTab]]</div>
-            <div data-options="name:2,iconCls:'icon-01'">[[$store.state.language.closeElseTab]]</div>
-            <div data-options="name:3,iconCls:'icon-01'">[[$store.state.language.closeAllTab]]</div>
+            <div data-options="name:1,iconCls:'icon-01'" language="html:closeCurrentTab"></div>
+            <div data-options="name:2,iconCls:'icon-01'" language="html:closeElseTab"></div>
+            <div data-options="name:3,iconCls:'icon-01'" language="html:closeAllTab"></div>
         </div>
     </div>
 </body>
-
 <script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
@@ -79,7 +70,6 @@
 <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script type="text/javascript">
     //设置获取菜单配置
     hm.menuCfgReset({
@@ -89,7 +79,6 @@
     //获取菜单数据，并保存到缓存中,并插入一级菜单
     hm.getMenuData();
     // console.log(JSON.parse(window.localStorage.getItem('hm_menu_data')));
-
     //页面加载进度框
     var loadMenuData = hm.language.loadMenuData ? hm.language.loadMenuData : 'Loading menu data!';
     hm.openProgress(loadMenuData);
@@ -508,5 +497,8 @@
             }
         });
     });
+    //设置风格
+    var style = $.cookie('back-style') ? $.cookie('back-style') : 'hm_style_default';
+    $('#hm-layout').attr('class',style);
 </script>
 </html>

@@ -134,12 +134,14 @@ func (c *BaseCtrl) ResponseData(data interface{}, w io.Writer, r *http.Request) 
 		}
 	} else {
 		infos = "no problem"
+		dt["info"] = ""
 	}
 	var status interface{}
 	if _, ok := dt["status"]; ok {
 		status = dt["status"]
 	} else {
 		status = "1"
+		dt["status"] = 1
 	}
 	excuteTime := c.TimeString(r, "excuteTime")
 	terminalLog := c.Config().Value("common", "terminalLog")

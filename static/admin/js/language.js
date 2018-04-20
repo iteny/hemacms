@@ -206,7 +206,6 @@ var language = {
         menuTestIcon: "Menu icon entry is illegal!",
         menuTestIsshow: "Menu isshow input is illegal!",
         menuTestUrl: "Menu URL only allows English and left slashes,2-80 characters!",
-        menuTestEn: "English name only allows English and spaces,2-80 characters!",
         //后台菜单结束
         //角色管理开始
         roleName: "Role name",
@@ -238,6 +237,7 @@ var language = {
         jsCss: "Copy css",
         jsRgb: "Copy rgb",
         status: "Status",
+        backstageHome: "Backstage-HemaCms",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -257,6 +257,9 @@ var language = {
         oprateDelAllLog: "Delete all operat logs",
         oprateTime: "Oprate time",
         //日志结束
+        //验证数据开始
+        valiEnglish: "Please enter a valid English letter A~Z,a~z!",
+        //验证数据结束
     },
     //简体中文,chinese
     cn: {
@@ -465,7 +468,6 @@ var language = {
         menuTestIcon: "菜单图标输入不合法!",
         menuTestIsshow: "菜单显示输入不合法!",
         menuTestUrl: "菜单网址只允许英文和左斜杠,2-80位字符!",
-        menuTestEn: "英文名称只允许英文和空格,2-80位字符!",
         //后台菜单结束
         //角色管理开始
         roleName: "角色名称",
@@ -497,6 +499,7 @@ var language = {
         jsCss: "复制Css",
         jsRgb: "复制Rgb",
         status: "状态",
+        backstageHome: "后台首页-HemaCms",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
@@ -516,5 +519,61 @@ var language = {
         oprateDelAllLog: "删除全部操作日志",
         oprateTime: "操作时间",
         //日志结束
+        //验证数据开始
+        valiEnglish: "请输入有效的英文字母A~Z,a~z!",
+        //验证数据结束
+
     },
 };
+$('[language]').each(function() {
+    var me = $(this);
+    var a = me.attr('language').split(':');
+    var p = a[0]; //文字放置位置
+    var m = a[1]; //文字的标识
+
+    //用户选择语言后保存在cookie中，这里读取cookie中的语言版本
+    var lan = $.cookie('back-language');
+
+    //选取语言文字
+    // switch (lan) {
+    //     case 'cn':
+    //         var t = cn[m]; //这里cn[m]中的cn是上面定义的json字符串的变量名，m是json中的键，用此方式读取到json中的值
+    //         break;
+    //     case 'en':
+    //         var t = en[m];
+    //         break;
+    //     default:
+    //         var t = hk[m];
+    // }
+    var t = '';
+    switch (lan) {
+        case 'cn':
+            t = language['cn'][m];
+            break;
+        case 'en':
+            t = language['en'][m];
+            break;
+        default:
+            t = language['cn'][m];
+            break;
+    }
+    //如果所选语言的json中没有此内容就选取其他语言显示
+    if (t == undefined) t = language['cn'][m];
+    if (t == undefined) t = language['en'][m];
+
+    if (t == undefined) return true; //如果还是没有就跳出
+
+    //文字放置位置有（html,val等，可以自己添加）
+    switch (p) {
+        case 'html':
+            me.html(t);
+            break;
+        case 'val':
+        case 'value':
+            me.val(t);
+            break;
+        default:
+            me.html(t);
+    }
+
+});

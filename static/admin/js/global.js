@@ -206,8 +206,8 @@ HmObj.prototype.changeLanguage = function() {
 HmObj.prototype.changeStyle = function(type) {
     switch (type) {
         case 'default':
-            $('#hm-app').removeClass('hm_style_mac');
-            $('#hm-app').addClass('hm_style_default');
+            $('#hm-layout').removeClass('hm_style_mac');
+            $('#hm-layout').addClass('hm_style_default');
             $.cookie('back-style', 'hm_style_default', {
                 expires: 30, //有限日期，可以是一个整数或一个日期(单位：天)。这个地方也要注意，如果不设置这个东西，浏览器关闭之后此cookie就失效了
                 // path: "/", //cookie值保存的路径，默认与创建页路径一致。
@@ -217,8 +217,8 @@ HmObj.prototype.changeStyle = function(type) {
             this.notice('success', this.language.styleSwitch + this.language.styleDefault);
             break;
         case 'mac':
-            $('#hm-app').removeClass('hm_style_default');
-            $('#hm-app').addClass('hm_style_mac');
+            $('#hm-layout').removeClass('hm_style_default');
+            $('#hm-layout').addClass('hm_style_mac');
             $.cookie('back-style', 'hm_style_mac', {
                 expires: 30, //有限日期，可以是一个整数或一个日期(单位：天)。这个地方也要注意，如果不设置这个东西，浏览器关闭之后此cookie就失效了
                 // path: "/", //cookie值保存的路径，默认与创建页路径一致。
@@ -312,6 +312,18 @@ HmObj.prototype.easyuiLanguage = function() {
         ]
     }
     $.extend($.fn.validatebox.defaults.rules, {
+        status: {
+            validator: function(value, param) {
+                return /1|0/.test(value);
+            },
+            message: "只能是1或0",
+        },
+        english: { // 验证英语
+            validator: function(value) {
+                return /^[A-Za-z]+$/i.test(value);
+            },
+            message: that.language.valiEnglish,
+        },
         username: {
             validator: function(value, param) {
                 return /^[a-zA-Z][a-zA-Z0-9_]{4,15}$/.test(value);
@@ -383,12 +395,6 @@ HmObj.prototype.easyuiLanguage = function() {
                 return /^[\u4e00-\u9fa5A-Za-z0-9 ]{1,80}$/.test(value);
             },
             message: that.language.roleName + that.language.name ? that.language.roleName + that.language.name : "Role name only allows Chinese characters, English letters and spaces, 1-80 characters!",
-        },
-        english: { // 验证英语
-            validator: function(value) {
-                return /^[A-Za-z ]{2,80}$/i.test(value);
-            },
-            message: that.language.menuTestEn ? that.language.menuTestEn : "English name only allows English and spaces,2-80 characters!",
         },
         menuUrl: { // 验证后台地址
             validator: function(value) {
@@ -1010,9 +1016,13 @@ HmObj.prototype.ajaxSearch = function(externalFunc, me) {
                 onLoadSuccess: function(data) {
                     externalFunc(data)
                     that.linkbutton('enable');
-
                 }
             });
+        } else {
+            parent.hm.notice('warn', hm.language.easyuiRemoteMessage);
+            setTimeout(function() {
+                that.linkbutton('enable');
+            }, 2000);
         }
     }
 }

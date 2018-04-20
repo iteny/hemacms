@@ -12,25 +12,25 @@
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
 </head>
 <body onkeydown="hm.searchKey();">
-<form action="" id="hm-app">
+<form>
     <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.oprateDelMonthLog]]</a>
-        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delAllOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.oprateDelAllLog]]</a>
-        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:oprateDelMonthLog"></a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delAllOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:oprateDelAllLog"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
         <form name="datagird_tools">
             <div id="hm_search">
-                [[$store.state.language.status]]:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1">&nbsp;&nbsp;
-                [[$store.state.language.loginSearchUser]]:&nbsp;<input type="text" name="username" class="easyui-validatebox"></input>&nbsp;&nbsp;
-                [[$store.state.language.oprateExcuteTime]]([[$store.state.language.oprateMillisecond]]):&nbsp;<input type="text" name="excuteTime" class="easyui-validatebox" style="width:60px;"></input>&nbsp;&nbsp;
-                [[$store.state.language.oprateTime]]:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
-                [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
-                <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
-                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true">[[$store.state.language.clearSearch]]</a>
+                <span language="html:status"></span>:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1" class="easyui-validatebox" data-options="required:false,validType:['status','length[1,1]']">&nbsp;&nbsp;
+                <span language="html:loginSearchUser"></span>:&nbsp;<input type="text" name="username" class="easyui-validatebox"  data-options="required:false,validType:['english','length[5,100]']"></input>&nbsp;&nbsp;
+                <span language="html:oprateExcuteTime"></span>(<span language="html:oprateMillisecond"></span>):&nbsp;<input type="text" name="excuteTime" class="easyui-validatebox" style="width:60px;"></input>&nbsp;&nbsp;
+                <span language="html:oprateTime"></span>:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
+                <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
+                <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
+                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
             </div>
         </form>
     </div>
@@ -43,7 +43,6 @@
 <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var mehigh = document.documentElement.clientHeight-80;
 $('#hm_data').datagrid({

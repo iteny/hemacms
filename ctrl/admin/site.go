@@ -1227,21 +1227,21 @@ func (c *SiteCtrl) EditRole(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 	name, sort, remark, en, id := r.PostFormValue("name"), r.PostFormValue("sort"), r.PostFormValue("remark"), r.PostFormValue("en"), r.PostFormValue("id")
-	isName, isSort, isRemark, isEn, isId := c.Regexp().Name(name), c.Regexp().Sort(sort), c.Regexp().Remark(remark), c.Regexp().English(en), c.Regexp().Id(id)
+	// isName, isSort, isRemark, isEn, isId := c.Regexp().Name(name), c.Regexp().Sort(sort), c.Regexp().Remark(remark), c.Regexp().English(en), c.Regexp().Id(id)
 	switch false {
-	case isName:
+	case (vali.EnglishSpace(name) && vali.Length(name, 2, 50)) || (vali.Chinese(name) && vali.Length(name, 2, 100)):
 		c.ResponseJson(11, "", w, r)
 		return
-	case isSort:
+	case vali.Numeric(sort) && vali.Length(sort, 1, 3):
 		c.ResponseJson(12, "", w, r)
 		return
-	case isRemark:
+	case vali.Article(remark) && vali.Length(remark, 2, 255):
 		c.ResponseJson(13, "", w, r)
 		return
-	case isEn:
+	case vali.English(en) && vali.Length(en, 2, 100):
 		c.ResponseJson(14, "", w, r)
 		return
-	case isId:
+	case vali.Numeric(id) && vali.Length(id, 1, 8):
 		c.ResponseJson(15, "", w, r)
 		return
 	default:
@@ -1275,8 +1275,8 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 修改角色提交
- * @English	edit role submit
+ * @description 配色方案
+ * @English	color schemes
  * @homepage http://www.hemacms.com/
  * @author Nicholas Mars
  * @date 2018-03-24
@@ -1477,9 +1477,7 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 			c.Cache().SetAlwaysTime("oprateLog"+username+status+dateFrom+dateTo+excuteTime+page+row, log)
 		}
 		if count != 0 {
-			data["total"] = strconv.Itoa(count)
-			data["rows"] = log
-			data["status"] = 1
+			data["total"], data["rows"] = strconv.Itoa(count), log
 		} else {
 			data["status"], data["info"], data["rows"] = 17, "no found data", log
 		}
