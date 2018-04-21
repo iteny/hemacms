@@ -139,18 +139,13 @@ var language = {
         isNickname: "Please enter the nickname!",
         isEmail: "Please enter the email!",
         isRemark: "Please enter the remark!",
-        usernameVali: "Account must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
         passwordVali: "Password must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
         passwordEdVali: "Entered passwords differ!",
         nicknameVali: "Nicknames only allow Chinese characters, English letters, numbers, minus and underlines, and 2-80 bit characters",
-        remarkVali: "Remark only letters, numbers, English Chinese characters, minus, comma, period, exclamation and underline, 2-255 characters!",
         sqlTypeVali: "The database type can only be sqlite3, mysql!",
         portVali: "The port number must be 1-5 bits positive integers!",
         readTimeoutVali: "The readTimeout must be 1-3 bits positive integers!",
         writeTimeoutVali: "The writeTimeout must be 1-3 bits positive integers!",
-        sortVali: "Sort must be 1-3 positive integers!",
-        idVali: "Id must be 1-8 positive integers!",
-        englishVali: "English name only allows English and spaces,2-80 characters!",
         //easyui validatebox扩展结束
         //配置文件开始
         cfgRows: "Rows",
@@ -238,6 +233,11 @@ var language = {
         jsRgb: "Copy rgb",
         status: "Status",
         backstageHome: "Backstage-HemaCms",
+        oprateLogPage: "Oprate log page",
+        loginLogPage: "Login log page",
+        addRolePage: "Add role page",
+        editRolePage: "Edit role page",
+        roleManagementPage: "Role management page",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -258,7 +258,13 @@ var language = {
         oprateTime: "Oprate time",
         //日志结束
         //验证数据开始
-        valiEnglish: "Please enter a valid English letter A~Z,a~z!",
+        valiChinese: "Please enter valid Chinese characters!",
+        valiEnglish: "Please enter a valid English letter!(A~Z or a~z)",
+        valiEnglishSpace: "Please enter a valid English letter and space!(A~Z,a~z,sapce)",
+        valiEnglishNumeric: "Please enter a valid English letter and number!(A~Z,a~z,0~9)",
+        valiNumeric: "Please enter a valid number!(0~9)",
+        valiNumericNoHeadZero: "Please enter a valid number. The initial letter can not be zero!(0~9)",
+        valiArticle: "Please enter the specified valid text!(chinese,A~Z,a~z,[,.!，。！],space)",
         //验证数据结束
     },
     //简体中文,chinese
@@ -405,14 +411,10 @@ var language = {
         passwordVali: "密码必须字母开头、5-16位字符、字母数字下划线!",
         passwordEdVali: "两次输入的密码不一致!",
         nicknameVali: "昵称只允许汉字、英文字母、数字、减号及下划线、2-80位字符!",
-        remarkVali: "备注只允许汉字、英文字母、数字、减号、逗号、句号、感叹号及下划线、2-255位字符!",
         sqlTypeVali: "数据库类型只能是sqlite3,mysql!",
         portVali: "端口号必须是1-5位正整数!",
         readTimeoutVali: "读取超时必须是1-3位正整数!",
         writeTimeoutVali: "写入超时必须是1-3位正整数!",
-        sortVali: "排序必须是1-3位正整数!",
-        idVali: "ID必须是1-8位正整数!",
-        englishVali: "英文名称只允许英文和空格,2-80位字符!",
         //easyui validatebox扩展结束
         //配置文件开始
         cfgRows: "项",
@@ -500,6 +502,11 @@ var language = {
         jsRgb: "复制Rgb",
         status: "状态",
         backstageHome: "后台首页-HemaCms",
+        oprateLogPage: "操作日志页",
+        loginLogPage: "登录日志页",
+        addRolePage: "添加角色页",
+        editRolePage: "修改角色页",
+        roleManagementPage: "角色管理页",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
@@ -520,7 +527,13 @@ var language = {
         oprateTime: "操作时间",
         //日志结束
         //验证数据开始
-        valiEnglish: "请输入有效的英文字母A~Z,a~z!",
+        valiChinese: "请输入有效的汉字!",
+        valiEnglish: "请输入有效的英文字母!(A~Z,a~z)",
+        valiEnglishSpace: "请输入有效的英文字母和空格!(A~Z,a~z,空格)",
+        valiEnglishNumeric: "请输出有效的英文字母和数字!(A~Z,a~z,0~9)",
+        valiNumeric: "请输入有效的数字!(0~9)",
+        valiNumericNoHeadZero: "请输入有效的数字,开头的字母不能是0!(0~9)",
+        valiArticle: "请输入指定的有效的文本!(汉字,A~Z,a~z,[,.!，。！],space)",
         //验证数据结束
 
     },
@@ -571,6 +584,9 @@ $('[language]').each(function() {
         case 'val':
         case 'value':
             me.val(t);
+            break;
+        case 'table':
+            me.html('&nbsp;&nbsp;&nbsp;' + t + '&nbsp;:&nbsp;');
             break;
         default:
             me.html(t);

@@ -312,17 +312,53 @@ HmObj.prototype.easyuiLanguage = function() {
         ]
     }
     $.extend($.fn.validatebox.defaults.rules, {
-        status: {
+        status: { //验证0和1
             validator: function(value, param) {
                 return /1|0/.test(value);
             },
             message: "只能是1或0",
         },
-        english: { // 验证英语
+        chinese: { //验证中文
+            validator: function(value) {
+                return /^[\u4e00-\u9fa5]+$/i.test(value);
+            },
+            message: that.language.valiChinese,
+        },
+        english: { // 验证英文字母
             validator: function(value) {
                 return /^[A-Za-z]+$/i.test(value);
             },
             message: that.language.valiEnglish,
+        },
+        englishSpace: { // 验证英文字母和空格
+            validator: function(value) {
+                return /^[A-Za-z ]+$/i.test(value);
+            },
+            message: that.language.valiEnglishSpace,
+        },
+        englishNumeric: { // 验证英文字母和数字
+            validator: function(value) {
+                return /^[a-zA-Z0-9]+$/i.test(value);
+            },
+            message: that.language.valiEnglishNumeric,
+        },
+        numeric: { // 验证数字
+            validator: function(value) {
+                return /^[0-9]+$/i.test(value);
+            },
+            message: that.language.valiNumeric,
+        },
+        numericNoHeadZero: { // 验证数字，开头不能为0
+            validator: function(value) {
+                return /^[1-9][0-9]*$/i.test(value);
+            },
+            message: that.language.valiNumericNoHeadZero,
+        },
+        article: { // 验证文章
+            validator: function(value) {
+                return /^[\u4e00-\u9fa5A-Za-z0-9-_,.!，。！ ]+$/i.test(value);
+            },
+            message: that.language.valiArticle,
         },
         username: {
             validator: function(value, param) {
@@ -820,30 +856,32 @@ HmObj.prototype.datagridWidthResize = function(domid, type) {
     });
 };
 //数据表格重载数据
-HmObj.prototype.datagridReload = function(domid, type) {
+HmObj.prototype.datagridReload = function(domid, type, externalFunc, me) {
     if (type == 'treegrid') {
         $(domid).treegrid("reload");
     } else {
-        $(domid).datagrid({
-            onLoadSuccess: function(data) {
-                if (data.status == 66) {
-                    parent.window.location = '/intendant/login';
-                } else {
-                    $('.easyui-linkbutton').linkbutton();
-                    $('.easyui-tooltip').tooltip({
-                        position: 'bottom',
-                        onShow: function() {
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#f39c12',
-                                borderColor: '#f39c12',
-                                color: '#fff',
-                                size: '18px',
-                            });
-                        }
-                    });
-                }
+        var that = $(me),
+            form = $('.hm_search'),
+            params = form.serializeArray(),
+            vali = form.form('enableValidation').form('validate');
+        if (that.linkbutton('options').disabled == true) {
+            parent.hm.notice('warn', hm.language.easyuiResubmit);
+        } else {
+            that.linkbutton('disable');
+            if (vali) {
+                $(domid).datagrid({
+                    onLoadSuccess: function(data) {
+                        externalFunc(data)
+                        that.linkbutton('enable');
+                    }
+                });
+            } else {
+                parent.hm.notice('warn', hm.language.easyuiRemoteMessage);
+                setTimeout(function() {
+                    that.linkbutton('enable');
+                }, 2000);
             }
-        });
+        }
     }
 };
 //快捷按键
@@ -1051,7 +1089,7 @@ HmObj.prototype.clearSearch = function(me) {
             }
         }
     });
-    that.parents("#hm_search").find(".easyui-validatebox").val(''); //找到form表单下的所有input标签并清空
+    $(".hm_search").find(".easyui-validatebox").val(''); //找到form表单下的所有input标签并清空
 };
 //ajax轮询
 HmObj.prototype.ajaxPolling = function() {

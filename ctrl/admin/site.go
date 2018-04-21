@@ -905,17 +905,13 @@ func (c *SiteCtrl) Role(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
-	jsonRole := ""
-	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
-	name := r.PostFormValue("name")
-	isName := c.Regexp().Name(name)
+	data := make(map[string]interface{}, 4)
+	page, row, name := r.PostFormValue("page"), r.PostFormValue("rows"), r.PostFormValue("name")
 	switch {
-	case isName == false && name != "":
-		jsonRole = "{\"total\":0,\"rows\":[]}"
+	case ((vali.EnglishSpace(name) == false && vali.Length(name, 2, 100) == false) || (vali.Chinese(name) == false && vali.Length(name, 2, 50) == false)) && name != "":
+		data["status"], data["info"] = 11, "Invalid role name"
 	default:
-		ipage, _ := strconv.Atoi(page)
-		irow, _ := strconv.Atoi(row)
-		first := irow * (ipage - 1)
+		pageNum := c.Pagination(page, row)
 		addsql := ""
 		if name != "" {
 			cookie, err := r.Cookie("back-language")
@@ -942,27 +938,38 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 			}
 
 		}
-		if rows, found := c.Cache().Get("allRole"); found {
-			// array = rows.([]sql.User)
-			jsonRole = rows.(string)
+		fmt.Println(addsql)
+		count := 0
+		if rows, found := c.Cache().Get("roleCount" + name + page + row); found {
+			count = rows.(int)
 		} else {
-			roleSql := "SELECT * FROM hm_auth_role " + addsql + " Limit ?,?"
-			role := []sql.AuthRole{}
-			err := c.Sql().Select(&role, roleSql, first, row)
+			totalSql := "SELECT id FROM hm_auth_role " + addsql
+			total := []sql.AuthRole{}
+			err := c.Sql().Select(&total, totalSql)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
-			count := len(role)
-			if count != 0 {
-				jsonRole = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(role) + "}"
-			} else {
-				jsonRole = "{\"total\":0,\"rows\":[]}"
+			count = len(total)
+			c.Cache().SetAlwaysTime("roleCount"+name+page+row, count)
+		}
+		role := []sql.AuthRole{}
+		if rows, found := c.Cache().Get("role" + name + page + row); found {
+			role = rows.([]sql.AuthRole)
+		} else {
+			roleSql := "SELECT * FROM hm_auth_role " + addsql + " ORDER BY id ASC Limit ?,?"
+			err := c.Sql().Select(&role, roleSql, pageNum, row)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
 			}
-			// c.Cache().CacheSetAlwaysTime("allUser", jsonUser)
+			c.Cache().SetAlwaysTime("role"+name+page+row, role)
+		}
+		if count != 0 && role != nil {
+			data["total"], data["rows"] = strconv.Itoa(count), role
+		} else {
+			data["status"], data["info"], data["rows"] = 17, "no found data", role
 		}
 	}
-	fmt.Fprint(w, jsonRole)
+	c.ResponseData(data, w, r)
 }
 
 /**
@@ -1152,19 +1159,18 @@ func (c *SiteCtrl) AddRole(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) AddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 	name, sort, remark, en := r.PostFormValue("name"), r.PostFormValue("sort"), r.PostFormValue("remark"), r.PostFormValue("en")
-	isName, isSort, isRemark, isEn := c.Regexp().Name(name), c.Regexp().Sort(sort), c.Regexp().Remark(remark), c.Regexp().English(en)
 	switch false {
-	case isName:
-		c.ResponseJson(11, "", w, r)
+	case vali.Chinese(name) && vali.Length(name, 2, 50):
+		c.ResponseJson(11, "invalid chinese role name", w, r)
 		return
-	case isSort:
-		c.ResponseJson(12, "", w, r)
+	case vali.NumericNoHeadZero(sort) && vali.Length(sort, 1, 3):
+		c.ResponseJson(12, "invalid sort", w, r)
 		return
-	case isRemark:
-		c.ResponseJson(13, "", w, r)
+	case vali.Article(remark) && vali.Length(remark, 2, 255):
+		c.ResponseJson(13, "invalid remark", w, r)
 		return
-	case isEn:
-		c.ResponseJson(14, "", w, r)
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 100):
+		c.ResponseJson(14, "invalid english role name ", w, r)
 		return
 	default:
 		role := sql.AuthRole{}
@@ -1175,7 +1181,6 @@ func (c *SiteCtrl) AddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(sqls, name, sort, remark, en)
 			err = tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
 				c.Cache().Del("allrole")
@@ -1183,13 +1188,13 @@ func (c *SiteCtrl) AddRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if role.Name == name {
-				c.ResponseJson(21, "", w, r)
+				c.ResponseJson(21, "Chinese role name already exist", w, r)
 				return
 			} else if role.En == en {
-				c.ResponseJson(22, "", w, r)
+				c.ResponseJson(22, "English role name already exist", w, r)
 				return
 			} else {
-				c.ResponseJson(44, "", w, r)
+				c.ResponseJson(44, "Unknown error", w, r)
 				return
 			}
 		}
@@ -1205,12 +1210,10 @@ func (c *SiteCtrl) AddRoleSubmit(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) EditRole(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "roleId")
-	fmt.Println(id)
 	role := sql.AuthRole{}
 	sqls := "SELECT * FROM hm_auth_role WHERE id = ?"
 	err := c.Sql().Get(&role, sqls, id)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
 	data := make(map[string]interface{})
@@ -1227,22 +1230,21 @@ func (c *SiteCtrl) EditRole(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 	name, sort, remark, en, id := r.PostFormValue("name"), r.PostFormValue("sort"), r.PostFormValue("remark"), r.PostFormValue("en"), r.PostFormValue("id")
-	// isName, isSort, isRemark, isEn, isId := c.Regexp().Name(name), c.Regexp().Sort(sort), c.Regexp().Remark(remark), c.Regexp().English(en), c.Regexp().Id(id)
 	switch false {
-	case (vali.EnglishSpace(name) && vali.Length(name, 2, 50)) || (vali.Chinese(name) && vali.Length(name, 2, 100)):
-		c.ResponseJson(11, "", w, r)
+	case vali.Chinese(name) && vali.Length(name, 2, 50):
+		c.ResponseJson(11, "invalid chinese role name", w, r)
 		return
-	case vali.Numeric(sort) && vali.Length(sort, 1, 3):
-		c.ResponseJson(12, "", w, r)
+	case vali.NumericNoHeadZero(sort) && vali.Length(sort, 1, 3):
+		c.ResponseJson(12, "invalid sort", w, r)
 		return
 	case vali.Article(remark) && vali.Length(remark, 2, 255):
-		c.ResponseJson(13, "", w, r)
+		c.ResponseJson(13, "invalid remark", w, r)
 		return
-	case vali.English(en) && vali.Length(en, 2, 100):
-		c.ResponseJson(14, "", w, r)
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 100):
+		c.ResponseJson(14, "invalid english role name ", w, r)
 		return
-	case vali.Numeric(id) && vali.Length(id, 1, 8):
-		c.ResponseJson(15, "", w, r)
+	case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+		c.ResponseJson(15, "invalid role id", w, r)
 		return
 	default:
 		role := sql.AuthRole{}
@@ -1253,7 +1255,6 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(sqls, name, sort, remark, en, id)
 			err = tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
 				c.Cache().Del("allrole")
@@ -1261,13 +1262,13 @@ func (c *SiteCtrl) EditRoleSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if role.Name == name {
-				c.ResponseJson(21, "", w, r)
+				c.ResponseJson(21, "Chinese role name already exist", w, r)
 				return
 			} else if role.En == en {
-				c.ResponseJson(22, "", w, r)
+				c.ResponseJson(22, "English role name already exist", w, r)
 				return
 			} else {
-				c.ResponseJson(44, "", w, r)
+				c.ResponseJson(44, "Unknown error", w, r)
 				return
 			}
 		}
@@ -1357,9 +1358,7 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 			c.Cache().SetAlwaysTime("loginLog"+username+dateFrom+dateTo+page+row, log)
 		}
 		if count != 0 {
-			data["total"] = strconv.Itoa(count)
-			data["rows"] = log
-			data["status"] = 1
+			data["total"], data["rows"] = strconv.Itoa(count), log
 		} else {
 			data["status"], data["info"], data["rows"] = 17, "no found data", log
 		}
@@ -1401,7 +1400,7 @@ func (c *SiteCtrl) OprateLog(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 获取操作日志
+ * @description ���取操作日志
  * @English	Get oprate log
  * @homepage    http://www.hemacms.com/
  * @author Nicholas Mars

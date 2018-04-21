@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Oprate log</title>
+    <title language="html:oprateLogPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+    <style>
+    .datagrid-view{
+        margin-top: 80px;
+    }
+    </style>
 </head>
 <body onkeydown="hm.searchKey();">
 <form>
@@ -19,16 +25,18 @@
     <div id="hm_toolbar">
         <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:oprateDelMonthLog"></a>
         <a href="javascript:void(0)" onclick="hm.ajaxDel(oprateLogDel,this)" data-url="/intendant/site/delAllOprateLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:oprateDelAllLog"></a>
-        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',logSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
-        <form name="datagird_tools">
-            <div id="hm_search">
+        <form name="hm_search">
+            <div class="hm_search" style="margin-bottom:6px;">
                 <span language="html:status"></span>:&nbsp;<input id="status" style="height:24px;line-height:24px;"><input type="hidden" name="status" value="1" class="easyui-validatebox" data-options="required:false,validType:['status','length[1,1]']">&nbsp;&nbsp;
-                <span language="html:loginSearchUser"></span>:&nbsp;<input type="text" name="username" class="easyui-validatebox"  data-options="required:false,validType:['english','length[5,100]']"></input>&nbsp;&nbsp;
-                <span language="html:oprateExcuteTime"></span>(<span language="html:oprateMillisecond"></span>):&nbsp;<input type="text" name="excuteTime" class="easyui-validatebox" style="width:60px;"></input>&nbsp;&nbsp;
-                <span language="html:oprateTime"></span>:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
-                <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
+                <span language="html:loginSearchUser"></span>:&nbsp;<input type="text" name="username" class="easyui-validatebox length_3"  data-options="required:false,validType:['english','length[5,100]']"></input>&nbsp;&nbsp;
+                <span language="html:oprateExcuteTime"></span>(<span language="html:oprateMillisecond"></span>):&nbsp;<input type="text" name="excuteTime" class="easyui-validatebox length_3" data-options="required:false,validType:['numericNoHeadZero','length[1,10]']"></input>&nbsp;&nbsp;
+            </div>
+            <div class="hm_search">
+                <span language="html:oprateTime"></span>:&nbsp;<input type="text" name="dateFrom" class="easyui-datetimebox length_3" data-options="editable:false">
+                <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox length_3" data-options="editable:false">
                 <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
                 <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
             </div>
@@ -40,7 +48,6 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script>
@@ -141,7 +148,7 @@ $('#hm_data').datagrid({
             width: 75,
             align: 'center',
             formatter: function(value, row, index){
-                return hm.dateFormat(value)+"【"+value+"】";
+                return hm.dateFormat(value);
             },
         },{
             field: 'oprate_ip',
@@ -209,7 +216,7 @@ function logSearch(data){
     } else if(data.status == 16){
         parent.hm.notice("warn", data.info);
     } else if(data.status == 17){
-        parent.hm.notice("error", data.info);
+        parent.hm.notice("warn", data.info);
     }else if(data.status == 4){
         parent.hm.notice("error", hm.language.searchFailed + data.info);
     } else if(data.status == 1){

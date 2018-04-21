@@ -4,30 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login log</title>
+    <title language="html:loginLogPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body onkeydown="hm.searchKey();">
-<form action="" id="hm-app">
+<form>
     <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.ajaxDel(loginLogDel,this)" data-url="/intendant/site/delLoginLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true">[[$store.state.language.loginDelMonthLog]]</a>
-        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
+        <a href="javascript:void(0)" onclick="hm.ajaxDel(loginLogDel,this)" data-url="/intendant/site/delLoginLog" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:loginDelMonthLog"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',logSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
-        <form name="datagird_tools">
-            <div id="hm_search">
-                [[$store.state.language.loginSearchUser]]: <input type="text" name="username" class="easyui-validatebox"></input>
-                [[$store.state.language.userCreateTime]]: <input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
-                [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
-                <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
-                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true">[[$store.state.language.clearSearch]]</a>
+        <form name="hm_search">
+            <div class="hm_search">
+                <span language="html:loginSearchUser"></span>: <input type="text" name="username" class="easyui-validatebox" data-options="required:false,validType:['english','length[5,100]']"></input>
+                <span language="html:userCreateTime"></span>: <input type="text" name="dateFrom" class="easyui-datetimebox length_3" data-options="editable:false">
+                <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox length_3" data-options="editable:false">
+                <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
+                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
             </div>
         </form>
     </div>
@@ -37,10 +38,8 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var mehigh = document.documentElement.clientHeight-80;
 $('#hm_data').datagrid({

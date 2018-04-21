@@ -4,42 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Edit role</title>
+    <title language="html:editRolePage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
 <form id="hm-app" action="/intendant/site/editRoleSubmit">
-    <input type="hidden" name="id" value="{{.role.Id}}">
+    <input class="easyui-validatebox length_5" type="hidden" name="id" value="{{.role.Id}}" data-options="required:true,validType:['numericNoHeadZero','length[1,80]']">
     <div class="frame_form_table">
         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
             <tbody>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.roleChinese]]&nbsp;:&nbsp;</td>
-                    <td width="160"><input class="easyui-validatebox length_5" name="name" value="{{.role.Name}}" data-options="required:true,validType:'roleName'"></td>
+                    <td width="40" language="table:roleChinese"></td>
+                    <td width="160"><input class="easyui-validatebox length_5" name="name" value="{{.role.Name}}" data-options="required:true,validType:['chinese','length[2,50]']"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.roleEnglish]]&nbsp;:&nbsp;</td>
-                    <td width="160"><input class="easyui-validatebox length_5" name="en" value="{{.role.En}}"  data-options="required:true,validType:'english'"></td>
+                    <td width="40" language="table:roleEnglish"></td>
+                    <td width="160"><input class="easyui-validatebox length_5" name="en" value="{{.role.En}}"  data-options="required:true,validType:['englishSpace','length[2,100]']"></td>
                 </tr>
                 <tr>
-                    <td width="30">&nbsp;&nbsp;&nbsp;[[$store.state.language.roleSort]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" value="{{.role.Sort}}" data-options="required:true,validType:'sort'" /></td>
+                    <td width="40" language="table:roleSort"></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" value="{{.role.Sort}}" data-options="required:true,validType:['numericNoHeadZero','length[1,3]']"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.roleRemark]]&nbsp;:&nbsp;</td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.role.Remark}}" data-options="required:true,validType:'remark'" /></td>
+                    <td width="40" language="table:roleRemark"></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.role.Remark}}" data-options="required:true,validType:['article','length[2,255]']"></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="hm_toolbar">
-        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
-        <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
-        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(meFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.ajaxEdit]]</a>
+        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+        <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(editRoleFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:ajaxEdit"></a>
     </div>
 </form>
 </body>
@@ -47,43 +48,31 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
-function meFunc(data){
-    var failed = hm.language.editFailed ? hm.language.editFailed : "Edit failed!",
-        success = hm.language.editSuccess ? hm.language.editSuccess : "Edit success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        roleCheckName = hm.language.roleCheckName ? hm.language.roleCheckName : "Role chinese name already exists!",
-        roleCheckEn = hm.language.roleCheckEn ? hm.language.roleCheckEn : "Role english name already exists!",
-        nameVali = hm.language.roleName + hm.language.name ? hm.language.roleName + hm.language.name : "Role name only allows Chinese characters, English letters and spaces, 2-80 characters!",
-        sortVali = hm.language.sortVali ? hm.language.sortVali : "Sort must be 1-3 positive integers!",
-        remarkVali = hm.language.remarkVali ? hm.language.remarkVali : "Remark only letters, numbers, English Chinese characters, minus, comma, period, exclamation and underline, 2-255 characters!",
-        englishVali = hm.language.englishVali ? hm.language.englishVali : "English name only allows English and spaces,2-80 characters!",
-        idVali = hm.language.idVali ? hm.language.idVali : "Id must be 1-8 positive integers!";
+function editRoleFunc(data){
     if (data.status == 21) {
-        parent.hm.notice("error", roleCheckName + data.info);
+        parent.hm.notice("warn", hm.language.roleCheckName);
     } else if (data.status == 22) {
-        parent.hm.notice("error", roleCheckEn + data.info);
+        parent.hm.notice("warn", hm.language.roleCheckEn);
     } else if (data.status == 11) {
-        parent.hm.notice("error", nameVali + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", sortVali + data.info);
+        parent.hm.notice("warn",  data.info);
     } else if(data.status == 13){
-        parent.hm.notice("error", remarkVali + data.info);
+        parent.hm.notice("warn",  data.info);
     } else if(data.status == 14){
-        parent.hm.notice("error", englishVali + data.info);
+        parent.hm.notice("warn",  data.info);
     } else if(data.status == 15){
-        parent.hm.notice("error", idVali + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.editFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.editSuccess);
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error",unknownError+ data.info);
+        parent.hm.notice("error",hm.language.unknownError);
     }
 }
 </script>

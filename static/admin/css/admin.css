@@ -642,16 +642,14 @@ a.east-ct i{
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#F2F2F2,GradientType=0);
 }
-#hm_search{
+.hm_search{
     padding-left: 10px;
 }
-#hm_search .easyui-validatebox{
+.hm_search .easyui-validatebox{
     height: 20px;
     line-height: 20px;
-    border-width: 1px;
-    /*border-style: inherit;*/
-    border-color: #d4d4d4;
     border-radius: 4px;
+    border: 1px solid #d4d4d4;
 }
 .hm_fa_ok{
     color:white;background-color:green;border-radius:50%;text-align:center;width:20px;height:20px;line-height:19px;
@@ -799,7 +797,7 @@ a.east-ct i{
     border-radius: 0;
     padding: 4px 0;
 }
-#hm_search .l-btn-icon-left .l-btn-text{
+.hm_search .l-btn-icon-left .l-btn-text{
     padding: 1px 0;
 }
 #hm_menu_tools .l-btn{
