@@ -20,7 +20,7 @@
     <div id="hm_toolbar">
         <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:roleAdd"></a>
         <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleBatchDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:roleBatchDel"></a>
-        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',roleSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
         <form name="hm_search">
@@ -148,7 +148,7 @@ $('#hm_data').datagrid({
         }
     }
 });
-hm.datagridWidthResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
+hm.datagridResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
 function roleBatchDel(data){
     var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
         success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
@@ -188,22 +188,28 @@ function roleDel(data){
     }
 }
 function roleSearch(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 54){
+        parent.hm.notice("warn", hm.language.noFoundData);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.searchFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        // parent.hm.refreshTab();
+        parent.hm.notice("success", hm.language.searchSuccess );
+        $('.easyui-linkbutton').linkbutton();
+        $('.easyui-tooltip').tooltip({
+            position: 'bottom',
+            onShow: function() {
+                $(this).tooltip('tip').css({
+                    backgroundColor: '#f39c12',
+                    borderColor: '#f39c12',
+                    color: '#fff',
+                    size: '18px',
+                });
+            }
+        });
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError);
     }
 }
 </script>

@@ -907,8 +907,9 @@ func (c *SiteCtrl) Role(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{}, 4)
 	page, row, name := r.PostFormValue("page"), r.PostFormValue("rows"), r.PostFormValue("name")
+	data["total"], data["rows"] = 0, []string{}
 	switch {
-	case ((vali.EnglishSpace(name) == false && vali.Length(name, 2, 100) == false) || (vali.Chinese(name) == false && vali.Length(name, 2, 50) == false)) && name != "":
+	case ((vali.EnglishSpace(name) || vali.Chinese(name)) && vali.Length(name, 2, 20) == false) && name != "":
 		data["status"], data["info"] = 11, "Invalid role name"
 	default:
 		pageNum := c.Pagination(page, row)
@@ -966,7 +967,7 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 		if count != 0 && role != nil {
 			data["total"], data["rows"] = strconv.Itoa(count), role
 		} else {
-			data["status"], data["info"], data["rows"] = 17, "no found data", role
+			data["status"], data["info"], data["rows"] = 54, "no found data", role
 		}
 	}
 	c.ResponseData(data, w, r)
@@ -1309,13 +1310,13 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
 	switch {
-	case vali.English(username) == false && vali.Length(username, 5, 15) && username != "":
+	case ((vali.English(username) && vali.Length(username, 5, 20)) == false) && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
 	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
 		data["status"], data["info"] = 12, "Invalid dateFrom"
 	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
 		data["status"], data["info"] = 13, "Invalid dateTo"
-	case vali.NumericNoHeadZero(page) == false || vali.NumericNoHeadZero(row) == false:
+	case (vali.NumericNoHeadZero(page) && vali.Length(page, 1, 5) && vali.NumericNoHeadZero(row) && vali.Length(row, 2, 2)) == false:
 		data["status"], data["info"] = 14, "Invalid pagination"
 	default:
 		pageNum := c.Pagination(page, row)
@@ -1360,7 +1361,7 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 		if count != 0 {
 			data["total"], data["rows"] = strconv.Itoa(count), log
 		} else {
-			data["status"], data["info"], data["rows"] = 17, "no found data", log
+			data["status"], data["info"], data["rows"] = 54, "no found data", log
 		}
 	}
 	c.ResponseData(data, w, r)
@@ -1380,7 +1381,6 @@ func (c *SiteCtrl) DelLoginLog(w http.ResponseWriter, r *http.Request) {
 	tx.MustExec(delSql)
 	err := tx.Commit()
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
 		c.Cache().ScanDel("loginLog")
@@ -1400,7 +1400,7 @@ func (c *SiteCtrl) OprateLog(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description ���取操作日志
+ * @description 获取操作日志
  * @English	Get oprate log
  * @homepage    http://www.hemacms.com/
  * @author Nicholas Mars
@@ -1413,17 +1413,17 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 	excuteTime := r.PostFormValue("excuteTime")
 	data["total"], data["rows"] = 0, []string{}
 	switch {
-	case vali.English(username) == false && vali.Length(status, 5, 15) && username != "":
+	case ((vali.English(username) && vali.Length(username, 5, 20)) == false) && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
-	case vali.Numeric(status) == false && vali.Length(status, 1, 1) && status != "":
+	case ((vali.Numeric(status) && vali.Length(status, 1, 1)) == false) && status != "":
 		data["status"], data["info"] = 12, "Invalid status"
 	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
 		data["status"], data["info"] = 13, "Invalid dateFrom"
 	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
 		data["status"], data["info"] = 14, "Invalid dateTo"
-	case vali.Numeric(excuteTime) == false && vali.Length(excuteTime, 1, 8) == false && excuteTime != "":
+	case ((vali.Numeric(excuteTime) && vali.Length(excuteTime, 1, 8)) == false) && excuteTime != "":
 		data["status"], data["info"] = 15, "Invalid excuteTime"
-	case vali.NumericNoHeadZero(page) == false || vali.NumericNoHeadZero(row) == false:
+	case (vali.NumericNoHeadZero(page) && vali.Length(page, 1, 5) && vali.NumericNoHeadZero(row) && vali.Length(row, 2, 2)) == false:
 		data["status"], data["info"] = 16, "Invalid pagination"
 	default:
 		pageNum := c.Pagination(page, row)
@@ -1434,7 +1434,6 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		}
 		if status == "1" {
 			addsql = addsql + "status =" + status + " AND "
-			fmt.Println("到这里来了")
 		}
 		if status == "0" {
 			addsql = addsql + "status <> 1 AND "
@@ -1478,7 +1477,7 @@ func (c *SiteCtrl) GetOprateLog(w http.ResponseWriter, r *http.Request) {
 		if count != 0 {
 			data["total"], data["rows"] = strconv.Itoa(count), log
 		} else {
-			data["status"], data["info"], data["rows"] = 17, "no found data", log
+			data["status"], data["info"], data["rows"] = 54, "no found data", log
 		}
 	}
 	c.ResponseData(data, w, r)

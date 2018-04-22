@@ -81,6 +81,7 @@ var language = {
         searchFailed: "Search failed!",
         authSuccess: "Authorization success!",
         authFailed: "Authorization failed!",
+        noFoundData: "No found data!",
         success: "success",
         fail: "failed",
         refresh: "Refresh", //refresh
@@ -349,6 +350,7 @@ var language = {
         searchFailed: "查询失败!",
         authSuccess: "授权成功!",
         authFailed: "授权失败!",
+        noFoundData: "没有查询到数据!",
         success: "成功",
         fail: "失败",
         refresh: "刷新", //refresh

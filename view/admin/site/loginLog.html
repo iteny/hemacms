@@ -24,7 +24,7 @@
     <div id="hm_menu_tools">
         <form name="hm_search">
             <div class="hm_search">
-                <span language="html:loginSearchUser"></span>: <input type="text" name="username" class="easyui-validatebox" data-options="required:false,validType:['english','length[5,100]']"></input>
+                <span language="html:loginSearchUser"></span>: <input type="text" name="username" class="easyui-validatebox" data-options="required:false,validType:['english','length[5,20]']"></input>
                 <span language="html:userCreateTime"></span>: <input type="text" name="dateFrom" class="easyui-datetimebox length_3" data-options="editable:false">
                 <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox length_3" data-options="editable:false">
                 <a href="#" onclick="hm.ajaxSearch(logSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
@@ -126,37 +126,34 @@ $('#hm_data').datagrid({
         }
     }
 });
-hm.datagridWidthResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
+hm.datagridResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
 function loginLogDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!";
     if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.delFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.delSuccess);
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError+data.info);
     }
 }
 function logSearch(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userIdGroup = hm.language.userIdGroup ? hm.language.userIdGroup : "Account ID array is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
+        parent.hm.notice("warn",  data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 54){
+        parent.hm.notice("warn", hm.language.noFoundData);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.searchFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
+        parent.hm.notice("success", hm.language.searchSuccess + data.info);
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError+data.info);
     }
 }
 </script>

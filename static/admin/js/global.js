@@ -840,17 +840,19 @@ HmObj.prototype.reloadPage = function() {
     window.location.reload();
 };
 //数据表格宽度自动适应
-HmObj.prototype.datagridWidthResize = function(domid, type) {
+HmObj.prototype.datagridResize = function(domid, type) {
     $(window).resize(function() {
         if (type == 'treegrid') {
             $(domid).treegrid({
                 fitColumns: true,
                 autoRowHeight: true,
+                autoRowWidth: true,
             });
         } else {
             $(domid).datagrid({
                 fitColumns: true,
                 autoRowHeight: true,
+                autoRowWidth: true,
             });
         }
     });
@@ -871,8 +873,8 @@ HmObj.prototype.datagridReload = function(domid, type, externalFunc, me) {
             if (vali) {
                 $(domid).datagrid({
                     onLoadSuccess: function(data) {
-                        externalFunc(data)
                         that.linkbutton('enable');
+                        externalFunc(data)
                     }
                 });
             } else {
@@ -1052,8 +1054,8 @@ HmObj.prototype.ajaxSearch = function(externalFunc, me) {
             $('#hm_data').datagrid({
                 queryParams: this.serializeObject(params),
                 onLoadSuccess: function(data) {
-                    externalFunc(data)
                     that.linkbutton('enable');
+                    externalFunc(data)
                 }
             });
         } else {
@@ -1090,6 +1092,7 @@ HmObj.prototype.clearSearch = function(me) {
         }
     });
     $(".hm_search").find(".easyui-validatebox").val(''); //找到form表单下的所有input标签并清空
+    $(".hm_search").find(".easyui-datetimebox").datetimebox('setValue', '');
 };
 //ajax轮询
 HmObj.prototype.ajaxPolling = function() {
@@ -1165,9 +1168,9 @@ HmObj.prototype.ajaxSort = function(externalFunc, me) {
                     parent.hm.openProgress();
                 },
                 success: function(data) {
+                    that.linkbutton('enable');
                     parent.hm.closeProgress();
                     externalFunc(data)
-                    that.linkbutton('enable');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1211,9 +1214,9 @@ HmObj.prototype.ajaxPgrid = function(externalFunc, me) {
                     parent.hm.openProgress();
                 },
                 success: function(data) {
+                    that.linkbutton('enable');
                     parent.hm.closeProgress(); //当页面加载完毕执行
                     externalFunc(data)
-                    that.linkbutton('enable');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1257,9 +1260,9 @@ HmObj.prototype.getTreeNodes = function(externalFunc, me) {
                 parent.hm.openProgress();
             },
             success: function(data) {
+                that.linkbutton('enable');
                 parent.hm.closeProgress();
                 externalFunc(data)
-                that.linkbutton('enable');
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1320,9 +1323,9 @@ HmObj.prototype.ajaxAddEdit = function(externalFunc, me) {
                     parent.hm.openProgress();
                 },
                 success: function(data) {
+                    that.linkbutton('enable');
                     parent.hm.closeProgress();
                     externalFunc(data)
-                    that.linkbutton('enable');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1371,9 +1374,9 @@ HmObj.prototype.ajaxDel = function(externalFunc, me) {
                         parent.hm.openProgress();
                     },
                     success: function(data) {
+                        that.linkbutton('enable');
                         parent.hm.closeProgress();
                         externalFunc(data)
-                        that.linkbutton('enable');
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
                         parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1425,9 +1428,9 @@ HmObj.prototype.ajaxBatchDel = function(externalFunc, me) {
                             parent.hm.openProgress();
                         },
                         success: function(data) {
+                            that.linkbutton('enable');
                             parent.hm.closeProgress();
                             externalFunc(data)
-                            that.linkbutton('enable');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
                             parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
