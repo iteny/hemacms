@@ -913,38 +913,29 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 		data["status"], data["info"] = 11, "Invalid role name"
 	default:
 		pageNum := c.Pagination(page, row)
-		addsql := ""
+		addSql := ""
 		if name != "" {
 			cookie, err := r.Cookie("back-language")
 			if err != nil {
-				common.Log().Debug().Str("[back-language-reload]", "cn").Str("[Error]", err.Error()).Msg("back-stage language set fail")
-				language := "cn"
-				language = c.Config().Value("cookie", "language")
-				homeLanguage := &http.Cookie{
-					Name:     "back-language",
-					Value:    language,
-					Path:     "/",
-					HttpOnly: false,
-					MaxAge:   80000,
+				c.Log().CheckErr("cookie error", err)
+				value := c.Config().Value("cookie", "language")
+				if vali.MultiLanguage(value) {
+					c.SetCookie("back-language", value, 0, w)
+				} else {
+					c.SetCookie("back-language", "en", 0, w)
 				}
-				http.SetCookie(w, homeLanguage)
+			} else {
+				addSql = c.MultiLanguageAddSql(cookie.Value, name, "en")
 			}
-			switch cookie.Value {
-			case "cn":
-				addsql = "WHERE name LIKE '%" + name + "%'"
-			case "en":
-				addsql = "WHERE en LIKE '%" + name + "%'"
-			default:
-				addsql = "WHERE name LIKE '%" + name + "%'"
-			}
-
 		}
-		fmt.Println(addsql)
+		if addSql != "" {
+			addSql = "WHERE " + strings.TrimRight(addSql, "AND ")
+		}
 		count := 0
 		if rows, found := c.Cache().Get("roleCount" + name + page + row); found {
 			count = rows.(int)
 		} else {
-			totalSql := "SELECT id FROM hm_auth_role " + addsql
+			totalSql := "SELECT id FROM hm_auth_role " + addSql
 			total := []sql.AuthRole{}
 			err := c.Sql().Select(&total, totalSql)
 			if err != nil {
@@ -957,7 +948,7 @@ func (c *SiteCtrl) GetRole(w http.ResponseWriter, r *http.Request) {
 		if rows, found := c.Cache().Get("role" + name + page + row); found {
 			role = rows.([]sql.AuthRole)
 		} else {
-			roleSql := "SELECT * FROM hm_auth_role " + addsql + " ORDER BY id ASC Limit ?,?"
+			roleSql := "SELECT * FROM hm_auth_role " + addSql + " ORDER BY id ASC Limit ?,?"
 			err := c.Sql().Select(&role, roleSql, pageNum, row)
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)

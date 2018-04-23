@@ -240,3 +240,33 @@ func (c *BaseCtrl) DateToTimestamp(date, format string) int64 {
 	from, _ := time.ParseInLocation(format, date, loc)
 	return from.Unix()
 }
+
+//获取cookie
+func (c *BaseCtrl) SetCookie(key string, value string, age int, w http.ResponseWriter) {
+	if age == 0 {
+		age = 80000
+	}
+	setCookie := &http.Cookie{
+		Name:     key,
+		Value:    value,
+		Path:     "/",
+		HttpOnly: false,
+		MaxAge:   age,
+	}
+	http.SetCookie(w, setCookie)
+}
+
+//多语言增加sql
+func (c *BaseCtrl) MultiLanguageAddSql(str string, value string, field ...string) string {
+	var addSql string = ""
+	if str == "cn" {
+		addSql = addSql + "name LIKE '%" + value + "%' AND "
+	} else {
+		for _, v := range field {
+			if str == v {
+				addSql = addSql + v + " LIKE '%" + value + "%' AND "
+			}
+		}
+	}
+	return addSql
+}
