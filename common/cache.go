@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -41,6 +42,30 @@ func (c *CacheCtrl) ScanDel(key string) {
 	for k, _ := range clearCache {
 		if strings.Contains(k, key) {
 			cache.Delete(k)
+		}
+	}
+}
+func (c *CacheCtrl) ScanKey(key string) {
+	clearCache := cache.Items()
+	for k, _ := range clearCache {
+		if key == "" {
+			fmt.Println(k)
+		} else {
+			if strings.Contains(k, key) {
+				fmt.Println(k)
+			}
+		}
+	}
+}
+func (c *CacheCtrl) ScanValue(key string) {
+	clearCache := cache.Items()
+	for k, v := range clearCache {
+		if key == "" {
+			fmt.Println(v)
+		} else {
+			if strings.Contains(k, key) {
+				fmt.Println(v)
+			}
 		}
 	}
 }

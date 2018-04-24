@@ -336,6 +336,12 @@ HmObj.prototype.easyuiLanguage = function() {
             },
             message: that.language.valiEnglishSpace,
         },
+        nLanguageSpace: { // 多语言验证
+            validator: function(value) {
+                return /^[A-Za-z ]+$/i.test(value) || /^[\u4e00-\u9fa5]+$/i.test(value);
+            },
+            message: that.language.valiNLanguageSpace,
+        },
         englishNumeric: { // 验证英文字母和数字
             validator: function(value) {
                 return /^[a-zA-Z0-9]+$/i.test(value);

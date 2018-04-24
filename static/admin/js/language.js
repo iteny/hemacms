@@ -141,7 +141,7 @@ var language = {
         isEmail: "Please enter the email!",
         isRemark: "Please enter the remark!",
         passwordVali: "Password must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
-        passwordEdVali: "Entered passwords differ!",
+        passwordEdVali: "Two input password mismatch!",
         nicknameVali: "Nicknames only allow Chinese characters, English letters, numbers, minus and underlines, and 2-80 bit characters",
         sqlTypeVali: "The database type can only be sqlite3, mysql!",
         portVali: "The port number must be 1-5 bits positive integers!",
@@ -186,9 +186,8 @@ var language = {
         userCheckUsername: "Account has already existed!",
         userCheckNickname: "Nickname has already existed!",
         userCheckEmail: "Email has already existed!",
-        userId: "Account ID is illegal!",
         userIdGroup: "Account ID array is illegal!",
-        userAdminNoDel: "Superadmin does not allow deletion!",
+        userAdminNoDel: "Super admin don't allow deletion!",
         userSearch: "Search accounts",
         userTo: "to",
         //用户管理结束
@@ -239,6 +238,9 @@ var language = {
         addRolePage: "Add role page",
         editRolePage: "Edit role page",
         roleManagementPage: "Role management page",
+        addUserPage: "Add account page",
+        editUserPage: "Edit account page",
+        userManagementPage: "Account management page",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -266,6 +268,7 @@ var language = {
         valiNumeric: "Please enter a valid number!(0~9)",
         valiNumericNoHeadZero: "Please enter a valid number. The initial letter can not be zero!(0~9)",
         valiArticle: "Please enter the specified valid text!(chinese,A~Z,a~z,[,.!，。！],space)",
+        valiNLanguageSpace: "Please enter a valid Chinese or English letter, space!(chinese or A~Z,a~z,sapce)",
         //验证数据结束
     },
     //简体中文,chinese
@@ -456,7 +459,6 @@ var language = {
         userCheckUsername: "用户名已存在!",
         userCheckNickname: "昵称已存在!",
         userCheckEmail: "邮箱已存在!",
-        userId: "用户ID不合法!",
         userIdGroup: "用户ID数组不合法!",
         userAdminNoDel: "超级管理员不允许删除!",
         userSearch: "查询用户名",
@@ -509,6 +511,9 @@ var language = {
         addRolePage: "添加角色页",
         editRolePage: "修改角色页",
         roleManagementPage: "角色管理页",
+        addUserPage: "添加用户页",
+        editUserPage: "修改用户页",
+        userManagementPage: "用户管理页",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
@@ -536,6 +541,7 @@ var language = {
         valiNumeric: "请输入有效的数字!(0~9)",
         valiNumericNoHeadZero: "请输入有效的数字,开头的字母不能是0!(0~9)",
         valiArticle: "请输入指定的有效的文本!(汉字,A~Z,a~z,[,.!，。！],space)",
+        valiNLanguageSpace: "请输入有效的汉字或英文字母,空格!(汉字 or A~Z,a~z,sapce)",
         //验证数据结束
 
     },
@@ -550,16 +556,6 @@ $('[language]').each(function() {
     var lan = $.cookie('back-language');
 
     //选取语言文字
-    // switch (lan) {
-    //     case 'cn':
-    //         var t = cn[m]; //这里cn[m]中的cn是上面定义的json字符串的变量名，m是json中的键，用此方式读取到json中的值
-    //         break;
-    //     case 'en':
-    //         var t = en[m];
-    //         break;
-    //     default:
-    //         var t = hk[m];
-    // }
     var t = '';
     switch (lan) {
         case 'cn':

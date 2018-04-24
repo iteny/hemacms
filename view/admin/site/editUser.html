@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>修改用户</title>
+    <title language="html:editUserPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
 <form id="hm-app" type="add" action="/intendant/site/editUserSubmit">
@@ -18,44 +19,44 @@
         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
             <tbody>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userName]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userName"></td>
                     <td width="160"><input class="easyui-validatebox length_5" name="username" value="{{.user.Username}}" data-options="required:true,validType:'username'"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwd]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userPwd"></td>
                     <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" data-options="required:true,validType:'password'"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userPwdEd]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userPwdEd"></td>
                     <td width="190"><input class="easyui-validatebox length_5" type="text" name="passworded" required="required" validType="passworded['#pwd']"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userNickname]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userNickname"></td>
                     <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" value="{{.user.Nickname}}" data-options="required:true,validType:'nickname'"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userEmail]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userEmail"></td>
                     <td width="190"><input class="easyui-validatebox length_5" type="text" name="email" value="{{.user.Email}}" data-options="required:true,validType:'email'"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.remark]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:remark"></td>
                     <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.user.Remark}}" data-options="required:true,validType:'remark'"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.userRoleGroup]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:userRoleGroup"></td>
                     <td width="160"><input class="select length_3" name="role" value="{{.roleme.RoleId}}"></td>
                 </tr>
                 <tr>
-                    <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.isshow]]&nbsp;:&nbsp;</td>
+                    <td width="40" language="table:isshow"></td>
                     <td width="190"><input class="switch length_5" name="status" value="{{.user.Status}}"></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="hm_toolbar">
-        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
-        <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
-        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(meFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true">[[$store.state.language.ajaxEdit]]</a>
+        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+        <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(meFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" language="html:ajaxEdit"></a>
     </div>
 </form>
 </body>
@@ -63,10 +64,8 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var group = $.parseJSON({{.role}});
 var lang = '';

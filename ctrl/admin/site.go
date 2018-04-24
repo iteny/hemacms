@@ -504,66 +504,68 @@ func (c *SiteCtrl) User(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) GetUser(w http.ResponseWriter, r *http.Request) {
 	array := make([]sql.User, 0)
-	jsonUser := ""
+	data := make(map[string]interface{}, 4)
 	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
-	isUsername, isDateFrom, isDateTo := c.Regexp().Username(username), c.Regexp().Date(dateFrom), c.Regexp().Date(dateTo)
+	data["total"], data["rows"] = 0, []string{}
 	switch {
-	case isUsername == false && username != "":
-		jsonUser = "{\"total\":0,\"rows\":[]}"
-		// fmt.Println("username")
-	case isDateFrom == false && dateFrom != "":
-		jsonUser = "{\"total\":0,\"rows\":[]}"
-		fmt.Println("datefrom")
-	case isDateTo == false && dateTo != "":
-		jsonUser = "{\"total\":0,\"rows\":[]}"
-		fmt.Println("dateto")
+	case ((vali.English(username) && vali.Length(username, 5, 20)) == false) && username != "":
+		data["status"], data["info"] = 11, "Invalid account"
+	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
+		data["status"], data["info"] = 12, "Invalid dateFrom"
+	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
+		data["status"], data["info"] = 13, "Invalid dateTo"
+	case (vali.NumericNoHeadZero(page) && vali.Length(page, 1, 5) && vali.NumericNoHeadZero(row) && vali.Length(row, 2, 2)) == false:
+		data["status"], data["info"] = 14, "Invalid pagination"
 	default:
-		ipage, _ := strconv.Atoi(page)
-		irow, _ := strconv.Atoi(row)
-		first := irow * (ipage - 1)
-		timeLayout := "2006-01-02 15:04:05"  //转化所需模板
-		loc, _ := time.LoadLocation("Local") //重要：获取时区
-		from, _ := time.ParseInLocation(timeLayout, dateFrom, loc)
-		to, _ := time.ParseInLocation(timeLayout, dateTo, loc)
-		fromTime, toTime := from.Unix(), to.Unix()
+		pageNum := c.Pagination(page, row)
+		fromTime, toTime := c.DateToTimestamp(dateFrom, vali.RF3339Js), c.DateToTimestamp(dateTo, vali.RF3339Js)
 		addsql := ""
 		if username != "" {
-			addsql = "username LIKE '%" + username + "%' AND "
+			addsql = addsql + "username LIKE '%" + username + "%' AND "
 		}
 		if dateFrom != "" {
-			addsql = addsql + fmt.Sprintf("create_time>='%v' AND ", fromTime)
+			addsql = addsql + fmt.Sprintf("login_time>='%v' AND ", fromTime)
 		}
 		if dateTo != "" {
-			addsql = addsql + fmt.Sprintf("create_time<='%v' AND ", toTime)
+			addsql = addsql + fmt.Sprintf("login_time<='%v' AND ", toTime)
 		}
 		if addsql != "" {
 			addsql = "WHERE " + strings.Trim(addsql, "AND ")
 		}
-		fmt.Println(addsql)
-		if rows, found := c.Cache().Get("allUser"); found {
-			// array = rows.([]sql.User)
-			jsonUser = rows.(string)
+		count := 0
+		if rows, found := c.Cache().Get("userCount" + username + dateFrom + dateTo + page + row); found {
+			count = rows.(int)
 		} else {
-			userSql := "SELECT * FROM hm_user " + addsql + " Limit ?,?"
+			totalSql := "SELECT id FROM hm_user " + addsql
+			total := []sql.User{}
+			err := c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count = len(total)
+			c.Cache().SetAlwaysTime("userCount"+username+dateFrom+dateTo+page+row, count)
+		}
+		// log := []sql.LoginLog{}
+		if rows, found := c.Cache().Get("user" + username + dateFrom + dateTo + page + row); found {
+			array = rows.([]sql.User)
+		} else {
+			userSql := "SELECT * FROM hm_user " + addsql + " ORDER BY id ASC Limit ?,?"
 			roleSql := "SELECT * FROM hm_auth_role"
 			accessSql := "SELECT uid,role_id FROM hm_auth_role_access"
 			user := []sql.User{}
 			role := []sql.AuthRole{}
 			access := []sql.AuthRoleAccess{}
-			err := c.Sql().Select(&user, userSql, first, row)
+			err := c.Sql().Select(&user, userSql, pageNum, row)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error1")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			err = c.Sql().Select(&role, roleSql)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			err = c.Sql().Select(&access, accessSql)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			for k, v := range user {
@@ -580,16 +582,16 @@ func (c *SiteCtrl) GetUser(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
-			count := len(array)
-			if count != 0 {
-				jsonUser = "{\"total\":" + strconv.Itoa(count) + ",\"rows\":" + c.RowsJson(array) + "}"
-			} else {
-				jsonUser = "{\"total\":0,\"rows\":[]}"
-			}
-			// c.Cache().CacheSetAlwaysTime("allUser", jsonUser)
+			c.Cache().SetAlwaysTime("user"+username+dateFrom+dateTo+page+row, array)
 		}
+		if count != 0 {
+			data["total"], data["rows"] = strconv.Itoa(count), array
+		} else {
+			data["status"], data["info"], data["rows"] = 54, "no found data", array
+		}
+		c.Cache().ScanKey("user")
 	}
-	fmt.Fprint(w, jsonUser)
+	c.ResponseData(data, w, r)
 }
 
 /**
@@ -601,12 +603,9 @@ func (c *SiteCtrl) GetUser(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) DelUser(w http.ResponseWriter, r *http.Request) {
 	id := r.PostFormValue("id")
-	isId := c.Regexp().Id(id)
-	if isId == false {
-		c.ResponseJson(11, "", w, r)
-	} else {
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
 		if id == "1" {
-			c.ResponseJson(12, "", w, r)
+			c.ResponseJson(12, "Super admin don't allow deletion", w, r)
 			return
 		} else {
 			userSql := "DELETE FROM hm_user WHERE id = ?"
@@ -616,13 +615,14 @@ func (c *SiteCtrl) DelUser(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(accessSql, id)
 			err := tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				// c.Cache().CacheDel("allUser")
+				c.Cache().ScanDel("user")
 				c.ResponseJson(1, "", w, r)
 			}
 		}
+	} else {
+		c.ResponseJson(11, "Invalid user id", w, r)
 	}
 }
 
@@ -635,30 +635,28 @@ func (c *SiteCtrl) DelUser(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) BatchDelUser(w http.ResponseWriter, r *http.Request) {
 	ids := r.PostFormValue("ids")
-	isIds := c.Regexp().IdGroup(ids)
-	if !isIds {
-		c.ResponseJson(11, "", w, r)
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if v == "1" {
+			c.ResponseJson(12, "Super admin don't allow deletion", w, r)
+			return
+		}
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid user id", w, r)
+			return
+		}
+	}
+	userSql := fmt.Sprintf("DELETE FROM hm_user WHERE id IN (%v)", ids)
+	accessSql := fmt.Sprintf("DELETE FROM hm_auth_role_access WHERE uid IN (%v)", ids)
+	tx := c.Sql().MustBegin()
+	tx.MustExec(userSql)
+	tx.MustExec(accessSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		id := strings.Split(ids, ",")
-		for _, v := range id {
-			if v == "1" {
-				c.ResponseJson(12, "", w, r)
-				return
-			}
-		}
-		userSql := fmt.Sprintf("DELETE FROM hm_user WHERE id IN (%v)", ids)
-		accessSql := fmt.Sprintf("DELETE FROM hm_auth_role_access WHERE uid IN (%v)", ids)
-		tx := c.Sql().MustBegin()
-		tx.MustExec(userSql)
-		tx.MustExec(accessSql)
-		err := tx.Commit()
-		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
-			c.ResponseJson(4, err.Error(), w, r)
-		} else {
-			c.Cache().Del("allUser")
-			c.ResponseJson(1, "", w, r)
-		}
+		c.Cache().ScanDel("user")
+		c.ResponseJson(1, "", w, r)
 	}
 }
 
@@ -670,15 +668,13 @@ func (c *SiteCtrl) BatchDelUser(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) AddUser(w http.ResponseWriter, r *http.Request) {
-	data := make(map[string]interface{})
+	data := make(map[string]interface{}, 2)
 	roleSql := "select * from hm_auth_role"
 	role := []sql.AuthRole{}
 	err := c.Sql().Select(&role, roleSql)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
-	data["currentUrl"] = r.RequestURI
 	data["role"] = c.RowsJson(role)
 	c.Template(w, r, data, "./view/admin/site/addUser.html")
 }
@@ -694,74 +690,67 @@ func (c *SiteCtrl) AddUserSubmit(w http.ResponseWriter, r *http.Request) {
 	username, password, passworded := r.PostFormValue("username"), r.PostFormValue("password"), r.PostFormValue("passworded")
 	nickname, email := r.PostFormValue("nickname"), r.PostFormValue("email")
 	remark, role, status := r.PostFormValue("remark"), r.PostFormValue("role"), r.PostFormValue("status")
-	isUsername, isPassword := c.Regexp().Username(username), c.Regexp().Password(password)
-	isNickname, isEmail, isRemark := c.Regexp().Nickname(nickname), c.Regexp().Email(email), c.Regexp().Remark(remark)
-	isRole, isStatus := c.Regexp().Id(role), c.Regexp().Status(status)
 	switch false {
-	case isUsername:
-		c.ResponseJson(11, "", w, r)
+	case vali.EnglishNumeric(username) && vali.Length(username, 5, 20):
+		c.ResponseJson(11, "Invalid account name", w, r)
 		return
-	case isPassword:
-		c.ResponseJson(12, "", w, r)
+	case vali.EnglishNumeric(password) && vali.Length(password, 5, 15):
+		c.ResponseJson(12, "Invalid password", w, r)
 		return
-	case isNickname:
-		c.ResponseJson(13, "", w, r)
+	case ((vali.Chinese(nickname) || vali.EnglishSpace(nickname)) && vali.Length(nickname, 2, 50)) == true:
+		c.ResponseJson(13, "Invalid nickname", w, r)
 		return
-	case isEmail:
-		c.ResponseJson(14, "", w, r)
+	case vali.Email(email) && vali.Length(email, 4, 50):
+		c.ResponseJson(14, "Invalid email", w, r)
 		return
-	case isRemark:
-		c.ResponseJson(15, "", w, r)
+	case vali.Article(remark) && vali.Length(remark, 2, 255):
+		c.ResponseJson(15, "Invalid remark", w, r)
 		return
-	case isRole:
-		c.ResponseJson(16, "", w, r)
+	case vali.NumericNoHeadZero(role) && vali.Length(role, 1, 8):
+		c.ResponseJson(16, "Invalid role id", w, r)
 		return
-	case isStatus:
-		c.ResponseJson(17, "", w, r)
+	case vali.Status(status):
+		c.ResponseJson(17, "Invalid status", w, r)
+		return
+	case vali.EqualTo(password, passworded):
+		c.ResponseJson(18, "Two input password mismatch", w, r)
 		return
 	default:
-		if password != passworded {
-			c.ResponseJson(18, "", w, r)
-			return
-		} else {
-			user := sql.User{}
-			err := c.Sql().Get(&user, "SELECT * FROM hm_user WHERE username = ? OR nickname = ? OR email = ?", username, nickname, email)
+		user := sql.User{}
+		err := c.Sql().Get(&user, "SELECT * FROM hm_user WHERE username = ? OR nickname = ? OR email = ?", username, nickname, email)
+		if err != nil {
+			ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+			if ip == "::1" {
+				ip = "127.0.0.1"
+			}
+			userSql := "INSERT INTO hm_user(username,password,nickname,email,remark,status,create_time,create_ip) VALUES(?,?,?,?,?,?,?,?)"
+			accessSql := "INSERT INTO hm_auth_role_access(uid,role_id) VALUES(?,?)"
+			tx := c.Sql().MustBegin()
+			id, err := tx.MustExec(userSql, username, c.Sha1PlusMd5(password), nickname, email, remark, status, time.Now().Unix(), ip).LastInsertId()
 			if err != nil {
-				ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-				if ip == "::1" {
-					ip = "127.0.0.1"
-				}
-				userSql := "INSERT INTO hm_user(username,password,nickname,email,remark,status,create_time,create_ip) VALUES(?,?,?,?,?,?,?,?)"
-				accessSql := "INSERT INTO hm_auth_role_access(uid,role_id) VALUES(?,?)"
-				tx := c.Sql().MustBegin()
-				id, err := tx.MustExec(userSql, username, c.Sha1PlusMd5(password), nickname, email, remark, status, time.Now().Unix(), ip).LastInsertId()
-				if err != nil {
-					c.Log().Debug().Err(err).Msg("Error")
-					c.ResponseJson(4, err.Error(), w, r)
-				}
-				tx.MustExec(accessSql, id, role)
-				err = tx.Commit()
-				if err != nil {
-					c.Log().Debug().Err(err).Msg("Error")
-					c.ResponseJson(4, err.Error(), w, r)
-				} else {
-					c.Cache().Del("allUser")
-					c.ResponseJson(1, "", w, r)
-				}
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			tx.MustExec(accessSql, id, role)
+			err = tx.Commit()
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				if user.Username == username {
-					c.ResponseJson(21, "", w, r)
-					return
-				} else if user.Nickname == nickname {
-					c.ResponseJson(22, "", w, r)
-					return
-				} else if user.Email == email {
-					c.ResponseJson(23, "", w, r)
-					return
-				} else {
-					c.ResponseJson(44, "", w, r)
-					return
-				}
+				c.Cache().ScanDel("user")
+				c.ResponseJson(1, "", w, r)
+			}
+		} else {
+			if user.Username == username {
+				c.ResponseJson(21, "Account name already exist", w, r)
+				return
+			} else if user.Nickname == nickname {
+				c.ResponseJson(22, "Nickname already exist", w, r)
+				return
+			} else if user.Email == email {
+				c.ResponseJson(23, "Email already exist", w, r)
+				return
+			} else {
+				c.ResponseJson(44, "Unknown error", w, r)
+				return
 			}
 		}
 	}
@@ -980,7 +969,6 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 		sqls := "SELECT * FROM hm_auth_role WHERE id = ?"
 		err := c.Sql().Get(&role, sqls, id)
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		c.Cache().SetAlwaysTime("role"+id, role)
@@ -992,7 +980,6 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 		sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
 		err := c.Sql().Select(&rule, sqls)
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		c.Cache().SetAlwaysTime("allmenu", rule)
@@ -1009,24 +996,6 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 		rule[k].Checked = iss
 	}
 	array := sql.RecursiveMenu(rule, 0, 0)
-	// for rk, rv := range array {
-	// 	if len(rv.Children) != 0 {
-	// 		for ck, cv := range rv.Children {
-	// 			if len(cv.Children) != 0 {
-	// 				for tk, tv := range cv.Children {
-	// 					if len(tv.Children) == 0 {
-	// 						for _, v := range ids {
-	// 							vint, _ := strconv.Atoi(v)
-	// 							if vint == tv.Id {
-	// 								array[rk].Children[ck].Children[tk].Checked = 1
-	// 							}
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 	data := make(map[string]interface{})
 	data["json"] = c.RowsJson(array)
 	data["id"] = id
@@ -1055,7 +1024,6 @@ func (c *SiteCtrl) SetRoleSubmit(w http.ResponseWriter, r *http.Request) {
 		tx.MustExec(sqls, ids, id)
 		err := tx.Commit()
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
 			c.Cache().Del("role" + id)
@@ -1074,12 +1042,9 @@ func (c *SiteCtrl) SetRoleSubmit(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) DelRole(w http.ResponseWriter, r *http.Request) {
 	id := r.PostFormValue("id")
-	isId := c.Regexp().Id(id)
-	if isId == false {
-		c.ResponseJson(11, "", w, r)
-	} else {
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
 		if id == "1" {
-			c.ResponseJson(12, "", w, r)
+			c.ResponseJson(12, "Super admin don't allow deletion", w, r)
 			return
 		} else {
 			roleSql := "DELETE FROM hm_auth_role WHERE id = ?"
@@ -1087,13 +1052,14 @@ func (c *SiteCtrl) DelRole(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(roleSql, id)
 			err := tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().Del("allrole")
+				c.Cache().ScanDel("role")
 				c.ResponseJson(1, "", w, r)
 			}
 		}
+	} else {
+		c.ResponseJson(11, "Invalid role id", w, r)
 	}
 }
 
@@ -1106,28 +1072,26 @@ func (c *SiteCtrl) DelRole(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) BatchDelRole(w http.ResponseWriter, r *http.Request) {
 	ids := r.PostFormValue("ids")
-	isIds := c.Regexp().IdGroup(ids)
-	if !isIds {
-		c.ResponseJson(11, "", w, r)
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if v == "1" {
+			c.ResponseJson(12, "Super admin don't allow deletion", w, r)
+			return
+		}
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid role id", w, r)
+			return
+		}
+	}
+	roleSql := fmt.Sprintf("DELETE FROM hm_auth_role WHERE id IN (%v)", ids)
+	tx := c.Sql().MustBegin()
+	tx.MustExec(roleSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		id := strings.Split(ids, ",")
-		for _, v := range id {
-			if v == "1" {
-				c.ResponseJson(12, "", w, r)
-				return
-			}
-		}
-		roleSql := fmt.Sprintf("DELETE FROM hm_auth_role WHERE id IN (%v)", ids)
-		tx := c.Sql().MustBegin()
-		tx.MustExec(roleSql)
-		err := tx.Commit()
-		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
-			c.ResponseJson(4, err.Error(), w, r)
-		} else {
-			c.Cache().Del("allrole")
-			c.ResponseJson(1, "", w, r)
-		}
+		c.Cache().ScanDel("role")
+		c.ResponseJson(1, "", w, r)
 	}
 }
 
@@ -1143,7 +1107,7 @@ func (c *SiteCtrl) AddRole(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 添加角色提交
+ * @description 添加��色提交
  * @English	add role submit
  * @homepage http://www.hemacms.com/
  * @author Nicholas Mars
@@ -1300,6 +1264,7 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{}, 4)
 	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
 	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	data["total"], data["rows"] = 0, []string{}
 	switch {
 	case ((vali.English(username) && vali.Length(username, 5, 20)) == false) && username != "":
 		data["status"], data["info"] = 11, "Invalid account"
@@ -1391,7 +1356,7 @@ func (c *SiteCtrl) OprateLog(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 获取操作日志
+ * @description 获取操作������
  * @English	Get oprate log
  * @homepage    http://www.hemacms.com/
  * @author Nicholas Mars

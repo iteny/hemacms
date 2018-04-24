@@ -19,13 +19,13 @@
     </div>
     <div id="hm_toolbar">
         <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:roleAdd"></a>
-        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleBatchDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:roleBatchDel"></a>
+        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:roleBatchDel"></a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',roleSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
         <form name="hm_search">
             <div class="hm_search">
-                <span language="html:roleSearch"></span>: <input type="text" name="name" class="easyui-validatebox"></input>
+                <span language="html:roleSearch"></span>: <input type="text" name="name" class="easyui-validatebox" data-options="required:false,validType:['nLanguageSpace','length[2,20]']"></input>
                 <a href="#" onclick="hm.ajaxSearch(roleSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
                 <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
             </div>
@@ -149,42 +149,18 @@ $('#hm_data').datagrid({
     }
 });
 hm.datagridResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
-function roleBatchDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userIdGroup = hm.language.userIdGroup ? hm.language.userIdGroup : "Account ID array is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
-    if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
-    } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
-    } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
-    }else{
-        parent.hm.notice("error", unknownError+data.info);
-    }
-}
 function roleDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
+        parent.hm.notice("error", hm.language.userAdminNoDel);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.delFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.delSuccess );
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError);
     }
 }
 function roleSearch(data){

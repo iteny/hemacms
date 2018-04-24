@@ -4,31 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>用户管理</title>
+    <title language="html:userManagementPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body onkeydown="hm.searchKey();">
-<form action="" id="hm-app">
+<form>
     <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addUser" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.userAdd]]</a>
-        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(userBatchDel,this)" data-url="/intendant/site/batchDelUser" class="easyui-linkbutton"  iconCls="icon-arrow_ns" plain="true">[[$store.state.language.userBatchDel]]</a>
-        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true">[[$store.state.language.reloadDatagrid]]</a>
+        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addUser" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:userAdd"></a>
+        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(userDel,this)" data-url="/intendant/site/batchDelUser" class="easyui-linkbutton"  iconCls="icon-arrow_ns" plain="true" language="html:userBatchDel"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',userSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
     <div id="hm_menu_tools">
-        <form name="datagird_tools">
-            <div id="hm_search">
-                [[$store.state.language.userSearch]]: <input type="text" name="username" class="easyui-validatebox"></input>
-                [[$store.state.language.userCreateTime]]: <input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
-                [[$store.state.language.userTo]]:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
-                <a href="#" onclick="hm.ajaxSearch(userSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true">[[$store.state.language.search]]</a>
-                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true">[[$store.state.language.clearSearch]]</a>
+        <form name="hm_search">
+            <div class="hm_search">
+                <span language="html:userSearch"></span>: <input type="text" name="username" class="easyui-validatebox" data-options="required:false,validType:['english','length[5,20]']"></input>
+                <span language="html:userCreateTime"></span>: <input type="text" name="dateFrom" class="easyui-datetimebox" data-options="editable:false">
+                <span language="html:userTo"></span>:<input type="text" name="dateTo" class="easyui-datetimebox" data-options="editable:false">
+                <a href="#" onclick="hm.ajaxSearch(userSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
+                <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
             </div>
         </form>
     </div>
@@ -38,10 +39,8 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var mehigh = document.documentElement.clientHeight-80;
 $('#hm_data').datagrid({
@@ -184,62 +183,50 @@ $('#hm_data').datagrid({
         }
     }
 });
-hm.datagridWidthResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
-function userBatchDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userIdGroup = hm.language.userIdGroup ? hm.language.userIdGroup : "Account ID array is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
-    if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
-    } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
-    } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
-    } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
-    }else{
-        parent.hm.notice("error", unknownError+data.info);
-    }
-}
+hm.datagridResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
 function userDel(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
+        parent.hm.notice("error", hm.language.userAdminNoDel);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.delFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.delSuccess );
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError);
     }
 }
 function userSearch(data){
-    var failed = hm.language.delFailed ? hm.language.delFailed : "Delete failed!",
-        success = hm.language.delSuccess ? hm.language.delSuccess : "Delete success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userId = hm.language.userId ? hm.language.userId : "Account ID is illegal!",
-        userAdminNoDel = hm.language.userAdminNoDel ? hm.language.userAdminNoDel : "Superadmin does not allow deletion!";
     if (data.status == 11) {
-        parent.hm.notice("error", userIdGroup + data.info);
+        parent.hm.notice("warn",  data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", userAdminNoDel + data.info);
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 54){
+        parent.hm.notice("warn", hm.language.noFoundData);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.searchFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
-        parent.hm.refreshTab();
+        parent.hm.notice("success", hm.language.searchSuccess );
+        $('.easyui-linkbutton').linkbutton();
+        $('.easyui-tooltip').tooltip({
+            position: 'bottom',
+            onShow: function() {
+                $(this).tooltip('tip').css({
+                    backgroundColor: '#f39c12',
+                    borderColor: '#f39c12',
+                    color: '#fff',
+                    size: '18px',
+                });
+            }
+        });
     }else{
-        parent.hm.notice("error", unknownError+data.info);
+        parent.hm.notice("error", hm.language.unknownError+data.info);
     }
 }
 </script>
