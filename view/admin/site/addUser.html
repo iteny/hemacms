@@ -46,8 +46,8 @@
                     <td width="160"><input class="select length_3" name="role" value="2"></td>
                 </tr>
                 <tr>
-                    <td width="40" language="table:isshow"></td>
-                    <td width="190"><input class="switch length_5" name="status" value="1"></td>
+                    <td width="40" language="table:lock"></td>
+                    <td width="190"><input class="switch length_5"><input type="hidden" name="status" value="1" class="easyui-validatebox" data-options="required:false,validType:['status','length[1,1]']"></td>
                 </tr>
             </tbody>
         </table>
@@ -67,17 +67,7 @@
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script>
 var group = $.parseJSON({{.role}});
-var lang = '';
-switch ($.cookie('back-language')) {
-    case 'cn':
-        lang = 'name';
-        break;
-    case 'en':
-        lang = 'en';
-        break;
-    default:
-        lang = 'name';
-}
+var lang = hm.getLanguage('field');
 $('.select[name=role]').combobox({
     required: true,
     valueField:'id',
@@ -88,16 +78,16 @@ $('.select[name=role]').combobox({
 		return node[lang];
 	}
 });
-$('.switch[name=status]').switchbutton({
+$('.switch').switchbutton({
     checked: true,
     reversed: true,
     onText: hm.language.on,
     offText: hm.language.off,
     onChange: function(checked) {
         if(checked){
-            $('input[name=isshow]').val(1);
+            $('input[name=status]').val(1);
         }else{
-            $('input[name=isshow]').val(0);
+            $('input[name=status]').val(0);
         }
 
     }

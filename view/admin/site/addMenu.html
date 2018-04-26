@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>添加菜单</title>
+    <title language="html:addMenuPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
     <form id="hm-app" action="/intendant/site/addMenuSubmit">
@@ -17,35 +18,35 @@
             <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
                 <tbody>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.superiorMenu]]&nbsp;:&nbsp;</td>
+                        <td width="40" language="table:superiorMenu"></td>
                         <td width="160"><input id="menuselect" class="length_3" name="pid" value="{{.pid}}"></td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuChinese]]&nbsp;:&nbsp;</td>
-                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true,validType:'menuName'" /></td>
+                        <td width="40" language="table:menuChinese"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true,validType:['chinese','length[2,50]']"></td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuEnglish]]&nbsp;:&nbsp;</td>
-                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="en" data-options="required:true,validType:'english'" /></td>
+                        <td width="40" language="table:menuEnglish"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,50]']"></td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuUrl]]&nbsp;:&nbsp;</td>
-                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="url" data-options="required:true,validType:'menuUrl'" /></td>
+                        <td width="40" language="table:menuUrl"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="url" data-options="required:true,validType:['menuUrl','length[2,50]']"></td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuSort]]&nbsp;:&nbsp;</td>
-                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:'sort'" /></td>
+                        <td width="40" language="table:menuSort"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.menuIcon]]&nbsp;:&nbsp;</td>
+                        <td width="40" language="table:menuIcon"></td>
                         <td>
                             <input id="hm_menu_icons_input" name="icon" type="hidden" value="icon-2012080404391">
                             <strong id="hm_menu_icons"><i class='icon-2012080404391'></i></strong>
-                            <a href="#" class="easyui-linkbutton" plain="true" onclick="parent.hm.showMenuIcons(hm.language.selectIcons)">[[$store.state.language.selectIcons]]</a>
+                            <a href="#" class="easyui-linkbutton" plain="true" onclick="parent.hm.showMenuIcons(hm.language.selectIcons)" language="html:selectIcons"></a>
                         </td>
                     </tr>
                     <tr>
-                        <td width="40">&nbsp;&nbsp;&nbsp;[[$store.state.language.isshow]]&nbsp;:&nbsp;</td>
+                        <td width="40" language="table:isshow"></td>
                         <td width="190"><input id="isshow"></td>
                         <input type="hidden" name="isshow" value="1">
                     </tr>
@@ -53,9 +54,9 @@
             </table>
         </div>
         <div id="hm_toolbar">
-            <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
-            <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
-            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(addUserFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true">[[$store.state.language.ajaxAdd]]</a>
+            <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+            <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(addUserFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:ajaxAdd"></a>
         </div>
     </form>
 </body>
@@ -63,10 +64,8 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script type="text/javascript">
 var data = [];
 var menudata = $.parseJSON({{.json}});
@@ -75,17 +74,7 @@ data.push(JSON.parse(topdata));
 $.each(menudata, function(index, obj) {
     data.push(obj);
 });
-var lang = '';
-switch ($.cookie('back-language')) {
-    case 'cn':
-        lang = 'text';
-        break;
-    case 'en':
-        lang = 'en';
-        break;
-    default:
-        lang = 'text';
-}
+var lang = hm.getLanguage('easyui-tree');
 $('#menuselect').combotree({
     required: true,
     textField: lang,
@@ -107,49 +96,35 @@ $('#isshow').switchbutton({
     }
 });
 function addUserFunc(data){
-    var failed = hm.language.addFailed ? hm.language.addFailed : "Add failed!",
-        success = hm.language.addSuccess ? hm.language.addSuccess : "Add successed!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        noAuth = hm.language.noAuth ? hm.language.noAuth : "You have no authority",
-        menuCheckName = hm.language.menuCheckName ? hm.language.menuCheckName : "Chinese name already exists!",
-        menuCheckUrl = hm.language.menuCheckUrl ? hm.language.menuCheckUrl : "Menu URL already exists!",
-        menuCheckEn = hm.language.menuCheckEn ? hm.language.menuCheckEn : "English name already exists!",
-        menuTestPid = hm.language.menuTestPid ? hm.language.menuTestPid : "The upper menu ID input is illegal!",
-        menuTestName = hm.language.menuTestName ? hm.language.menuTestName : "Chinese name must be Chinese!",
-        menuTestSort = hm.language.menuTestSort ? hm.language.menuTestSort : "Menu ordering is illegal!",
-        menuTestIcon = hm.language.menuTestIcon ? hm.language.menuTestIcon : "Menu icon entry is illegal!",
-        menuTestIsshow = hm.language.menuTestIsshow ? hm.language.menuTestIsshow : "Menu isshow input is illegal!",
-        menuTestUrl = hm.language.menuTestUrl ? hm.language.menuTestUrl : "Menu url entry is illegal!",
-        menuTestEn = hm.language.menuTestEn ? hm.language.menuTestEn : "English name only allows English and spaces!";
     if (data.status == 21) {
-        parent.hm.notice("error", menuCheckName + data.info);
+        parent.hm.notice("warn", hm.language.menuCheckName + data.info);
     } else if(data.status == 22){
-        parent.hm.notice("error", menuCheckUrl + data.info);
+        parent.hm.notice("warn", hm.language.menuCheckUrl + data.info);
     } else if(data.status == 23){
-        parent.hm.notice("error", menuCheckEn + data.info);
+        parent.hm.notice("warn", hm.language.menuCheckEn + data.info);
     } else if (data.status == 66) {
-        parent.hm.notice("error", noAuth);
+        parent.hm.notice("error", hm.language.noAuth);
     } else if(data.status == 11){
-        parent.hm.notice("error", menuTestPid + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", menuTestName + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 13){
-        parent.hm.notice("error", menuTestSort + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 14){
-        parent.hm.notice("error", menuTestIcon + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 15){
-        parent.hm.notice("error", menuTestIsshow + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 16){
-        parent.hm.notice("error", menuTestUrl + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 17){
-        parent.hm.notice("error", menuTestEn + data.info);
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.addFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.addSuccess);
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error",unknownError+ data.info);
+        parent.hm.notice("error",hm.language.unknownError);
     }
 }
 </script>

@@ -5,21 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
+    <title language="html:homePage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
-    <style>
-    .hm_panel{
-        /*border: 1px solid red;*/
-    }
-
-    </style>
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
-<div id="hm-app" class="easyui-layout" data-options="fit:true" style="width:100%;">
+<div class="easyui-layout" data-options="fit:true" style="width:100%;">
     <div id="hm_home_box" data-options="region:'center'" style="height:800px;width:100%;padding:10px;">
         <div class="hm_top_box" style="">
             <a class="hm_pos" data-url="html/main.html" data-icon="larry-neirongguanli1">
@@ -67,37 +62,37 @@
         </div>
         <div class="hm_panel_box">
             <div class="hm_panel">
-                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>用户信息</div>
+                <div class="hm_panel_title" language="html:homeUserInfo"></div>
                 <div class="hm_panel_body hm_scrollbar_1">
                     <div class="frame_form_table" style="margin:0;">
                         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
                             <tbody>
                                 <tr>
-                                    <td align="right" width="50">&nbsp;&nbsp;&nbsp;你好&nbsp;:&nbsp;</td>
+                                    <td align="right" width="50" language="table:homeHello"></td>
                                     <td width="180">{{.username}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;所属角色&nbsp;:&nbsp;</td>
-                                    <td>{{.rolename}}</td>
+                                    <td align="right" language="table:homeRoleName">&nbsp;&nbsp;&nbsp;所属角色&nbsp;:&nbsp;</td>
+                                    <td id="role_name"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;项目作者&nbsp;:&nbsp;</td>
-                                    <td>河马叔叔[QQ:8192332][Email:iteny@icloud.com]</td>
+                                    <td align="right" language="table:homeProjectAuthor">&nbsp;&nbsp;&nbsp;项目作者&nbsp;:&nbsp;</td>
+                                    <td language="html:homeProjectAuthorEcho"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;产品名称&nbsp;:&nbsp;</td>
-                                    <td>河马内容管理系统[<a href="http://www.hemacms.com">访问官网</a>]</td>
+                                    <td align="right" language="table:homeProductName">&nbsp;&nbsp;&nbsp;产品名称&nbsp;:&nbsp;</td>
+                                    <td language="html:homeProductNameEcho"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;项目托管&nbsp;:&nbsp;</td>
+                                    <td align="right" language="table:homeProjectTrusteeship">&nbsp;&nbsp;&nbsp;项目托管&nbsp;:&nbsp;</td>
                                     <td><a href="https://github.com/iteny/hemacms">github</a>&nbsp;&nbsp;<a href="https://gitee.com/iteny/hippocms">码云</a></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;用户类型&nbsp;:&nbsp;</td>
-                                    <td>终身免费</td>
+                                    <td align="right" language="table:homeUserType">&nbsp;&nbsp;&nbsp;用户类型&nbsp;:&nbsp;</td>
+                                    <td language="html:homeLifetimeFree"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">&nbsp;&nbsp;&nbsp;版本号&nbsp;:&nbsp;</td>
+                                    <td align="right" language="table:homeVersion">&nbsp;&nbsp;&nbsp;版本号&nbsp;:&nbsp;</td>
                                     <td>1.0.0</td>
                                 </tr>
                             </tbody>
@@ -108,41 +103,41 @@
         </div>
         <div class="hm_panel_box">
             <div class="hm_panel">
-                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>系统信息</div>
+                <div class="hm_panel_title" language="html:homeSystemInfo"></div>
                 <div class="hm_panel_body hm_scrollbar_2">
                     <div class="frame_form_table" style="margin:0;">
                         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
                             <tbody>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;服务器时间&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeServerTime"></td>
                                     <td width="200" id="serverTime"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;操作系统&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeOperatingSystem"></td>
                                     <td>{{.os}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;系统架构&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeSystemArchitecture"></td>
                                     <td>{{.arch}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;CPU型号&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeCpuVersion"></td>
                                     <td>{{.cpuModelName}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;正常运行时间&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeUptime"></td>
                                     <td id="uptime"></td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;主机名&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeHostName"></td>
                                     <td>{{.hostname}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;进程号&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeProcessNumber"></td>
                                     <td>{{.procs}}</td>
                                 </tr>
                                 <tr>
-                                    <td align="right" width="60">&nbsp;&nbsp;&nbsp;内核版本&nbsp;:&nbsp;</td>
+                                    <td align="right" width="100" language="table:homeKernelVersion"></td>
                                     <td>{{.kernelVersion}}</td>
                                 </tr>
                             </tbody>
@@ -153,7 +148,7 @@
         </div>
         <div class="hm_panel_box">
             <div class="hm_panel">
-                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>服务器占用</div>
+                <div class="hm_panel_title" language="html:homeServerOccupancy"></div>
                 <div class="hm_panel_body hm_scrollbar_3">
                     <div class="frame_form_table" style="margin:0;">
                         <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
@@ -198,44 +193,24 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
+switch ($.cookie('back-language')) {
+    case 'cn':
+        $('#role_name').html({{.rolename}});
+        break;
+    case 'en':
+        $('#role_name').html({{.roleen}});
+        break;
+    default:
+        $('#role_name').html({{.rolename}});
+}
 var meWidth = document.documentElement.clientWidth;
 $('.hm_panel .panel').width(meWidth);
 $('#serverTime').html(hm.dateFormat({{.serverTime}}));
 $('#uptime').html(hm.dateFormat({{.uptime}}));
-// var str = '';
-// //cpu监控
-// $.each({{.cpuUserd}}, function(k, v) {
-//     str += '<tr>';
-//     str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
-//     str += '<td width="400">';
-//     str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
-//     str += '</td>';
-//     str += '</tr>';
-// });
-// //硬盘监控
-// str += '<tr>';
-// str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
-// str += '<td width="400">';
-// str += '<div>硬盘总容量:' + {{.diskTotal}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + {{.diskUserd}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + {{.diskFree}} + 'GB</div>';
-// str += '<div class="easyui-progressbar" data-options="value:' + Math.round({{.diskUserdPercent}}) + '" style="height:22px;width:400px;"></div>';
-// str += '</td>';
-// str += '</tr>';
-// //内存监控
-// str += '<tr>';
-// str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
-// str += '<td width="400">';
-// str += '<div>总物理内存:' + {{.memTotal}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + {{.memUserd}} + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + {{.memFree}} + 'GB</div>';
-// str += '<div class="easyui-progressbar" data-options="value:' + Math.round({{.memUserdPercent}}) + '" style="height:22px;width:400px;"></div>';
-// str += '</td>';
-// str += '</tr>';
-// $('#hm_system_monitor').html(str);
-// $('.easyui-progressbar').progressbar();
 hm.ajaxPolling();
-setInterval('hm.ajaxPolling()',{{.ajaxPolling}});//轮询执行，500ms一次
+setInterval('hm.ajaxPolling()',{{.ajaxPolling}} * 1000);//轮询执行，500ms一次
 </script>
 </html>

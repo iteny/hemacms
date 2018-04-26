@@ -41,8 +41,11 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	c.Log().CheckErr("Session Get Error", err)
 	rolename, err := session.GetString("rolename")
 	c.Log().CheckErr("Session Get Error", err)
+	roleen, err := session.GetString("roleen")
+	c.Log().CheckErr("Session Get Error", err)
 	data["username"] = username //用户名
 	data["rolename"] = rolename //角色名
+	data["roleen"] = roleen     //角色名
 	data["ajaxPolling"] = c.Config().Value("common", "ajaxPolling")
 	data["arch"] = runtime.GOARCH          //系统架构
 	data["serverTime"] = time.Now().Unix() //服务器时间

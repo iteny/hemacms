@@ -82,31 +82,21 @@ $('#hm_data').datagrid({
             sortable: true,
         },{
             field: 'username',
-            title: hm.language.userName ? hm.language.userName : 'Account',
+            title: hm.language.userName,
             width: 60,
             align: 'center',
         },{
             field: 'role',
-            title: hm.language.userRoleName ? hm.language.userRoleName : 'Role name',
+            title: hm.language.userRoleName,
             width: 60,
             align: 'center',
             formatter: function(value, row, index) {
-                var lang = '';
-                switch ($.cookie('back-language')) {
-                    case 'cn':
-                        lang = value;
-                        break;
-                    case 'en':
-                        lang = row.roleen;
-                        break;
-                    default:
-                        lang = value;
-                }
+                var lang = hm.getLanguage('datagird',value,row);
                 return lang;
             }
         },{
             field: 'create_time',
-            title: hm.language.userCreateTime ? hm.language.userCreateTime : 'Create time',
+            title: hm.language.userCreateTime,
             width: 75,
             align: 'center',
             formatter: function(value, row, index){
@@ -115,17 +105,17 @@ $('#hm_data').datagrid({
             sortable: true,
         },{
             field: 'create_ip',
-            title: hm.language.userCreateIp ? hm.language.userCreateIp : 'Create ip',
+            title: hm.language.userCreateIp,
             width: 60,
             align: 'center',
         },{
             field: 'email',
-            title: hm.language.userEmail ? hm.language.userEmail : 'Email',
+            title: hm.language.userEmail,
             width: 60,
             align: 'center',
         },{
             field: 'remark',
-            title: hm.language.remark ? hm.language.remark : 'Remark',
+            title: hm.language.remark,
             width: 40,
             align: 'center',
             formatter: function(value,row,index){
@@ -137,19 +127,19 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'status',
-            title: hm.language.isshow ? hm.language.isshow : 'Isshow',
+            title: hm.language.isshow,
             width: 30,
             align: 'center',
             formatter: function(value, row, index) {
                 if(value){
-                    return '<i class="fa fa-check" style="color:white;background-color:green;border-radius:25px;padding:2px;"></i>';
+                    return '<i class="fa fa-check hm_fa_ok"></i>';
                 }else{
-                    return '<i class="fa fa-remove" style="color:white;background-color:red;border-radius:25px;padding:2px;"></i>';
+                    return '<i class="fa fa-remove hm_fa_no"></i>';
                 }
             }
         },{
             field: 'cz',
-            title: hm.language.manageOperat ? hm.language.manageOperat : 'Management operation',
+            title: hm.language.manageOperat,
             width: 120,
             align: 'center',
             formatter: function(value, row, index) {

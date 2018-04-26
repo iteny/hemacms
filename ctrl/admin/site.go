@@ -51,7 +51,6 @@ func (c *SiteCtrl) GetMenu(w http.ResponseWriter, r *http.Request) {
 		sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
 		err := c.Sql().Select(&rule, sqls)
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		c.Cache().SetAlwaysTime("allmenu", rule)
@@ -73,7 +72,6 @@ func (c *SiteCtrl) SortMenu(w http.ResponseWriter, r *http.Request) {
 	result, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		c.ResponseJson(4, ""+err.Error(), w, r)
-		c.Log().Debug().Err(err).Msg("Error")
 	}
 	json.Unmarshal(result, &sortMenu)
 	var menuk []string
@@ -84,14 +82,14 @@ func (c *SiteCtrl) SortMenu(w http.ResponseWriter, r *http.Request) {
 	bf.WriteString("UPDATE hm_auth_rule SET sort = CASE id ")
 	// menu := make(map[string]string, 0)
 	for _, v := range menuk {
-		mid := c.Regexp().Id(v)
-		msort := c.Regexp().Sort(sortMenu[v])
+		mid := vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)
+		msort := vali.NumericNoHeadZero(sortMenu[v]) && vali.Length(v, 1, 3)
 		switch false {
 		case mid:
-			c.ResponseJson(11, "", w, r)
+			c.ResponseJson(11, "Invalid menu id", w, r)
 			return
 		case msort:
-			c.ResponseJson(12, "", w, r)
+			c.ResponseJson(12, "Invalid sort", w, r)
 			return
 		default:
 			bf.WriteString(fmt.Sprintf("WHEN %v THEN %v ", v, sortMenu[v]))
@@ -133,7 +131,6 @@ func (c *SiteCtrl) IconsCls(w http.ResponseWriter, r *http.Request) {
 	}
 	var ss []string
 	s := string(dat)
-	// fmt.Printf("%#v", s)
 	for _, v := range strings.Split(s, "\n") {
 		v = strings.TrimSpace(v)
 		if v == "" {
@@ -141,8 +138,6 @@ func (c *SiteCtrl) IconsCls(w http.ResponseWriter, r *http.Request) {
 		}
 		ss = append(ss, v)
 	}
-	fmt.Println(ss)
-	// s := strings.Split(dat, "}")
 	fmt.Fprint(w, c.RowsJson(ss))
 }
 
@@ -161,7 +156,6 @@ func (c *SiteCtrl) AddMenu(w http.ResponseWriter, r *http.Request) {
 		sqls := "SELECT * FROM hm_auth_rule"
 		err := c.Sql().Select(&rule, sqls)
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		c.Cache().SetAlwaysTime("allmenu", rule)
@@ -170,7 +164,6 @@ func (c *SiteCtrl) AddMenu(w http.ResponseWriter, r *http.Request) {
 	ar := sql.RecursiveMenuLevel(rule, 0, 0)
 	data["json"] = c.RowsJson(ar)
 	pid := chi.URLParam(r, "menuPid")
-	data["currentUrl"] = r.RequestURI
 	data["pid"] = pid
 	c.Template(w, r, data, "./view/admin/site/addMenu.html")
 }
@@ -185,30 +178,27 @@ func (c *SiteCtrl) AddMenu(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) AddMenuSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow")
-	isPid, isName := c.Regexp().Id(pid), c.Regexp().MenuName(name)
-	isSort, isIcon, isIsshow := c.Regexp().Sort(sort), c.Regexp().Icon(icon), c.Regexp().Status(isshow)
-	isUrl, isEn := c.Regexp().UrlAdmin(url), c.Regexp().English(en)
 	switch false {
-	case isPid:
-		c.ResponseJson(11, "", w, r)
+	case vali.NumericNoHeadZero(pid) && vali.Length(pid, 1, 8):
+		c.ResponseJson(11, "Invalid menu pid", w, r)
 		return
-	case isName:
-		c.ResponseJson(12, "", w, r)
+	case vali.Chinese(name) && vali.Length(name, 2, 50):
+		c.ResponseJson(12, "Invalid chinese menu name", w, r)
 		return
-	case isSort:
-		c.ResponseJson(13, "", w, r)
+	case vali.NumericNoHeadZero(sort) && vali.Length(sort, 1, 3):
+		c.ResponseJson(13, "Invalid sort", w, r)
 		return
-	case isIcon:
-		c.ResponseJson(14, "", w, r)
+	case vali.IconCss(icon) && vali.Length(icon, 2, 50):
+		c.ResponseJson(14, "Invalid icon css", w, r)
 		return
-	case isIsshow:
-		c.ResponseJson(15, "", w, r)
+	case vali.Status(isshow):
+		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case isUrl:
-		c.ResponseJson(16, "", w, r)
+	case vali.MenuUrl(url) && vali.Length(url, 2, 50):
+		c.ResponseJson(16, "Invalid menu url", w, r)
 		return
-	case isEn:
-		c.ResponseJson(17, "", w, r)
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
+		c.ResponseJson(17, "Invalid english menu name", w, r)
 		return
 	default:
 		rule := sql.AuthRule{}
@@ -219,7 +209,6 @@ func (c *SiteCtrl) AddMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(sqls, url, name, pid, isshow, sort, icon, 1, en)
 			err = tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
 				c.Cache().Del("allmenu")
@@ -227,16 +216,16 @@ func (c *SiteCtrl) AddMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if rule.Name == name {
-				c.ResponseJson(21, "", w, r)
+				c.ResponseJson(21, "Menu chinese name already exist", w, r)
 				return
 			} else if rule.Url == url {
-				c.ResponseJson(22, "", w, r)
+				c.ResponseJson(22, "Menu url already exist", w, r)
 				return
 			} else if rule.En == en {
-				c.ResponseJson(23, "", w, r)
+				c.ResponseJson(23, "Menu english name already exist", w, r)
 				return
 			} else {
-				c.ResponseJson(44, "", w, r)
+				c.ResponseJson(44, "Unknown error", w, r)
 				return
 			}
 		}
@@ -256,7 +245,6 @@ func (c *SiteCtrl) EditMenu(w http.ResponseWriter, r *http.Request) {
 	ruleSingle := sql.AuthRule{}
 	err := c.Sql().Get(&ruleSingle, "SELECT * FROM hm_auth_rule WHERE id = ?", id)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
 	data["menu"] = ruleSingle
@@ -267,14 +255,12 @@ func (c *SiteCtrl) EditMenu(w http.ResponseWriter, r *http.Request) {
 		sqls := "SELECT * FROM hm_auth_rule"
 		err := c.Sql().Select(&allrule, sqls)
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		}
 		c.Cache().SetAlwaysTime("allmenu", allrule)
 	}
 	ar := sql.RecursiveMenuLevel(allrule, 0, 0)
 	data["json"] = c.RowsJson(ar)
-	data["currentUrl"] = r.RequestURI
 	c.Template(w, r, data, "./view/admin/site/editMenu.html")
 }
 
@@ -288,33 +274,30 @@ func (c *SiteCtrl) EditMenu(w http.ResponseWriter, r *http.Request) {
 func (c *SiteCtrl) EditMenuSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow, id := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow"), r.PostFormValue("id")
-	isPid, isName, isId := c.Regexp().Id(pid), c.Regexp().MenuName(name), c.Regexp().Id(id)
-	isSort, isIcon, isIsshow := c.Regexp().Sort(sort), c.Regexp().Icon(icon), c.Regexp().Status(isshow)
-	isUrl, isEn := c.Regexp().UrlAdmin(url), c.Regexp().English(en)
 	switch false {
-	case isPid:
-		c.ResponseJson(11, "", w, r)
+	case vali.NumericNoHeadZero(pid) && vali.Length(pid, 1, 8):
+		c.ResponseJson(11, "Invalid menu pid", w, r)
 		return
-	case isName:
-		c.ResponseJson(12, "", w, r)
+	case vali.Chinese(name) && vali.Length(name, 2, 50):
+		c.ResponseJson(12, "Invalid chinese menu name", w, r)
 		return
-	case isSort:
-		c.ResponseJson(13, "", w, r)
+	case vali.NumericNoHeadZero(sort) && vali.Length(sort, 1, 3):
+		c.ResponseJson(13, "Invalid sort", w, r)
 		return
-	case isIcon:
-		c.ResponseJson(14, "", w, r)
+	case vali.IconCss(icon) && vali.Length(icon, 2, 50):
+		c.ResponseJson(14, "Invalid icon css", w, r)
 		return
-	case isIsshow:
-		c.ResponseJson(15, "", w, r)
+	case vali.Status(isshow):
+		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case isUrl:
-		c.ResponseJson(16, "", w, r)
+	case vali.MenuUrl(url) && vali.Length(url, 2, 50):
+		c.ResponseJson(16, "Invalid menu url", w, r)
 		return
-	case isEn:
-		c.ResponseJson(17, "", w, r)
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
+		c.ResponseJson(17, "Invalid english menu name", w, r)
 		return
-	case isId:
-		c.ResponseJson(18, "", w, r)
+	case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+		c.ResponseJson(18, "Invalid menu id", w, r)
 		return
 	default:
 		rule := sql.AuthRule{}
@@ -325,7 +308,6 @@ func (c *SiteCtrl) EditMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			tx.MustExec(sqls, url, name, pid, isshow, sort, icon, 1, en, id)
 			err := tx.Commit()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
 				c.Cache().Del("allmenu")
@@ -333,16 +315,16 @@ func (c *SiteCtrl) EditMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if rule.Name == name {
-				c.ResponseJson(21, "", w, r)
+				c.ResponseJson(21, "Menu chinese name already exist", w, r)
 				return
 			} else if rule.Url == url {
-				c.ResponseJson(22, "", w, r)
+				c.ResponseJson(22, "Menu url already exist", w, r)
 				return
 			} else if rule.En == en {
-				c.ResponseJson(23, "", w, r)
+				c.ResponseJson(23, "Menu english name already exist", w, r)
 				return
 			} else {
-				c.ResponseJson(44, "", w, r)
+				c.ResponseJson(44, "Unknown error", w, r)
 				return
 			}
 		}
@@ -358,11 +340,7 @@ func (c *SiteCtrl) EditMenuSubmit(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 	id := r.PostFormValue("id")
-	isId := c.Regexp().Id(id)
-	if isId == false {
-		c.ResponseJson(11, "", w, r)
-		return
-	} else {
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
 		rule := []sql.AuthRule{}
 		if rows, found := c.Cache().Get("allmenu"); found {
 			rule = rows.([]sql.AuthRule)
@@ -370,7 +348,6 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 			sqls := "SELECT * FROM hm_auth_rule"
 			err := c.Sql().Select(&rule, sqls)
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("错���")
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			c.Cache().SetAlwaysTime("allmenu", rule)
@@ -381,12 +358,14 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
 		tx.MustExec(delSql)
 		err := tx.Commit()
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
 			c.Cache().Del("allmenu")
 			c.ResponseJson(1, "", w, r)
 		}
+	} else {
+		c.ResponseJson(11, "Invalid menu id", w, r)
+		return
 	}
 }
 
@@ -399,7 +378,6 @@ func (c *SiteCtrl) DelMenuSubmit(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) System(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
-	data["sqlType"] = c.Config().Value("sql", "sqlType")
 	data["port"] = c.Config().Int("servSet", "port")
 	data["readTimeout"] = c.Config().Int("servSet", "readTimeout")
 	data["writeTimeout"] = c.Config().Int("servSet", "writeTimeout")
@@ -418,41 +396,33 @@ func (c *SiteCtrl) System(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) EditSystem(w http.ResponseWriter, r *http.Request) {
-	sqlType, port, language := r.PostFormValue("sqlType"), r.PostFormValue("port"), r.PostFormValue("language")
+	port, language := r.PostFormValue("port"), r.PostFormValue("language")
 	readTimeout, writeTimeout := r.PostFormValue("readTimeout"), r.PostFormValue("writeTimeout")
 	terminalLog, sqlLog := r.PostFormValue("terminalLog"), r.PostFormValue("sqlLog")
 	ajaxPolling := r.PostFormValue("ajaxPolling")
-	isSqlType, isPort, isLanguage := c.Regexp().SqlType(sqlType), c.Regexp().Port(port), c.Regexp().English(language)
-	isReadTimeout, isWriteTimeout := c.Regexp().ReadTimeout(readTimeout), c.Regexp().WriteTimeout(writeTimeout)
-	isTerminalLog, isSqlLog := c.Regexp().OnOff(terminalLog), c.Regexp().OnOff(sqlLog)
-	isAjaxPolling := c.Regexp().AjaxPolling(ajaxPolling)
 	switch false {
-	case isSqlType:
-		c.ResponseJson(11, "", w, r)
+	case vali.NumericNoHeadZero(port) && vali.Length(port, 1, 4):
+		c.ResponseJson(12, "Invalid http port", w, r)
 		return
-	case isPort:
-		c.ResponseJson(12, "", w, r)
+	case vali.NumericNoHeadZero(readTimeout) && vali.Length(readTimeout, 1, 5):
+		c.ResponseJson(13, "Invalid read timeout", w, r)
 		return
-	case isReadTimeout:
-		c.ResponseJson(13, "", w, r)
+	case vali.NumericNoHeadZero(writeTimeout) && vali.Length(writeTimeout, 1, 5):
+		c.ResponseJson(14, "Invalid write timeout", w, r)
 		return
-	case isWriteTimeout:
-		c.ResponseJson(14, "", w, r)
+	case vali.MultiLanguage(language):
+		c.ResponseJson(15, "Invalid default language", w, r)
 		return
-	case isLanguage:
-		c.ResponseJson(15, "", w, r)
+	case vali.Reg(terminalLog, `on|off`):
+		c.ResponseJson(16, "Invalid terminal log", w, r)
 		return
-	case isTerminalLog:
-		c.ResponseJson(16, "", w, r)
+	case vali.Reg(sqlLog, `on|off`):
+		c.ResponseJson(17, "Invalid sql log", w, r)
 		return
-	case isSqlLog:
-		c.ResponseJson(17, "", w, r)
-		return
-	case isAjaxPolling:
+	case vali.NumericNoHeadZero(ajaxPolling) && vali.Length(ajaxPolling, 1, 3):
 		c.ResponseJson(18, "", w, r)
 		return
 	default:
-		c.Config().SetValue("sql", "sqlType", sqlType)
 		c.Config().SetValue("servSet", "port", port)
 		c.Config().SetValue("servSet", "readTimeout", readTimeout)
 		c.Config().SetValue("servSet", "writeTimeout", writeTimeout)
@@ -462,20 +432,11 @@ func (c *SiteCtrl) EditSystem(w http.ResponseWriter, r *http.Request) {
 		c.Config().SetValue("common", "ajaxPolling", ajaxPolling)
 		err := c.Config().Save("./ini/hemacms.ini")
 		if err != nil {
-			c.Log().Debug().Err(err).Msg("Error")
 			c.ResponseJson(4, err.Error(), w, r)
 		} else {
-			homeLanguage := &http.Cookie{
-				Name:     "back-language",
-				Value:    language,
-				Path:     "/",
-				HttpOnly: false,
-				MaxAge:   80000,
-			}
-			http.SetCookie(w, homeLanguage)
+			c.SetCookie("back-language", language, 0, w)
 			err = c.Config().Reload()
 			if err != nil {
-				c.Log().Debug().Err(err).Msg("Error")
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
 				c.ResponseJson(1, "", w, r)
@@ -770,12 +731,10 @@ func (c *SiteCtrl) EditUser(w http.ResponseWriter, r *http.Request) {
 	accessSingle := sql.AuthRoleAccess{}
 	err := c.Sql().Get(&userSingle, "SELECT * FROM hm_user WHERE id = ?", id)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
 	err = c.Sql().Get(&accessSingle, "SELECT * FROM hm_auth_role_access WHERE uid = ?", id)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
 	data["user"] = userSingle
@@ -784,7 +743,6 @@ func (c *SiteCtrl) EditUser(w http.ResponseWriter, r *http.Request) {
 	role := []sql.AuthRole{}
 	err = c.Sql().Select(&role, roleSql)
 	if err != nil {
-		c.Log().Debug().Err(err).Msg("Error")
 		c.ResponseJson(4, err.Error(), w, r)
 	}
 	data["currentUrl"] = r.RequestURI
@@ -803,73 +761,67 @@ func (c *SiteCtrl) EditUserSubmit(w http.ResponseWriter, r *http.Request) {
 	username, password, passworded := r.PostFormValue("username"), r.PostFormValue("password"), r.PostFormValue("passworded")
 	nickname, email, id := r.PostFormValue("nickname"), r.PostFormValue("email"), r.PostFormValue("id")
 	remark, role, status := r.PostFormValue("remark"), r.PostFormValue("role"), r.PostFormValue("status")
-	isUsername, isPassword, isId := c.Regexp().Username(username), c.Regexp().Password(password), c.Regexp().Id(id)
-	isNickname, isEmail, isRemark := c.Regexp().Nickname(nickname), c.Regexp().Email(email), c.Regexp().Remark(remark)
-	isRole, isStatus := c.Regexp().Id(role), c.Regexp().Status(status)
 	switch false {
-	case isUsername:
-		c.ResponseJson(11, "", w, r)
+	case vali.EnglishNumeric(username) && vali.Length(username, 5, 20):
+		c.ResponseJson(11, "Invalid account name", w, r)
 		return
-	case isPassword:
-		c.ResponseJson(12, "", w, r)
+	case vali.EnglishNumeric(password) && vali.Length(password, 5, 15):
+		c.ResponseJson(12, "Invalid password", w, r)
 		return
-	case isNickname:
-		c.ResponseJson(13, "", w, r)
+	case ((vali.Chinese(nickname) || vali.EnglishSpace(nickname)) && vali.Length(nickname, 2, 50)) == true:
+		c.ResponseJson(13, "Invalid nickname", w, r)
 		return
-	case isEmail:
-		c.ResponseJson(14, "", w, r)
+	case vali.Email(email) && vali.Length(email, 4, 50):
+		c.ResponseJson(14, "Invalid email", w, r)
 		return
-	case isRemark:
-		c.ResponseJson(15, "", w, r)
+	case vali.Article(remark) && vali.Length(remark, 2, 255):
+		c.ResponseJson(15, "Invalid remark", w, r)
 		return
-	case isRole:
-		c.ResponseJson(16, "", w, r)
+	case vali.NumericNoHeadZero(role) && vali.Length(role, 1, 8):
+		c.ResponseJson(16, "Invalid role id", w, r)
 		return
-	case isStatus:
-		c.ResponseJson(17, "", w, r)
+	case vali.Status(status):
+		c.ResponseJson(17, "Invalid status", w, r)
 		return
-	case isId:
-		c.ResponseJson(19, "", w, r)
+	case vali.EqualTo(password, passworded):
+		c.ResponseJson(18, "Two input password mismatch", w, r)
+		return
+	case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+		c.ResponseJson(19, "Invalid account id", w, r)
 		return
 	default:
-		if password != passworded {
-			c.ResponseJson(18, "", w, r)
-			return
-		} else {
-			user := sql.User{}
-			err := c.Sql().Get(&user, "SELECT * FROM hm_user WHERE id <> ? AND (username = ? OR nickname = ? OR email = ?)", id, username, nickname, email)
+		user := sql.User{}
+		err := c.Sql().Get(&user, "SELECT * FROM hm_user WHERE id <> ? AND (username = ? OR nickname = ? OR email = ?)", id, username, nickname, email)
+		if err != nil {
+			ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+			if ip == "::1" {
+				ip = "127.0.0.1"
+			}
+			userSql := "UPDATE hm_user SET username=?,password=?,nickname=?,email=?,remark=?,status=? WHERE id = ?"
+			accessSql := "UPDATE hm_auth_role_access SET role_id=? WHERE uid = ?"
+			tx := c.Sql().MustBegin()
+			tx.MustExec(userSql, username, c.Sha1PlusMd5(password), nickname, email, remark, status, id)
+			tx.MustExec(accessSql, role, id)
+			err = tx.Commit()
 			if err != nil {
-				ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-				if ip == "::1" {
-					ip = "127.0.0.1"
-				}
-				userSql := "UPDATE hm_user SET username=?,password=?,nickname=?,email=?,remark=?,status=? WHERE id = ?"
-				accessSql := "UPDATE hm_auth_role_access SET role_id=? WHERE uid = ?"
-				tx := c.Sql().MustBegin()
-				tx.MustExec(userSql, username, c.Sha1PlusMd5(password), nickname, email, remark, status, id)
-				tx.MustExec(accessSql, role, id)
-				err = tx.Commit()
-				if err != nil {
-					c.Log().Debug().Err(err).Msg("Error")
-					c.ResponseJson(4, err.Error(), w, r)
-				} else {
-					c.Cache().Del("allUser")
-					c.ResponseJson(1, "", w, r)
-				}
+				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				if user.Username == username {
-					c.ResponseJson(21, "", w, r)
-					return
-				} else if user.Nickname == nickname {
-					c.ResponseJson(22, "", w, r)
-					return
-				} else if user.Email == email {
-					c.ResponseJson(23, "", w, r)
-					return
-				} else {
-					c.ResponseJson(44, "", w, r)
-					return
-				}
+				c.Cache().ScanDel("user")
+				c.ResponseJson(1, "", w, r)
+			}
+		} else {
+			if user.Username == username {
+				c.ResponseJson(21, "Account name already exist", w, r)
+				return
+			} else if user.Nickname == nickname {
+				c.ResponseJson(22, "Nickname already exist", w, r)
+				return
+			} else if user.Email == email {
+				c.ResponseJson(23, "Email already exist", w, r)
+				return
+			} else {
+				c.ResponseJson(44, "Unknown error", w, r)
+				return
 			}
 		}
 	}
@@ -1013,23 +965,27 @@ func (c *SiteCtrl) SetRole(w http.ResponseWriter, r *http.Request) {
 */
 func (c *SiteCtrl) SetRoleSubmit(w http.ResponseWriter, r *http.Request) {
 	id, ids := r.PostFormValue("id"), r.PostFormValue("ids")
-	isIds := c.Regexp().IdGroup(ids)
-	switch false {
-	case isIds:
-		c.ResponseJson(11, "", w, r)
+	if (vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8)) == false {
+		c.ResponseJson(11, "Invalid role id", w, r)
 		return
-	default:
-		sqls := "UPDATE hm_auth_role SET rules=? WHERE id = ?"
-		tx := c.Sql().MustBegin()
-		tx.MustExec(sqls, ids, id)
-		err := tx.Commit()
-		if err != nil {
-			c.ResponseJson(4, err.Error(), w, r)
-		} else {
-			c.Cache().Del("role" + id)
-			c.Cache().Del("auth" + id)
-			c.ResponseJson(1, "", w, r)
+	}
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(12, "Invalid rule id", w, r)
+			return
 		}
+	}
+	sqls := "UPDATE hm_auth_role SET rules=? WHERE id = ?"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(sqls, ids, id)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().Del("role" + id)
+		c.Cache().Del("auth" + id)
+		c.ResponseJson(1, "", w, r)
 	}
 }
 
@@ -1107,7 +1063,7 @@ func (c *SiteCtrl) AddRole(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 添加��色提交
+ * @description 添加����色提交
  * @English	add role submit
  * @homepage http://www.hemacms.com/
  * @author Nicholas Mars

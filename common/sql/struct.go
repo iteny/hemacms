@@ -17,7 +17,7 @@ type User struct {
 	Remark     string `json:"remark"`
 	Status     int    `json:"status"`
 	Role       string `json:"role"`
-	RoleEn     string `json:"roleen"`
+	RoleEn     string `json:"en"`
 }
 type AuthRole struct {
 	Id     int    `json:"id"`

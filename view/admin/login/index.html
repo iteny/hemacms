@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>后台登录</title>
+    <title language="html:backstageLoginPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
     <style>
     .window{
         border-color: #ededed;
@@ -113,69 +114,47 @@
     </style>
 </head>
 <body onkeydown="hm.shortcutKey();">
-    <div id="hm-app">
-        <div id="hm_login" class="hm_dialog">
-            <form name="hm_form_login" method="post" action="/intendant/login">
-                <div class="pp">
-                    <label for="name">[[$store.state.language.username]]&nbsp;:</label>
-                    <input class="easyui-validatebox length_3" type="text" name="username" />
-                </div>
-                <div class="pp">
-                    <label for="email">[[$store.state.language.password]]&nbsp;:</label>
-                    <input class="easyui-validatebox length_3" type="password" name="password" />
-                </div>
-                <div id="btn">
-                    <a href="#" id="hm_login_submit" class="easyui-linkbutton">[[$store.state.language.login]]</a>
-                </div>
-            </form>
-        </div>
-
+    <div id="hm_login" class="hm_dialog">
+        <form name="hm_form_login" method="post" action="/intendant/login">
+            <div class="pp">
+                <label for="name" language="html:username"></label>
+                <input class="easyui-validatebox length_3" type="text" name="username" data-options="required:true,validType:['englishNumeric','length[5,20]']">
+            </div>
+            <div class="pp">
+                <label for="email" language="html:password"></label>
+                <input class="easyui-validatebox length_3" type="password" name="password" data-options="required:true,validType:['englishNumeric','length[5,15]']">
+            </div>
+            <div id="btn">
+                <a href="#" id="hm_login_submit" class="easyui-linkbutton" language="html:login"></a>
+            </div>
+        </form>
     </div>
 </body>
 <script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 $(function(){
     var redirect = "/intendant/index";
     $('#hm_login').dialog({
-        title:hm.language.backStageLogin ? hm.language.backStageLogin : "Back-stage management",
+        title:hm.language.backStageLogin,
         top:400,
         modal:false,
         closable: false, //去除右上角的X关闭按钮
         draggable: false, //禁止拖动窗口
         buttons:'#btn',
     });
-    $('.easyui-validatebox[name=username]').validatebox({
-        required:true,
-        validType:'username',
-        missingMessage:hm.language.isUsername ? hm.language.isUsername : "Please enter the account!",
-        // invalidMessage:'用户名不能为空',
-    });
-    $('.easyui-validatebox[name=password]').validatebox({
-        required:true,
-        validType:'password',
-        missingMessage:hm.language.isPassword ? hm.language.isPassword : "Please enter the password!",
-    });
     //添加或修改
     $('#hm_login_submit').on('click', function (e) {
         e.preventDefault();
         var that = $(this),
             form = $('form[name=hm_form_login]'),
-            vali = form.form('enableValidation').form('validate'),
-            loginMsg = hm.language.loginMsg ? hm.language.loginMsg : "Waiting...,Log in for you!",
-            loginSuccess = hm.language.loginSuccess ? hm.language.loginSuccess : "Login success, 3 seconds after you jump!",
-            loginPassFail = hm.language.loginPassFail ? hm.language.loginPassFail : "Account or password error!",
-            loginDisabled = hm.language.loginDisabled ? hm.language.loginDisabled : "This account has been disabled!",
-            usernameVali = hm.language.usernameVali ? hm.language.usernameVali : "Account must begin with a letter, 5-16 characters, alphanumeric underscore!",
-            passwordVali = hm.language.passwordVali ? hm.language.passwordVali : "Password must begin with a letter, 5-16 characters, alphanumeric underscore!";
+            vali = form.form('enableValidation').form('validate');
         if (that.linkbutton('options').disabled == true){
-            parent.hm.notice('warn',hm.language.easyuiResubmit ? hm.language.easyuiResubmit : 'Don‘t repeat the submit');
+            parent.hm.notice('warn',hm.language.easyuiResubmit);
         }else{
             that.linkbutton('disable');
             if(vali){
@@ -185,21 +164,21 @@ $(function(){
                     type:'POST',
                     data:form.serialize(),
                     beforeSend: function(){
-                        hm.openProgress(loginMsg);
+                        hm.openProgress(hm.language.loginMsg);
                     },
                     success: function(data){
                         if(data.status == 4){
-                            hm.notice("error", loginPassFail+data.info);
+                            hm.notice("error", hm.language.loginPassFail+data.info);
                         }else if(data.status == 11){
-                            hm.notice("warn", usernameVali+data.info);
+                            hm.notice("warn", hm.language.usernameVali+data.info);
                         }else if(data.status == 12){
-                            hm.notice("warn", passwordVali+data.info);
+                            hm.notice("warn", hm.language.passwordVali+data.info);
                         }else if(data.status == 5){
-                            hm.notice("error", loginPassFail+data.info);
+                            hm.notice("error", hm.language.loginPassFail+data.info);
                         }else if(data.status == 7){
-                            hm.notice("error", loginDisabled+data.info);
+                            hm.notice("error", hm.language.loginDisabled+data.info);
                         }else if(data.status == 1){
-                            hm.notice("success", loginSuccess+data.info);
+                            hm.notice("success", hm.language.loginSuccess+data.info);
                             setTimeout(function(){parent.window.location.href=redirect}, 3000);
                         }
                         that.linkbutton('enable');

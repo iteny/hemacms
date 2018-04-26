@@ -20,11 +20,11 @@
             <tbody>
                 <tr>
                     <td width="40" language="table:userName"></td>
-                    <td width="160"><input class="easyui-validatebox length_5" name="username" value="{{.user.Username}}" data-options="required:true,validType:'username'"></td>
+                    <td width="160"><input class="easyui-validatebox length_5" name="username" value="{{.user.Username}}" data-options="required:true,validType:['englishNumeric','length[5,20]']"></td>
                 </tr>
                 <tr>
                     <td width="40" language="table:userPwd"></td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" data-options="required:true,validType:'password'"></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="password" id="pwd" data-options="required:true,validType:['englishNumeric','length[5,15]']"></td>
                 </tr>
                 <tr>
                     <td width="40" language="table:userPwdEd"></td>
@@ -32,7 +32,7 @@
                 </tr>
                 <tr>
                     <td width="40" language="table:userNickname"></td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" value="{{.user.Nickname}}" data-options="required:true,validType:'nickname'"></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="nickname" value="{{.user.Nickname}}" data-options="required:true,validType:['nLanguageSpace','length[2,50]']"></td>
                 </tr>
                 <tr>
                     <td width="40" language="table:userEmail"></td>
@@ -40,15 +40,15 @@
                 </tr>
                 <tr>
                     <td width="40" language="table:remark"></td>
-                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.user.Remark}}" data-options="required:true,validType:'remark'"></td>
+                    <td width="190"><input class="easyui-validatebox length_5" type="text" name="remark" value="{{.user.Remark}}" data-options="required:true,validType:['article','length[2,255]']"></td>
                 </tr>
                 <tr>
                     <td width="40" language="table:userRoleGroup"></td>
                     <td width="160"><input class="select length_3" name="role" value="{{.roleme.RoleId}}"></td>
                 </tr>
                 <tr>
-                    <td width="40" language="table:isshow"></td>
-                    <td width="190"><input class="switch length_5" name="status" value="{{.user.Status}}"></td>
+                    <td width="40" language="table:lock"></td>
+                    <td width="190"><input class="switch length_5"><input type="hidden" name="status" value="{{.user.Status}}" class="easyui-validatebox" data-options="required:false,validType:['status','length[1,1]']"></td>
                 </tr>
             </tbody>
         </table>
@@ -56,7 +56,7 @@
     <div id="hm_toolbar">
         <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
         <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
-        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(meFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" language="html:ajaxEdit"></a>
+        <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(editUserFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" language="html:ajaxEdit"></a>
     </div>
 </form>
 </body>
@@ -68,17 +68,7 @@
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script>
 var group = $.parseJSON({{.role}});
-var lang = '';
-switch ($.cookie('back-language')) {
-    case 'cn':
-        lang = 'name';
-        break;
-    case 'en':
-        lang = 'en';
-        break;
-    default:
-        lang = 'name';
-}
+var lang = hm.getLanguage('field');
 $('.select[name=role]').combobox({
     required: true,
     valueField:'id',
@@ -89,64 +79,51 @@ $('.select[name=role]').combobox({
 		return node[lang];
 	}
 });
-$('.switch[name=status]').switchbutton({
-    checked: true,
-    reversed: true,
+var st = hm.switchStatus({{.user.Status}});
+$('.switch').switchbutton({
+    checked: st,
+    reversed: false,
     onText: hm.language.on,
     offText: hm.language.off,
     onChange: function(checked) {
         if(checked){
-            $('input[name=isshow]').val(1);
+            $('input[name=status]').val(1);
         }else{
-            $('input[name=isshow]').val(0);
+            $('input[name=status]').val(0);
         }
 
     }
 });
-function meFunc(data){
-    var failed = hm.language.editFailed ? hm.language.editFailed : "Edit failed!",
-        success = hm.language.editSuccess ? hm.language.editSuccess : "Edit success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        userCheckUsername = hm.language.userCheckUsername ? hm.language.userCheckUsername : "Account has already existed!",
-        userCheckNickname = hm.language.userCheckNickname ? hm.language.userCheckNickname : "Nickname has already existed!",
-        userCheckEmail = hm.language.userCheckEmail ? hm.language.userCheckEmail : "Email has already existed!",
-        usernameVali = hm.language.usernameVali ? hm.language.usernameVali : "Account must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
-        passwordVali = hm.language.passwordVali ? hm.language.passwordVali : "Password must begin with a letter, 5-16 bits characters, alphanumeric underscore!",
-        passwordEdVali = hm.language.passwordEdVali ? hm.language.passwordEdVali : "Entered passwords differ!",
-        nicknameVali = hm.language.nicknameVali ? hm.language.nicknameVali : "Nicknames only allow Chinese characters, English letters, numbers, minus and underlines, and 2-80 bit characters",
-        emailVali = hm.language.easyuiEmailMessage ? hm.language.easyuiEmailMessage : "Please enter a valid email address!",
-        remarkVali = hm.language.remarkVali ? hm.language.remarkVali : "Remark only letters, numbers, English Chinese characters, minus, comma, period, exclamation and underline, 2-255 characters!",
-        userIsRole = hm.language.userIsRole ? hm.language.userIsRole : "Role number must be 1 to 8 positive integers!",
-        userIsStatus = hm.language.userIsStatus ? hm.language.userIsStatus : "Enabled, it must be 1 or 0!";
+function editUserFunc(data){
     if (data.status == 21) {
-        parent.hm.notice("error", userCheckUsername + data.info);
+        parent.hm.notice("error", hm.language.userCheckUsername);
     } else if (data.status == 22) {
-        parent.hm.notice("error", userCheckNickname + data.info);
+        parent.hm.notice("error", hm.language.userCheckNickname );
     } else if (data.status == 23) {
-        parent.hm.notice("error", userCheckEmail + data.info);
+        parent.hm.notice("error", hm.language.userCheckEmail );
     } else if (data.status == 11) {
-        parent.hm.notice("error", usernameVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 12){
-        parent.hm.notice("error", passwordVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 13){
-        parent.hm.notice("error", nicknameVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 14){
-        parent.hm.notice("error", emailVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 15){
-        parent.hm.notice("error", remarkVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 16){
-        parent.hm.notice("error", userIsRole + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 17){
-        parent.hm.notice("error", userIsStatus + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 18){
-        parent.hm.notice("error", passwordEdVali + data.info);
+        parent.hm.notice("error", data.info);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.editFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.editSuccess);
         parent.hm.refreshTab();
     }else{
-        parent.hm.notice("error",unknownError+ data.info);
+        parent.hm.notice("error",hm.language.unknownError);
     }
 }
 </script>

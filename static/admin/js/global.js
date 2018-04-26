@@ -348,6 +348,18 @@ HmObj.prototype.easyuiLanguage = function() {
             },
             message: that.language.valiEnglishNumeric,
         },
+        iconCss: { // 验证英文字母,数字,-,_,space
+            validator: function(value) {
+                return /^[a-zA-Z0-9-_ ]+$/i.test(value);
+            },
+            message: that.language.valiIconCss,
+        },
+        menuUrl: { // 验证英文字母,/
+            validator: function(value) {
+                return /^[A-Za-z/]+$/i.test(value);
+            },
+            message: that.language.valiMenuUrl,
+        },
         numeric: { // 验证数字
             validator: function(value) {
                 return /^[0-9]+$/i.test(value);
@@ -438,12 +450,12 @@ HmObj.prototype.easyuiLanguage = function() {
             },
             message: that.language.roleName + that.language.name ? that.language.roleName + that.language.name : "Role name only allows Chinese characters, English letters and spaces, 1-80 characters!",
         },
-        menuUrl: { // 验证后台地址
-            validator: function(value) {
-                return /^[A-Za-z/]{2,80}$/i.test(value);
-            },
-            message: that.language.menuTestUrl ? that.language.menuTestUrl : "Menu URL only allows English and left slashes,2-80 characters!",
-        },
+        // menuUrl: { // 验证后台地址
+        //     validator: function(value) {
+        //         return /^[A-Za-z/]{2,80}$/i.test(value);
+        //     },
+        //     message: that.language.menuTestUrl ? that.language.menuTestUrl : "Menu URL only allows English and left slashes,2-80 characters!",
+        // },
         ip: { // 验证IP地址
             validator: function(value) {
                 return /\d+\.\d+\.\d+\.\d+/.test(value);
@@ -829,6 +841,62 @@ HmObj.prototype.closeProgress = function(handwork) {
         $.messager.progress('close');
     }
 };
+//1和0转换成true和false
+HmObj.prototype.switchStatus = function(st) {
+    switch (st) {
+        case 1:
+            st = true;
+            break;
+        case 0:
+            st = false;
+            break;
+        default:
+            st = false;
+            break;
+    }
+    return st;
+};
+//得到当前语言
+HmObj.prototype.getLanguage = function(type, value, row) {
+    var lang = '';
+    if (type == "field") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = 'name';
+                break;
+            case 'en':
+                lang = 'en';
+                break;
+            default:
+                lang = 'name';
+        }
+    }
+    if (type == "easyui-tree") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = 'text';
+                break;
+            case 'en':
+                lang = 'en';
+                break;
+            default:
+                lang = 'text';
+        }
+    }
+    if (type == "datagird") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = value;
+                break;
+            case 'en':
+                lang = row.en;
+                break;
+            default:
+                lang = value;
+        }
+    }
+    return lang;
+};
 //刷新当前tab页面
 HmObj.prototype.refreshTab = function() {
     var currentTab = $('#hm-tabs').tabs('getSelected');
@@ -1115,26 +1183,26 @@ HmObj.prototype.ajaxPolling = function() {
                 //cpu监控
                 $.each(data.cpuUserd, function(k, v) {
                     str += '<tr>';
-                    str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;CPU使用状况' + (k + 1) + '&nbsp;:&nbsp;</td>';
-                    str += '<td width="400">';
-                    str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:400px;"></div>';
+                    str += '<td align="left" width="170">&nbsp;&nbsp;&nbsp;' + hm.language.homeCpuUsageCondition + (k + 1) + '&nbsp;:&nbsp;</td>';
+                    str += '<td width="300">';
+                    str += '<div class="easyui-progressbar hm_cpu" data-options="value:' + Math.round(v) + '" style="height:22px;width:300px;"></div>';
                     str += '</td>';
                     str += '</tr>';
                 });
                 //硬盘监控
                 str += '<tr>';
-                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;硬盘使用状况&nbsp;:&nbsp;</td>';
-                str += '<td width="400">';
-                str += '<div>硬盘总容量:' + data.diskTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.diskUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.diskFree + 'GB</div>';
-                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.diskUserdPercent) + '" style="height:22px;width:400px;"></div>';
+                str += '<td align="left" width="170">&nbsp;&nbsp;&nbsp;' + hm.language.homeDiskUsageCondition + '&nbsp;:&nbsp;</td>';
+                str += '<td width="300">';
+                str += '<div>' + hm.language.homeDiskCapacity + ':' + data.diskTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;' + hm.language.homeUsed + ':' + data.diskUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;' + hm.language.homeFree + ':' + data.diskFree + 'GB</div>';
+                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.diskUserdPercent) + '" style="height:22px;width:300px;"></div>';
                 str += '</td>';
                 str += '</tr>';
                 //内存监控
                 str += '<tr>';
-                str += '<td align="right" width="110">&nbsp;&nbsp;&nbsp;内存使用状况&nbsp;:&nbsp;</td>';
-                str += '<td width="400">';
-                str += '<div>总物理内存:' + data.memTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;已用:' + data.memUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;空闲:' + data.memFree + 'GB</div>';
-                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.memUserdPercent) + '" style="height:22px;width:400px;"></div>';
+                str += '<td align="left" width="170">&nbsp;&nbsp;&nbsp;' + hm.language.homeMemoryUsageCondition + '&nbsp;:&nbsp;</td>';
+                str += '<td width="300">';
+                str += '<div>' + hm.language.homeMemoryCapacity + ':' + data.memTotal + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;' + hm.language.homeUsed + ':' + data.memUserd + 'GB&nbsp;&nbsp;,&nbsp;&nbsp;' + hm.language.homeFree + ':' + data.memFree + 'GB</div>';
+                str += '<div class="easyui-progressbar" data-options="value:' + Math.round(data.memUserdPercent) + '" style="height:22px;width:300px;"></div>';
                 str += '</td>';
                 str += '</tr>';
                 $('#hm_system_monitor').html(str);
@@ -1314,7 +1382,6 @@ HmObj.prototype.ajaxAddEdit = function(externalFunc, me) {
     var that = $(me),
         form = that.parents('form'),
         vali = form.form('enableValidation').form('validate');
-    console.info(form.serialize());
     if (that.linkbutton('options').disabled == true) {
         parent.hm.notice('warn', hm.language.easyuiResubmit ? hm.language.easyuiResubmit : 'Don‘t repeat the submit');
     } else {
