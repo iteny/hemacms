@@ -772,7 +772,7 @@ a.east-ct i{
 .hm-op-btn{
     margin-right: 6px;
     border: 0;
-    border-radius: 0;
+    border-radius: 3px;
     padding: 0px 6px;
 }
 .hm-op-btn span{

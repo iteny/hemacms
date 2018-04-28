@@ -253,6 +253,7 @@ var language = {
         menuManagementPage: "Menu management page",
         systemSite: "System site",
         backstageLoginPage: "Backstage Login-HemaCms",
+        colorSchemesPage: "Color schemes page",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -570,6 +571,7 @@ var language = {
         menuManagementPage: "菜单管理页",
         systemSite: "系统设置",
         backstageLoginPage: "后台登录-HemaCms",
+        colorSchemesPage: "配色方案",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
