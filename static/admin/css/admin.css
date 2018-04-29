@@ -853,6 +853,10 @@ position:fixed;bottom:0;width:100%;height:44px;line-height: 44px;
     background: #3AC17E;
     color: white;
 }
+#tit{
+    height:36px;line-height:36px;border-color: #ededed;background-color: #f8f8f8;background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);background: linear-gradient(top, #f8f8f8, #f2f2f2);box-shadow: inset 0px 1px 1px #fff;border-bottom:1px solid #D4D4D4;text-indent:20px;color:#666;
+}
 /*easyui treegrid样式重置 结束--------------------------------------------------------------*/
 /*easyui tree样式重置 开始------------------------------------------------------------------*/
 .tree-title{

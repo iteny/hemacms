@@ -91,6 +91,8 @@ var language = {
         ajaxDel: "Delete",
         ajaxAuth: "Authorization",
         ajaxSetAuth: "Permission setting",
+        treeCheckAll: "Check all",
+        treeCheckUn: "Uncheck",
         search: "Search",
         clearSearch: "Clear search",
         goback: "Go back",
@@ -256,6 +258,7 @@ var language = {
         colorSchemesPage: "Color schemes page",
         addUpdateLogPage: "Add update log page",
         editUpdateLogPage: "Edit update log page",
+        setRoleAuthorityPage: "Set role authority page",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -417,6 +420,8 @@ var language = {
         ajaxDel: "删除",
         ajaxAuth: "授权",
         ajaxSetAuth: "权限设置",
+        treeCheckAll: "全选",
+        treeCheckUn: "反选",
         search: "查询",
         clearSearch: "清空查询",
         goback: "返回",
@@ -583,6 +588,7 @@ var language = {
         colorSchemesPage: "配色方案",
         addUpdateLogPage: "添加更新日志页",
         editUpdateLogPage: "修改更新日志页",
+        setRoleAuthorityPage: "设置角色权限页",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",

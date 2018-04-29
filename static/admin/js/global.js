@@ -1389,6 +1389,60 @@ HmObj.prototype.getTreeNodes = function(externalFunc, me) {
 
     }
 };
+//全选tree
+HmObj.prototype.treeCheckAll = function(id) {
+    var nodes = $('#' + id).tree('getRoots');
+    if (nodes !== null) {
+        for (var i = 0; i < nodes.length; i++) {
+            var ii = $('#' + id).tree('getChildren', nodes[i].target);
+            $('#' + id).tree('check', nodes[i].target);
+            if (ii !== null) {
+                for (var b = 0; b < ii.length; b++) {
+                    var bb = $('#' + id).tree('getChildren', ii[b].target);
+                    $('#' + id).tree('check', ii[b].target);
+                    if (bb !== null) {
+                        for (var c = 0; c < bb.length; c++) {
+                            var cc = $('#' + id).tree('getChildren', bb[c].target);
+                            $('#' + id).tree('check', bb[c].target);
+                            if (cc !== null) {
+                                for (var d = 0; d < cc.length; d++) {
+                                    $('#' + id).tree('check', cc[d].target);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+//反选tree
+HmObj.prototype.treeCheckUn = function(id) {
+    var nodes = $('#' + id).tree('getRoots');
+    if (nodes !== null) {
+        for (var i = 0; i < nodes.length; i++) {
+            var ii = $('#' + id).tree('getChildren', nodes[i].target);
+            $('#' + id).tree('uncheck', nodes[i].target);
+            if (ii !== null) {
+                for (var b = 0; b < ii.length; b++) {
+                    var bb = $('#' + id).tree('getChildren', ii[b].target);
+                    $('#' + id).tree('uncheck', ii[b].target);
+                    if (bb !== null) {
+                        for (var c = 0; c < bb.length; c++) {
+                            var cc = $('#' + id).tree('getChildren', bb[c].target);
+                            $('#' + id).tree('uncheck', bb[c].target);
+                            if (cc !== null) {
+                                for (var d = 0; d < cc.length; d++) {
+                                    $('#' + id).tree('uncheck', cc[d].target);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
 //验证get页面是否有权限
 HmObj.prototype.getVerify = function(me) {
     var that = $(me),

@@ -4,28 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>set role authority</title>
+    <title language="html:setRoleAuthorityPage"></title>
     <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
 <form id="hm-app" action="/intendant/site/sortMenu" method="post">
     <div class="easyui-layout" style="padding:10px 0px 55px 10px;">
         <div style="border:3px solid #09c;border-right:0;">
-            <div id="tit" style="height:36px;line-height:36px;border-color: #ededed;background-color: #f8f8f8;background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
-    background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);background: linear-gradient(top, #f8f8f8, #f2f2f2);box-shadow: inset 0px 1px 1px #fff;border-bottom:1px solid #D4D4D4;text-indent:20px;color:#666;">新建角色</div>
+            <div id="tit">no found</div>
             <div style="padding:8px;">
                 <table id="hm_tree" style="" region="center"></table>
             </div>
         </div>
     </div>
     <div id="hm_toolbar">
-        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true">[[$store.state.language.goback]]</a>
-        <a id="btn" href="{{.currentUrl}}" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true">[[$store.state.language.refreshCurrent]]</a>
-        <a href="javascript:void(0)" onclick="hm.getTreeNodes(treeFunc,this)" data-url="/intendant/site/setRoleSubmit" data-id="{{.id}}" class="easyui-linkbutton" iconCls="icon-group_gear" plain="true">[[$store.state.language.ajaxAuth]]</a>
+        <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+        <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+        <a onclick="hm.treeCheckAll('hm_tree')" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:treeCheckAll"></a>
+        <a onclick="hm.treeCheckUn('hm_tree')" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:treeCheckUn"></a>
+        <a href="javascript:void(0)" onclick="hm.getTreeNodes(treeFunc,this)" data-url="/intendant/site/setRoleSubmit" data-id="{{.id}}" class="easyui-linkbutton" iconCls="icon-group_gear" plain="true" language="html:ajaxAuth"></a>
     </div>
 </form>
 </body>
@@ -33,23 +35,11 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
-<link rel="stylesheet" href="/static/common/animate/animate.min.css">
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
-<script type="text/javascript" src="/static/common/dist/hmcms-vue.js"></script>
 <script>
 var data = $.parseJSON({{.json}});
-var lang = '';
-switch ($.cookie('back-language')) {
-    case 'cn':
-        lang = 'text';
-        break;
-    case 'en':
-        lang = 'en';
-        break;
-    default:
-        lang = 'text';
-}
+var lang = hm.getLanguage('easyui-tree');
 $('#hm_tree').tree({
     textField:lang,
     data: data,
@@ -63,23 +53,21 @@ $('#hm_tree').tree({
 	}
 });
 function treeFunc(data){
-    var failed = hm.language.authFailed ? hm.language.authFailed : "Authorization failed!",
-        success = hm.language.authSuccess ? hm.language.authSuccess : "Authorization success!",
-        unknownError = hm.language.unknownError ? hm.language.unknownError : "Unknow error!",
-        roleIds = hm.language.roleIds ? hm.language.roleIds : "Authorization id group is illegal!";
-    if(data.status == 11){
-        parent.hm.notice("error", roleIds + data.info);
+    if(data.status == 12){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 11){
+        parent.hm.notice("warn", data.info);
     } else if(data.status == 4){
-        parent.hm.notice("error", failed + data.info);
+        parent.hm.notice("error", hm.language.authFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", success + data.info);
+        parent.hm.notice("success", hm.language.authSuccess);
         hm.reloadPage();
     } else{
-        parent.hm.notice("error",unknownError + data.info);
+        parent.hm.notice("error",hm.language.unknownError);
     }
 }
 var lang = '',
-    currentRole = hm.language.currentRole ? hm.language.currentRole : 'Current role';
+    currentRole = hm.language.currentRole;
 switch ($.cookie('back-language')) {
     case 'cn':
         lang = {{.roleName}};
