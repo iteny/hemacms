@@ -76,6 +76,14 @@ type OprateLog struct {
 	Status     int    `json:"status"`
 }
 
+//更新日志
+type UpdateLog struct {
+	Id   int    `json:"id"`
+	Time int    `json:"time"`
+	Cn   string `json:"cn"`
+	En   string `json:"en"`
+}
+
 //递归重新排序无限极分类
 func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	array := make([]AuthRule, 0)

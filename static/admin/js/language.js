@@ -254,6 +254,8 @@ var language = {
         systemSite: "System site",
         backstageLoginPage: "Backstage Login-HemaCms",
         colorSchemesPage: "Color schemes page",
+        addUpdateLogPage: "Add update log page",
+        editUpdateLogPage: "Edit update log page",
         //通用提示结束
         //日志开始
         loginLogTime: "Login time",
@@ -272,6 +274,12 @@ var language = {
         oprateDelMonthLog: "Delete the oprate log a month ago",
         oprateDelAllLog: "Delete all operat logs",
         oprateTime: "Oprate time",
+        updateLogAdd: "Add update log",
+        updateLogBatchDel: "Batch delete update log",
+        updateLogPage: "Update log page",
+        updateLogChinese: "Chinese content",
+        updateLogEnglish: "English content",
+        updateLogContent: "Update content",
         //日志结束
         //首页开始
         homeUserInfo: "<i class='panel-icon icon-group_key'></i>Account info",
@@ -294,7 +302,7 @@ var language = {
         homeHostName: "Host name",
         homeProcessNumber: "Process number",
         homeKernelVersion: "Kernel version",
-        homeServerOccupancy: "<i class='panel-icon icon-group_key'></i>Server Occupancy",
+        homeServerOccupancy: "<i class='panel-icon icon-group_key'></i>Server Occupancy<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxPolling();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>refresh</a>",
         homeCpuUsageCondition: "CPU Usage Condition",
         homeDiskUsageCondition: "Disk Usage Condition",
         homeMemoryUsageCondition: "Memory Usage Condition",
@@ -302,6 +310,7 @@ var language = {
         homeMemoryCapacity: "Memory capacity",
         homeUsed: "Used",
         homeFree: "Free",
+        homeVersionUpdateLog: "<i class='panel-icon icon-group_key'></i>Version update log<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxUpdateLog();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>refresh</a>",
         //首页结束
         //验证数据开始
         valiChinese: "Please enter valid Chinese characters!",
@@ -572,6 +581,8 @@ var language = {
         systemSite: "系统设置",
         backstageLoginPage: "后台登录-HemaCms",
         colorSchemesPage: "配色方案",
+        addUpdateLogPage: "添加更新日志页",
+        editUpdateLogPage: "修改更新日志页",
         //通用提示结束
         //日志开始
         loginLogTime: "登录时间",
@@ -590,6 +601,12 @@ var language = {
         oprateDelMonthLog: "删除一个月前的操作日志",
         oprateDelAllLog: "删除全部操作日志",
         oprateTime: "操作时间",
+        updateLogAdd: "添加更新日志",
+        updateLogBatchDel: "批量删除更新日志",
+        updateLogPage: "更新日志页",
+        updateLogChinese: "中文内容",
+        updateLogEnglish: "英文内容",
+        updateLogContent: "更新内容",
         //日志结束
         //首页开始
         homeUserInfo: "<i class='panel-icon icon-group_key'></i>用户信息",
@@ -612,7 +629,7 @@ var language = {
         homeHostName: "主机名",
         homeProcessNumber: "进程号",
         homeKernelVersion: "内核版本",
-        homeServerOccupancy: "<i class='panel-icon icon-group_key'></i>服务器占用",
+        homeServerOccupancy: "<i class='panel-icon icon-group_key'></i>服务器占用<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxPolling();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>刷新</a>",
         homeCpuUsageCondition: "CPU使用状况",
         homeDiskUsageCondition: "硬盘使用状况",
         homeMemoryUsageCondition: "内存使用状况",
@@ -620,6 +637,7 @@ var language = {
         homeMemoryCapacity: "总物理内存",
         homeUsed: "已用",
         homeFree: "空闲",
+        homeVersionUpdateLog: "<i class='panel-icon icon-group_key'></i>版本更新日志<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxUpdateLog();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>刷新</a>",
         //首页结束
         //验证数据开始
         valiChinese: "请输入有效的汉字!",

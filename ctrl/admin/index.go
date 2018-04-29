@@ -51,10 +51,6 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	data["serverTime"] = time.Now().Unix() //服务器时间
 	host, _ := hostInfo.Info()
 	cpu, _ := cpuInfo.Info()
-	// cpuUserd, _ := cpuInfo.Percent(time.Second, false)
-	// mem, _ := memInfo.VirtualMemory()
-	// disk, _ := diskInfo.Usage("/")
-	// data["cpuUserd"] = cpuUserd
 	data["uptime"] = host.BootTime - host.Uptime            //正常运行时间
 	data["hostname"] = host.Hostname                        //主机名
 	data["procs"] = host.Procs                              //进程号
@@ -62,14 +58,7 @@ func (c *IndexCtrl) Home(w http.ResponseWriter, r *http.Request) {
 	data["kernelVersion"] = host.KernelVersion              //内核版本
 	data["cpuModelName"] = cpu[0].ModelName                 //cpu型号
 	data["serverTime"] = time.Now().Unix()                  //服务器时间
-	// data["memTotal"] = mem.Total / 1024 / 1024 / 1024
-	// data["memFree"] = mem.Free / 1024 / 1024 / 1024
-	// data["memUserd"] = mem.Total/1024/1024/1024 - mem.Free/1024/1024/1024
-	// data["memUserdPercent"] = mem.UsedPercent
-	// data["diskTotal"] = disk.Total / 1024 / 1024 / 1024
-	// data["diskFree"] = disk.Free / 1024 / 1024 / 1024
-	// data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
-	// data["diskUserdPercent"] = disk.UsedPercent
+
 	c.Template(w, r, data, "./view/admin/index/home.html")
 }
 
@@ -89,7 +78,24 @@ func (c *IndexCtrl) AjaxPolling(w http.ResponseWriter, r *http.Request) {
 	data["diskFree"] = disk.Free / 1024 / 1024 / 1024
 	data["diskUserd"] = disk.Total/1024/1024/1024 - disk.Free/1024/1024/1024
 	data["diskUserdPercent"] = disk.UsedPercent
-	// data["status"], data["info"] = 1, ""
+	c.ResponseData(data, w, r)
+}
+
+//ajax更新日志
+func (c *IndexCtrl) AjaxUpdateLog(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 1)
+	log := []sql.UpdateLog{}
+	if rows, found := c.Cache().Get("updateLogAll"); found {
+		log = rows.([]sql.UpdateLog)
+	} else {
+		logSql := "SELECT * FROM hm_update_log ORDER BY time DESC"
+		err := c.Sql().Select(&log, logSql)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("updateLogAll", log)
+	}
+	data["updateLog"] = log
 	c.ResponseData(data, w, r)
 }
 

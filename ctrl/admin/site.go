@@ -1435,3 +1435,226 @@ func (c *SiteCtrl) DelAllOprateLog(w http.ResponseWriter, r *http.Request) {
 		c.ResponseJson(1, "", w, r)
 	}
 }
+
+/**
+ * @description 更新日志页面
+ * @English	update log page
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) UpdateLog(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/updateLog.html")
+}
+
+/**
+ * @description 获取更新日志
+ * @English	Get update log
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) GetUpdateLog(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 4)
+	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
+	dateFrom, dateTo := r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	data["total"], data["rows"] = 0, []string{}
+	switch {
+	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
+		data["status"], data["info"] = 12, "Invalid dateFrom"
+	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
+		data["status"], data["info"] = 13, "Invalid dateTo"
+	case (vali.NumericNoHeadZero(page) && vali.Length(page, 1, 5) && vali.NumericNoHeadZero(row) && vali.Length(row, 2, 2)) == false:
+		data["status"], data["info"] = 14, "Invalid pagination"
+	default:
+		pageNum := c.Pagination(page, row)
+		fromTime, toTime := c.DateToTimestamp(dateFrom, vali.RF3339Js), c.DateToTimestamp(dateTo, vali.RF3339Js)
+		addsql := ""
+		if dateFrom != "" {
+			addsql = addsql + fmt.Sprintf("time>='%v' AND ", fromTime)
+		}
+		if dateTo != "" {
+			addsql = addsql + fmt.Sprintf("time<='%v' AND ", toTime)
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		count := 0
+		if rows, found := c.Cache().Get("updateLogCount" + dateFrom + dateTo + page + row); found {
+			count = rows.(int)
+		} else {
+			totalSql := "SELECT id FROM hm_update_log " + addsql
+			total := []sql.UpdateLog{}
+			err := c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count = len(total)
+			c.Cache().SetAlwaysTime("updateLogCount"+dateFrom+dateTo+page+row, count)
+		}
+		log := []sql.UpdateLog{}
+		if rows, found := c.Cache().Get("updateLog" + dateFrom + dateTo + page + row); found {
+			log = rows.([]sql.UpdateLog)
+		} else {
+			logSql := "SELECT * FROM hm_update_log " + addsql + " ORDER BY time DESC Limit ?,?"
+			err := c.Sql().Select(&log, logSql, pageNum, row)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("updateLog"+dateFrom+dateTo+page+row, log)
+		}
+		fmt.Println(log)
+		if count != 0 {
+			data["total"], data["rows"] = strconv.Itoa(count), log
+		} else {
+			data["status"], data["info"], data["rows"] = 54, "no found data", log
+		}
+	}
+	c.ResponseData(data, w, r)
+}
+
+/**
+ * @description 添加更新日志页面
+ * @English	Add update log page
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) AddUpdateLog(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/addUpdateLog.html")
+}
+
+/**
+ * @description 添加更新日志提交
+ * @English	Add update log submit
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) AddUpdateLogSubmit(w http.ResponseWriter, r *http.Request) {
+	cn, en := r.PostFormValue("cn"), r.PostFormValue("en")
+	switch false {
+	case vali.Article(cn) && vali.Length(cn, 2, 255):
+		c.ResponseJson(11, "invalid chinese content", w, r)
+		return
+	case vali.Article(en) && vali.Length(en, 2, 255):
+		c.ResponseJson(12, "invalid english content", w, r)
+		return
+	default:
+		sqls := "INSERT INTO hm_update_log(cn,en,time) VALUES(?,?,?)"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sqls, cn, en, time.Now().Unix())
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("updateLog")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 修改更新日志页面
+ * @English	Edit update log page
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) EditUpdateLog(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 2)
+	id := chi.URLParam(r, "updateLogId")
+	updateLogSingle := sql.UpdateLog{}
+	err := c.Sql().Get(&updateLogSingle, "SELECT * FROM hm_update_log WHERE id = ?", id)
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	}
+	data["updateLog"] = updateLogSingle
+	c.Template(w, r, data, "./view/admin/site/editUpdateLog.html")
+}
+
+/**
+ * @description 修改更新日志提交
+ * @English	Edit update log submit
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) EditUpdateLogSubmit(w http.ResponseWriter, r *http.Request) {
+	id, cn, en := r.PostFormValue("id"), r.PostFormValue("cn"), r.PostFormValue("en")
+	switch false {
+	case vali.Article(cn) && vali.Length(cn, 2, 255):
+		c.ResponseJson(11, "invalid chinese content", w, r)
+		return
+	case vali.Article(en) && vali.Length(en, 2, 255):
+		c.ResponseJson(12, "invalid english content", w, r)
+		return
+	case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+		c.ResponseJson(13, "invalid update log id", w, r)
+		return
+	default:
+		sqls := "UPDATE hm_update_log SET cn=?,en=?,time=? WHERE id = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sqls, cn, en, time.Now().Unix(), id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("updateLog")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 删除单个更新日志
+ * @English	Delete single update log
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) DelUpdateLog(w http.ResponseWriter, r *http.Request) {
+	id := r.PostFormValue("id")
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
+		updateLogSql := "DELETE FROM hm_update_log WHERE id = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(updateLogSql, id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("updateLog")
+			c.ResponseJson(1, "", w, r)
+		}
+	} else {
+		c.ResponseJson("11", "Invalid update log id", w, r)
+	}
+}
+
+/**
+ * @description 批量删除更新日志
+ * @English	Batch delete update logs
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) BatchDelUpdateLog(w http.ResponseWriter, r *http.Request) {
+	ids := r.PostFormValue("ids")
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid update log id", w, r)
+			return
+		}
+	}
+	updateLogSql := fmt.Sprintf("DELETE FROM hm_update_log WHERE id IN (%v)", ids)
+	tx := c.Sql().MustBegin()
+	tx.MustExec(updateLogSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("updateLog")
+		c.ResponseJson(1, "", w, r)
+	}
+}

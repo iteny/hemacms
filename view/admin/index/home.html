@@ -161,24 +161,10 @@
         </div>
         <div class="hm_panel_box">
             <div class="hm_panel">
-                <div class="hm_panel_title"><i class="panel-icon icon-group_key"></i>版本更新日志</div>
+                <div class="hm_panel_title" language="html:homeVersionUpdateLog"></div>
                 <div class="hm_panel_body hm_scrollbar_4">
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div><div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div><div style="width:100%:">asdfasd</div>
-                    <div style="width:100%:">asdfasd</div>
+                    <ul class="hm_timeline">
+                    </ul>
                 </div>
             </div>
         </div>
@@ -210,6 +196,7 @@ var meWidth = document.documentElement.clientWidth;
 $('.hm_panel .panel').width(meWidth);
 $('#serverTime').html(hm.dateFormat({{.serverTime}}));
 $('#uptime').html(hm.dateFormat({{.uptime}}));
+hm.ajaxUpdateLog();
 hm.ajaxPolling();
 setInterval('hm.ajaxPolling()',{{.ajaxPolling}} * 1000);//轮询执行，500ms一次
 </script>

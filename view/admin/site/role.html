@@ -18,7 +18,7 @@
         <table id="hm_data" region="center"></table>
     </div>
     <div id="hm_toolbar">
-        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addRole" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:roleAdd"></a>
+        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addUpdateLog" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:roleAdd"></a>
         <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(roleDel,this)" data-url="/intendant/site/batchDelRole" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:roleBatchDel"></a>
         <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',roleSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
     </div>
@@ -45,7 +45,7 @@ $('#hm_data').datagrid({
     height: mehigh,
     // striped: true, //斑马线效果
     nowrap: false, //数据列是否显示为一行
-    emptyMsg: hm.language.noData ? hm.language.noData : "no records data found",
+    emptyMsg: hm.language.noData,
     url:'/intendant/site/getRole',
     fitColumns: true, //宽度自适应窗口
     rownumbers: false, //是否显示行号
@@ -80,7 +80,7 @@ $('#hm_data').datagrid({
             sortable: true,
         },{
             field: 'name',
-            title: hm.language.roleName ? hm.language.roleName : 'Role name',
+            title: hm.language.roleName,
             width: 60,
             align: 'center',
             formatter: function(value, row, index) {
@@ -99,7 +99,7 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'remark',
-            title: hm.language.remark ? hm.language.remark : 'Remark',
+            title: hm.language.remark,
             width: 40,
             align: 'center',
             formatter: function(value,row,index){
@@ -111,7 +111,7 @@ $('#hm_data').datagrid({
             }
         },{
             field: 'cz',
-            title: hm.language.manageOperat ? hm.language.manageOperat : 'Management operation',
+            title: hm.language.manageOperat,
             width: 120,
             align: 'center',
             formatter: function(value, row, index) {

@@ -871,6 +871,18 @@ HmObj.prototype.getLanguage = function(type, value, row) {
                 lang = 'name';
         }
     }
+    if (type == "fieldtwo") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = 'cn';
+                break;
+            case 'en':
+                lang = 'en';
+                break;
+            default:
+                lang = 'cn';
+        }
+    }
     if (type == "easyui-tree") {
         switch ($.cookie('back-language')) {
             case 'cn':
@@ -1207,6 +1219,36 @@ HmObj.prototype.ajaxPolling = function() {
                 str += '</tr>';
                 $('#hm_system_monitor').html(str);
                 $('.easyui-progressbar').progressbar();
+            }
+        }
+    });
+};
+//ajax更新日志
+HmObj.prototype.ajaxUpdateLog = function() {
+    var that = this;
+    $.ajax({
+        type: "post",
+        url: "/intendant/ajaxUpdateLog",
+        dataType: "json",
+        success: function(data) {
+            if (data.status == 66) {
+                parent.window.location = '/intendant/login';
+            } else {
+                var str = '';
+                var lang = that.getLanguage('fieldtwo');
+                $.each(data.updateLog, function(k, v) {
+                    str += '<li>';
+                    str += '<div class="block">';
+                    str += '<div class="block_content">';
+                    str += '<h2 class="title">';
+                    str += '<a>' + that.dateFormat(v["time"]) + '</a>';
+                    str += '</h2>';
+                    str += '<p class="excerpt">' + v[lang] + '</p>';
+                    str += '</div>';
+                    str += '</div>';
+                    str += '</li>';
+                });
+                $('.hm_timeline').html(str);
             }
         }
     });
