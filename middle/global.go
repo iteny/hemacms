@@ -17,20 +17,20 @@ func LoginVerify(next http.Handler) http.Handler {
 		session := common.Sess().Load(r)
 		userId, err := session.GetString("uid")
 		common.Log().CheckErr("Session Get Error", err)
-		_, err = r.Cookie("back-language")
-		if err != nil {
-			common.Log().Debug().Str("[back-language-reload]", "cn").Str("[Error]", err.Error()).Msg("back-stage language set fail")
-			homeLanguage := &http.Cookie{
-				Name:     "back-language",
-				Value:    "cn",
-				Path:     "/",
-				HttpOnly: false,
-				MaxAge:   80000,
-			}
-			http.SetCookie(w, homeLanguage)
-		} else {
-			// common.Log().Debug().Str("[back-language]", cookie.Value).Msg("back-stage language set success")
-		}
+		// _, err = r.Cookie("back-language")
+		// if err != nil {
+		// 	common.Log().Debug().Str("[back-language-reload]", "cn").Str("[Error]", err.Error()).Msg("back-stage language set fail")
+		// 	homeLanguage := &http.Cookie{
+		// 		Name:     "back-language",
+		// 		Value:    "cn",
+		// 		Path:     "/",
+		// 		HttpOnly: false,
+		// 		MaxAge:   80000,
+		// 	}
+		// 	http.SetCookie(w, homeLanguage)
+		// } else {
+		// 	// common.Log().Debug().Str("[back-language]", cookie.Value).Msg("back-stage language set success")
+		// }
 		switch uri {
 		case "/intendant/login":
 			if userId != "" {
