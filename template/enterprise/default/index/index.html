@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -8,19 +9,75 @@
     <!-- <link rel="stylesheet" href="/static/common/pace/themes/pace-theme-barber-shop.css" /> -->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/static/common/bootstrap/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
     <link rel="stylesheet" href="/static/common/pace/pace-theme-minimal.css">
-
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_653809_p7vwo48bbfx647vi.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_654352_7p7q5598zty5jyvi.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_654371_83gg08ve2gnidx6r.css">
+    <link rel="stylesheet" href="/static/enterprise/css/enterprise.css">
     <style>
+        .navbar {}
+
+        .navbar-nav .dropdown-menu {
+            top: 46px;
+            border-radius: 0;
+            border-color: #D4D4D4;
+            background-color: #F2F2F2;
+            background: -webkit-linear-gradient(top, #ffffff 0, #F2F2F2 100%);
+            background: -moz-linear-gradient(top, #ffffff 0, #F2F2F2 100%);
+            background: -o-linear-gradient(top, #ffffff 0, #F2F2F2 100%);
+            background: linear-gradient(to bottom, #ffffff 0, #F2F2F2 100%);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#F2F2F2, GradientType=0);
+            border: 1px solid #d4d4d4;
+            border-top: 4px solid #f7c221;
+        }
+
+        .navbar-dark .dropdown-item {
+            color: #666;
+        }
+
+        .navbar-dark .container {
+            border-right: 1px solid red;
+        }
+
+        .navbar-dark .navbar-nav .nav-link {
+            color: #fff;
+        }
+
+        .navbar-dark .navbar-collapse.show .nav-link {
+            text-indent: 15px;
+        }
+
+        .navbar-dark .navbar-nav .active>.nav-link {
+            color: #f7c221;
+        }
+
+        .navbar-dark .navbar-toggler {
+            color: #fff;
+        }
+
+        .navbar-dark .navbar-nav .dropdown-toggle:hover {
+            color: #f7c221;
+        }
+
+        .navbar-dark .navbar-nav .show>.nav-link {
+            color: #f7c221;
+        }
+
+        .navbar-dark .navbar-toggler {
+            border: 1px solid #fff;
+        }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark hm_color_3">
         <div class="container">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#">HemaCms</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+                <i class="iconfont icon-tabulation  iconfont_weight_bold iconfont_size_2"></i>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
@@ -32,30 +89,140 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
-        </a>
+                            Dropdown
+                        </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="#">Action</a>
                             <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Disabled</a>
-                    </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
+                <!-- <form class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
+                </form> -->
             </div>
         </div>
     </nav>
+    <div id="demo" class="carousel slide" data-ride="carousel" style="height:400px;width:100%;">
+        <!-- 指示符 -->
+        <!-- <ul class="carousel-indicators">
+            <li data-target="#demo" data-slide-to="0" class="active"></li>
+            <li data-target="#demo" data-slide-to="1"></li>
+            <li data-target="#demo" data-slide-to="2"></li>
+        </ul> -->
+        <!-- 轮播图片 -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img style="width:100%;height:400px;" src="https://static.runoob.com/images/mix/img_fjords_wide.jpg">
+                <div class="carousel-caption">
+                    <h3 class="animated fadeInDownBig">第一张图片描述标题</h3>
+                    <p class="animated fadeInDownBig">描述文字!</p>
+                    <a class="btn btn-primary animated fadeInDownBig" href="#" role="button">Link</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img style="width:100%;height:400px;" src="https://static.runoob.com/images/mix/img_nature_wide.jpg">
+                <div class="carousel-caption">
+                    <h3 class="animated fadeInDownBig">第一张图片描述标题</h3>
+                    <p class="animated fadeInDownBig">描述文字!</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img style="width:100%;height:400px;" src="https://static.runoob.com/images/mix/img_mountains_wide.jpg">
+                <div class="carousel-caption">
+                    <h3 class="animated fadeInDownBig">第一张图片描述标题</h3>
+                    <p class="animated fadeInDownBig">描述文字!</p>
+                </div>
+            </div>
+        </div>
+        <!-- 左右切换按钮 -->
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
+    </div>
+    <div class="hm_func">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="media">
+                        <div class="bg hm_color_11">
+                            <i class="iconfont icon-31shouyexuanzhong"></i>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="mt-0">Media heading</h5> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia
+                            congue felis in faucibus.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="media">
+                        <div class="bg hm_color_15">
+                            <i class="iconfont icon-31shouyexuanzhong"></i>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="mt-0">Media heading</h5> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia
+                            congue felis in faucibus.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="media">
+                        <div class="bg hm_color_16">
+                            <i class="iconfont icon-31shouyexuanzhong"></i>
+                        </div>
+                        <div class="media-body">
+                            <h5 class="mt-0">Media heading</h5> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia
+                            congue felis in faucibus.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-sm">
+                    <a class="hm_func_box" href="#">
+                        <div class="hm_func_box_left">
+                            <div class="bg hm_color_14"><i class="iconfont icon-31shouyexuanzhong"></i></div>
+                        </div>
+                        <div class="hm_func_box_right">
+                            <span>sadfasadfasdfs</span>
+                            <p>asdfasdfasdf</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm">
+                    <a class="hm_func_box" href="#">
+                        <div class="hm_func_box_left">
+                            <div class="bg hm_color_15"><i class="iconfont icon-31shouyexuanzhong"></i></div>
+                        </div>
+                        <div class="hm_func_box_right">
+                            <span>sadfasadsadfasadfasdfssadfasadfasdfssadfasadfasdfssadfasadfasdfsfasdfs</span>
+                            <p>asdfasdfasdfsadfasadsadfasadfasdfssadfasadfasdfssadfasadfasdfssadfasadfasdfsfasdfssadfasadsadfasadfasdfssadfasadfasdfssadfasadfasdfssadfasadfasdfsfasdfssadfasadsadfasadfasdfssadfasadfasdfssadfasadfasdfssadfasadfasdfsfasdfs</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm">
+                    <a class="hm_func_box" href="#">
+                        <div class="hm_func_box_left">
+                            <div class="bg hm_color_16"><i class="iconfont icon-31shouyexuanzhong"></i></div>
+                        </div>
+                        <div class="hm_func_box_right">
+                            <span>sadfasadfasdfs</span>
+                            <p>asdfasdfasdf</p>
+                        </div>
+                    </a>
+                </div>
+            </div> -->
+        </div>
+    </div>
     <script src="/static/common/bootstrap/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="/static/common/bootstrap/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="/static/common/bootstrap/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="/static/common/pace/pace.min.js"></script>
+    <script src="/static/common/swiper/swiper.min.js"></script>
     <script>
     </script>
 </body>

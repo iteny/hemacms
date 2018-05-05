@@ -1,0 +1,120 @@
+.iconfont_weight_bold{
+    font-weight: bold;
+}
+.iconfont_weight_normal{
+    font-weight: normal;
+}
+.iconfont_size_1{
+    font-size: 16px;
+}
+.iconfont_size_2{
+    font-size: 18px;
+}
+.iconfont_size_3{
+    font-size: 20px;
+}
+.hm_color_1{
+    background: #1abc9c!important;
+}
+.hm_color_2{
+    background: #2ecc71!important;
+}
+.hm_color_3{
+    background: #3498db!important;
+}
+.hm_color_4{
+    background: #9b59b6!important;
+}
+.hm_color_5{
+    background: #34495e!important;
+}
+.hm_color_6{
+    background: #16a085!important;
+}
+.hm_color_7{
+    background: #27ae60!important;
+}
+.hm_color_8{
+    background: #2980b9!important;
+}
+.hm_color_9{
+    background: #8e44ad!important;
+}
+.hm_color_10{
+    background: #2c3e50!important;
+}
+.hm_color_11{
+    background: #f1c40f!important;
+}
+.hm_color_12{
+    background: #e67e22!important;
+}
+.hm_color_13{
+    background: #e74c3c!important;
+}
+.hm_color_14{
+    background: #ecf0f1!important;
+}
+.hm_color_15{
+    background: #95a5a6!important;
+}
+.hm_color_16{
+    background: #f39c12!important;
+}
+.hm_color_17{
+    background: #d35400!important;
+}
+.hm_color_18{
+    background: #c0392b!important;
+}
+.hm_color_19{
+    background: #bdc3c7!important;
+}
+.hm_color_20{
+    background: #7f8c8d!important;
+}
+.hm_color_21{
+    background: #34C749!important;
+}
+.hm_color_22{
+    background: #FC635D!important;
+}
+/* 功能开始 */
+.hm_func{
+    height: 110px;
+}
+.hm_func .col-sm{
+    padding: 10px 0 10px 10px;
+}
+.hm_func .media-body{
+    height: 80px;
+    overflow: hidden;
+    padding-left: 10px;
+}
+.hm_func .bg{
+    width: 50px;
+    height: 50px;
+    background: red;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    position: relative;
+}
+.hm_func i{
+    position: relative;
+    left:9px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 30px;
+    color: #fff;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    -webkit-transition-property: transform;
+    transition-property: transform;
+    -webkit-transition-timing-function: ease-in-out;
+    transition-timing-function: ease-in-out;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+}
+/* 功能结束 */
