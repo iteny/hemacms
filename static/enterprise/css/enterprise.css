@@ -1,3 +1,8 @@
+ul,ul li,ul ol{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 .iconfont_weight_bold{
     font-weight: bold;
 }
@@ -79,17 +84,155 @@
 .hm_color_22{
     background: #FC635D!important;
 }
+.hm_color_23{
+    background: #e14d43!important;
+}
+.hm_color_24{
+    background: #363b3f!important;
+}
+.hm_icon_1{
+    color: #1abc9c!important;
+}
+.hm_icon_2{
+    color: #2ecc71!important;
+}
+.hm_icon_3{
+    color: #3498db!important;
+}
+.hm_icon_4{
+    color: #9b59b6!important;
+}
+.hm_icon_5{
+    color: #34495e!important;
+}
+.hm_icon_6{
+    color: #16a085!important;
+}
+.hm_icon_7{
+    color: #27ae60!important;
+}
+.hm_icon_8{
+    color: #2980b9!important;
+}
+.hm_icon_9{
+    color: #8e44ad!important;
+}
+.hm_icon_10{
+    color: #2c3e50!important;
+}
+.hm_icon_11{
+    color: #f1c40f!important;
+}
+.hm_icon_12{
+    color: #e67e22!important;
+}
+.hm_icon_13{
+    color: #e74c3c!important;
+}
+.hm_icon_14{
+    color: #ecf0f1!important;
+}
+.hm_icon_15{
+    color: #95a5a6!important;
+}
+.hm_icon_16{
+    color: #f39c12!important;
+}
+.hm_icon_17{
+    color: #d35400!important;
+}
+.hm_icon_18{
+    color: #c0392b!important;
+}
+.hm_icon_19{
+    color: #bdc3c7!important;
+}
+.hm_icon_20{
+    color: #7f8c8d!important;
+}
+.hm_icon_21{
+    color: #34C749!important;
+}
+.hm_icon_22{
+    color: #FC635D!important;
+}
+.hm_icon_23{
+    color: #fff!important;
+}
+/* 下载开始 */
+.hm_download{
+    display: block;
+    margin: 40px 0;
+}
+.hm_download .container{
+}
+.hm_download .container .col-sm{
+    height: 185px;
+    display: block;
+}
+.hm_download .container .col-sm a{
+    display: block;
+}
+.hm_download .container .col-sm a:hover{
+    text-decoration: none;
+}
+.hm_download .top{
+    height: 100px;
+    width: 100%;
+    /* background: red; */
+}
+.hm_download .top i{
+    display: block;
+    text-align: center;
+    font-size: 60px;
+    color: #666;
+}
+.hm_download .bottom{
+    height: 85px;
+    width: 100%;
+    background: #3AC17E;
+    padding: 10px;
+    border-radius: 4px;
+}
+.hm_download .bottom .font_up{
+    text-align: center;
+    color: white;
+    font-size: 24px;
+}
+.hm_download .bottom .font_up i{
+    font-size: 20px;
+}
+.hm_download .bottom .font_down{
+    text-align: center;
+    color: white;
+    font-size: 14px;
+}
+/* 下载结束 */
 /* 功能开始 */
 .hm_func{
-    height: 110px;
+    display: block;
+    /* height: 110px; */
+    margin:40px 0;
 }
 .hm_func .col-sm{
-    padding: 10px 0 10px 10px;
+    padding: 10px 0 10px 20px;
+}
+.hm_func .col-sm a{
+    display: block;
+}
+.hm_func .col-sm a:hover{
+    text-decoration: none;
 }
 .hm_func .media-body{
     height: 80px;
     overflow: hidden;
     padding-left: 10px;
+    color: #666;
+    font-size: 14px;
+}
+.hm_func .media-body h1{
+    font-size: 20px;
+    color: #333;
 }
 .hm_func .bg{
     width: 50px;
@@ -118,3 +261,42 @@
     line-height: 50px;
 }
 /* 功能结束 */
+/* 块开始 */
+.hm_block{
+    margin: 40px 0;
+    padding:40px;
+    background: #f2f2f2;
+}
+.hm_block a{
+    margin-bottom: 10px;
+    width:100%;
+    color: #fff;
+}
+/* 块结束 */
+/* 页脚开始 */
+.hm_footer .down{
+    padding: 30px 0;
+}
+.hm_footer .col-sm-2{
+    background: red;
+    border-right: 1px solid blue;
+    margin-bottom: 10px;
+}
+.hm_footer .down ul li{
+    text-align: left;
+    color: #fff;
+}
+.hm_footer .down ul li h1{
+    font-size: 20px;
+    text-align: center;
+}
+.hm_footer .down ul li a{
+    display: block;
+    text-align: center;
+    color: #fff;
+    -webkit-transition:all .6s ease;
+    -moz-transition:all .6s ease;
+    -ms-transition:all .6s ease;
+    transition:all .6s ease;
+}
+/* 页脚结束 */
