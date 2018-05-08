@@ -162,7 +162,7 @@ ul,ul li,ul ol{
 /* 下载开始 */
 .hm_download{
     display: block;
-    margin: 40px 0;
+    margin: 60px 0;
 }
 .hm_download .container{
 }
@@ -212,7 +212,7 @@ ul,ul li,ul ol{
 .hm_func{
     display: block;
     /* height: 110px; */
-    margin:40px 0;
+    margin:60px 0;
 }
 .hm_func .col-sm{
     padding: 10px 0 10px 20px;
@@ -263,7 +263,7 @@ ul,ul li,ul ol{
 /* 功能结束 */
 /* 块开始 */
 .hm_block{
-    margin: 40px 0;
+    margin: 60px 0;
     padding:40px;
     background: #f2f2f2;
 }
@@ -274,26 +274,31 @@ ul,ul li,ul ol{
 }
 /* 块结束 */
 /* 页脚开始 */
-.hm_footer .down{
-    padding: 30px 0;
+.hm_footer .up{
+    padding: 30px 0 10px 0;
 }
 .hm_footer .col-sm-2{
-    background: red;
-    border-right: 1px solid blue;
-    margin-bottom: 10px;
+    /* background: red; */
+    /* border-right: 1px solid blue; */
+    margin-bottom: 20px;
 }
-.hm_footer .down ul li{
+.hm_footer .up ul li{
     text-align: left;
     color: #fff;
 }
-.hm_footer .down ul li h1{
+.hm_footer .up ul li h1{
     font-size: 20px;
-    text-align: center;
+    text-align: left;
 }
-.hm_footer .down ul li a{
+.hm_footer .up ul li h1 i{
+    font-size: 20px;
+}
+.hm_footer .up ul li a{
     display: block;
-    text-align: center;
-    color: #fff;
+    padding: 3px 0;
+    text-align: left;
+    color: #ccc;
+    font-size: 14px;
     -webkit-transition:all .6s ease;
     -moz-transition:all .6s ease;
     -ms-transition:all .6s ease;
