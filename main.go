@@ -34,7 +34,7 @@ func main() {
 		server.WriteTimeout = time.Duration(servWriteTimeout)
 	}
 	index := home.IndexCtrlObject()
-	//路由设置
+	//路由设置11
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
