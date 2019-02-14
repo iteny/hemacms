@@ -327,6 +327,9 @@ var language = {
         valiIconCss: "Please enter valid English letters, numbers,-,_,space",
         valiMenuUrl: "Please enter valid English letters,/",
         //验证数据结束
+        //企业站开始
+        navListPage: "Nav List Page",
+        //企业站结束
     },
     //简体中文,chinese
     cn: {
@@ -657,7 +660,17 @@ var language = {
         valiIconCss: "请输入有效的英文字母,数字,-,_,空格",
         valiMenuUrl: "请输入有效的英文字母,/",
         //验证数据结束
-
+        //企业站开始
+        navListPage: "导航列表",
+        addNavPage: "添加导航页面",
+        superiorNav: "上级导航",
+        navIcon: "导航图标",
+        navSort: "导航排序",
+        navName: "导航名称",
+        navEnglish: "英语名称",
+        navChinese: "中文名称",
+        navUrl: "导航网址",
+        //企业站结束
     },
 };
 $('[language]').each(function() {

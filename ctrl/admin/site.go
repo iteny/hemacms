@@ -75,7 +75,7 @@ func (c *SiteCtrl) SortMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	json.Unmarshal(result, &sortMenu)
 	var menuk []string
-	for k, _ := range sortMenu {
+	for k := range sortMenu {
 		menuk = append(menuk, k)
 	}
 	var bf bytes.Buffer
@@ -179,7 +179,7 @@ func (c *SiteCtrl) AddMenuSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow")
 	switch false {
-	case vali.NumericNoHeadZero(pid) && vali.Length(pid, 1, 8):
+	case vali.Numeric(pid) && vali.Length(pid, 1, 8):
 		c.ResponseJson(11, "Invalid menu pid", w, r)
 		return
 	case vali.Chinese(name) && vali.Length(name, 2, 50):

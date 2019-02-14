@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title language="html:navListPage"></title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+</head>
+<body>
+    <form action="/intendant/site/sortMenu" method="post">
+        <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
+            <table id="hm_menu" region="center"></table>
+        </div>
+        <div id="hm_toolbar">
+            <a href="javascript:void(0)" onclick="hm.ajaxSort(menuSort,this)" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:sort"></a>
+            <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addNav/0" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:addTopMenu"></a>
+            <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_menu','treegrid')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
+        </div>
+    </form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript">
+// parent.hm.openProgress();
+var mehigh = document.documentElement.clientHeight-80;
+$('#hm_menu').treegrid({
+    height: mehigh,
+    nowrap: true,
+    emptyMsg: 'no records found',
+    url: '/intendant/enterprise/getNav',
+    idField: 'id',
+    treeField: 'text',
+    fitColumns: true, //宽度自适应窗口
+    rownumbers: false, //是否加行号
+    singleSelect: true,
+    scrollbarSize: 0, //去除滚动条，否则右边最后一列会自动多处一块
+    toolbar: '#hm_menu_tools',
+    columns: [
+        [{
+                field: 'sort',
+                title: hm.language.sort,
+                width: 30,
+                align: 'center',
+                formatter: function(value, row, index) {
+                    return '<input name="' + row.id + '" value="' + value + '" class="easyui-validatebox" style="width:30px;text-align:center;border-radius:4px;">';
+                }
+            },{
+                field: 'id',
+                title: 'ID',
+                width: 20,
+                align: 'center',
+            },
+            {
+                field: 'text',
+                title: hm.language.menuName,
+                width: 120,
+                align: 'left',
+                formatter: function(value, row, index) {
+                    var lang = hm.getLanguage('datagird',value,row);
+                    return lang;
+                }
+            },
+            {
+                field: 'url',
+                title: hm.language.menuUrl,
+                width: 120,
+                align: 'center',
+            },
+            {
+                field: 'isshow',
+                title: hm.language.isshow,
+                width: 30,
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if(value == 1){
+                        return '<i class="fa fa-check hm_fa_ok"></i>';
+                    }else{
+                        return '<i class="fa fa-remove hm_fa_no"></i>';
+                    }
+                }
+            },
+            {
+                field: 'cz',
+                title: hm.language.manageOperat,
+                width: 180,
+                align: 'center',
+                formatter: function(value, row, index) {
+                    if(row.level > 3){
+                        str = '<a href="javascript:void(0)" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add" onclick="disClick()" disabled>'+hm.language.addSubMenu+'</a>';
+                    }else{
+                        str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubMenu+'</a>';
+                    }
+                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(menuDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delMenuSubmit" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
+                    return str;
+                }
+            }
+        ]
+    ],
+    onLoadSuccess: function(data) {
+        $('.easyui-validatebox').validatebox({
+            required: true,
+            validType: ['numericNoHeadZero','length[1,3]'],
+        });
+        $('.easyui-linkbutton').linkbutton();
+    }
+});
+hm.datagridResize("#hm_menu",'treegrid'); //让treegrid宽度自动适应
+function disClick(){//菜单不能超过4级
+    hm.notice('warn',hm.language.menuLevelConfine ? hm.language.menuLevelConfine : "Sorry,Do not allow the menu more than three!");
+    return false;
+}
+function menuSort(data){
+    if (data.status == 11) {
+        parent.hm.notice("warn", data.info);
+    } else if (data.status == 12) {
+        parent.hm.notice("warn", data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.menuSortInfoFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.menuSortInfoSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+function menuDel(data){
+    if (data.status == 11) {
+        parent.hm.notice("warn", data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.delFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.delSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+</script>
+</html>

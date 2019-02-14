@@ -19,6 +19,7 @@ func AdminRoutes() http.Handler {
 	index := admin.IndexCtrlObject()
 	site := admin.SiteCtrlObject()
 	content := admin.ContentCtrlObject()
+	enterprise := admin.EnterpriseCtrlObject()
 	login := admin.LoginCtrlObject()
 	r := chi.NewRouter()
 	r.Use(middle.LoginVerify)
@@ -96,6 +97,14 @@ func AdminRoutes() http.Handler {
 	})
 	r.Route("/content", func(r chi.Router) {
 		r.Get("/columnList", content.ColumnList) //栏目列表页面
+	})
+	r.Route("/enterprise", func(r chi.Router) {
+		r.Get("/navList", enterprise.NavList)   //导航列表页面
+		r.Post("/getNav", enterprise.GetNav)    //获取导航
+		r.Route("/addNav", func(r chi.Router) { //添加导航
+			r.Get("/{navPid}", enterprise.AddNav) //添加导航页面
+		})
+		r.Post("/addNavSubmit", enterprise.AddNavSubmit) //添加导航提交
 	})
 	return r
 }

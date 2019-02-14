@@ -84,6 +84,21 @@ type UpdateLog struct {
 	En   string `json:"en"`
 }
 
+//企业站导航表 hm_enterprise_nav
+type EnterpriseNav struct {
+	Id       int             `json:"id"`
+	Url      string          `json:"url"`
+	Name     string          `json:"text"`
+	Pid      int             `json:"pid"`
+	Isshow   int             `json:"isshow"`
+	Sort     int             `json:"sort"`
+	Icon     string          `json:"iconCls"`
+	Level    int             `json:"level"`
+	En       string          `json:"en"`
+	Checked  int             `json:"checked"`
+	Children []EnterpriseNav `json:"children"`
+}
+
 //递归重新排序无限极分类
 func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	array := make([]AuthRule, 0)
@@ -99,7 +114,7 @@ func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	}
 	for tk, tv := range array {
 		rm := RecursiveMenu(arr, tv.Id, level+1)
-		for sk, _ := range rm {
+		for sk := range rm {
 			array[tk].Children = append(array[tk].Children, rm[sk])
 		}
 
@@ -122,7 +137,7 @@ func RecursiveMenuLevel(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	}
 	for tk, tv := range array {
 		rm := RecursiveMenuLevel(arr, tv.Id, level+1)
-		for sk, _ := range rm {
+		for sk := range rm {
 			if rm[sk].Level < 4 {
 				array[tk].Children = append(array[tk].Children, rm[sk])
 			}
@@ -155,4 +170,22 @@ func RecursiveMenuId(arr []AuthRule, id string) string {
 	}
 	ids := strings.TrimRight(bf.String(), ",")
 	return ids
+}
+
+//递归重新排序无限极分类
+func RecursiveNav(arr []EnterpriseNav, pid int, level int) (ar []EnterpriseNav) {
+	array := make([]EnterpriseNav, 0)
+	for k, v := range arr {
+		if pid == v.Pid {
+			arr[k].Level = level + 1
+			array = append(array, arr[k])
+		}
+	}
+	for tk, tv := range array {
+		rm := RecursiveNav(arr, tv.Id, level+1)
+		for sk := range rm {
+			array[tk].Children = append(array[tk].Children, rm[sk])
+		}
+	}
+	return array
 }
