@@ -329,6 +329,18 @@ var language = {
         //验证数据结束
         //企业站开始
         navListPage: "Nav List Page",
+        addNavPage: "Add Nav Page",
+        superiorNav: "Superior Nav",
+        navIcon: "Nav Icon",
+        navSort: "Nav Sort",
+        navName: "Nav Name",
+        navEnglish: "English Name",
+        navChinese: "Chinese Name",
+        navUrl: "Nav Url Address",
+        addTopNav: "Add Top Nav",
+        addSubNav: "Add Sub Nav",
+        navName: "Nav Name",
+        navUrl: "Nav Url Address",
         //企业站结束
     },
     //简体中文,chinese
@@ -669,6 +681,10 @@ var language = {
         navName: "导航名称",
         navEnglish: "英语名称",
         navChinese: "中文名称",
+        navUrl: "导航网址",
+        addTopNav: "添加顶级导航",
+        addSubNav: "添加子导航",
+        navName: "导航名称",
         navUrl: "导航网址",
         //企业站结束
     },

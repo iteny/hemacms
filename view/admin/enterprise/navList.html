@@ -62,7 +62,7 @@ $('#hm_menu').treegrid({
             },
             {
                 field: 'text',
-                title: hm.language.menuName,
+                title: hm.language.navName,
                 width: 120,
                 align: 'left',
                 formatter: function(value, row, index) {
@@ -72,7 +72,7 @@ $('#hm_menu').treegrid({
             },
             {
                 field: 'url',
-                title: hm.language.menuUrl,
+                title: hm.language.navUrl,
                 width: 120,
                 align: 'center',
             },
@@ -95,12 +95,12 @@ $('#hm_menu').treegrid({
                 width: 180,
                 align: 'center',
                 formatter: function(value, row, index) {
-                    if(row.level > 3){
-                        str = '<a href="javascript:void(0)" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add" onclick="disClick()" disabled>'+hm.language.addSubMenu+'</a>';
+                    if(row.level > 2){
+                        str = '<a href="javascript:void(0)" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add" onclick="disClick()" disabled>'+hm.language.addSubNav+'</a>';
                     }else{
-                        str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/addMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubMenu+'</a>';
+                        str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addNav/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubNav+'</a>';
                     }
-                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/site/editMenu/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/editNav/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
                     str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(menuDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delMenuSubmit" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
                     return str;
                 }

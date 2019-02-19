@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-md-10 text-right menu-1">
                             <ul>
-                                <li class="active"><a href="index.html">Home</a></li>
+                               <!--  <li class="active"><a href="index.html">Home</a></li>
                                 <li class="has-dropdown">
                                     <a href="work.html">Works</a>
                                     <ul class="dropdown">
@@ -74,14 +74,27 @@
                                 <li><a href="blog.html">Blog</a></li>
                                 <li><a href="about.html">About</a></li>
                                 <li><a href="shop.html">Shop</a></li>
-                                <li><a href="contact.html">Contact</a></li>
+                                <li><a href="contact.html">Contact</a></li> -->
+                                {{ $ck := .cookie }}
                                 {{ range .json }}
-                                    <li><a href="contact.html">{{ .Id }}</a></li>
-                                    {{ range .Children }}
-                                        {{ .Name }}
+                                    {{ if .Children }}
+                                    <li class="has-dropdown"><a>{{ .Id }}</a>
+                                    {{ else }}
+                                    <li><a href="contact.html">{{ .Id }}</a>
                                     {{ end }}
+                                    {{ range .Children }}
+                                        {{if eq $ck "cn"}}
+                                            <ul class="dropdown">
+                                                <li><a href="work-grid.html">{{.Name}}</a></li>
+                                            </ul>
+                                        {{else if eq $ck "en"}}
+                                            <ul class="dropdown">
+                                                <li><a href="work-grid.html">{{.En}}</a></li>
+                                            </ul>
+                                       {{end}}
+                                    {{ end }}
+                                    </li>
                                 {{ end }}
-
                             </ul>
                         </div>
                     </div>
@@ -498,6 +511,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     
     <!-- jQuery -->
     <script src="/static/enterprise/js/jquery.min.js"></script>
+    <script src="/static/common/dist/jquery.cookie.js"></script>
     <!-- jQuery Easing -->
     <script src="/static/enterprise/js/jquery.easing.1.3.js"></script>
     <!-- Bootstrap -->
@@ -517,7 +531,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     <script src="/static/enterprise/js/jquery.countTo.js"></script>
     <!-- Main -->
     <script src="/static/enterprise/js/main.js"></script>
-
+    <script src="/static/common/dist/global.js"></script>
     </body>
 </html>
 

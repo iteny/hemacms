@@ -189,3 +189,21 @@ func RecursiveNav(arr []EnterpriseNav, pid int, level int) (ar []EnterpriseNav) 
 	}
 	return array
 }
+func RecursiveNavLevel(arr []EnterpriseNav, pid int, level int) (ar []EnterpriseNav) {
+	array := make([]EnterpriseNav, 0)
+	for k, v := range arr {
+		if pid == v.Pid {
+			arr[k].Level = level + 1
+			array = append(array, arr[k])
+		}
+	}
+	for tk, tv := range array {
+		rm := RecursiveNavLevel(arr, tv.Id, level+1)
+		for sk := range rm {
+			if rm[sk].Level < 4 {
+				array[tk].Children = append(array[tk].Children, rm[sk])
+			}
+		}
+	}
+	return array
+}
