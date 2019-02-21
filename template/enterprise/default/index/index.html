@@ -58,11 +58,11 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-2">
-                            <div id="colorlib-logo"><a href="index.html">Unapp</a></div>
+                            <div id="colorlib-logo"><a href="index">Unapp</a></div>
                         </div>
                         <div class="col-md-10 text-right menu-1">
                             <ul>
-                               <!--  <li class="active"><a href="index.html">Home</a></li>
+                                <!-- <li class="active"><a href="index.html">Home</a></li>
                                 <li class="has-dropdown">
                                     <a href="work.html">Works</a>
                                     <ul class="dropdown">
@@ -76,24 +76,31 @@
                                 <li><a href="shop.html">Shop</a></li>
                                 <li><a href="contact.html">Contact</a></li> -->
                                 {{ $ck := .cookie }}
+                                {{ $active := .active}}
                                 {{ range .json }}
                                     {{ if .Children }}
-                                    <li class="has-dropdown"><a>{{ .Id }}</a>
-                                    {{ else }}
-                                    <li><a href="contact.html">{{ .Id }}</a>
-                                    {{ end }}
-                                    {{ range .Children }}
                                         {{if eq $ck "cn"}}
-                                            <ul class="dropdown">
-                                                <li><a href="work-grid.html">{{.Name}}</a></li>
-                                            </ul>
+                                            <li class="has-dropdown"><a>{{.Url}}{{ .Name }}</a>
                                         {{else if eq $ck "en"}}
-                                            <ul class="dropdown">
-                                                <li><a href="work-grid.html">{{.En}}</a></li>
-                                            </ul>
-                                       {{end}}
+                                            <li class="has-dropdown"><a>{{.Url}}{{ .En }}</a>
+                                        {{end}}
+                                        <ul class="dropdown">
+                                            {{ range .Children }}
+                                                {{if eq $ck "cn"}}
+                                                    <li><a href="{{.Url}}">{{.Name}}</a></li>
+                                                {{else if eq $ck "en"}}
+                                                    <li><a href="{{.Url}}">{{.En}}</a></li>
+                                               {{end}}
+                                            {{ end }}
+                                        </ul>
+                                    {{ else }}
+                                        {{if eq $ck "cn"}}
+                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{.Url}}">{{ .Name }}</a>
+                                        {{else if eq $ck "en"}}
+                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{.Url}}">{{ .En }}</a>
+                                        {{end}}
                                     {{ end }}
-                                    </li>
+                                        </li>
                                 {{ end }}
                             </ul>
                         </div>

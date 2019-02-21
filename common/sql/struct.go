@@ -200,10 +200,34 @@ func RecursiveNavLevel(arr []EnterpriseNav, pid int, level int) (ar []Enterprise
 	for tk, tv := range array {
 		rm := RecursiveNavLevel(arr, tv.Id, level+1)
 		for sk := range rm {
-			if rm[sk].Level < 4 {
+			if rm[sk].Level < 3 {
 				array[tk].Children = append(array[tk].Children, rm[sk])
 			}
 		}
 	}
 	return array
+}
+
+//递归菜单ID
+func RecursiveNavId(arr []EnterpriseNav, id string) string {
+	var bf bytes.Buffer
+	bf.WriteString(id)
+	bf.WriteString(",")
+	meid, _ := strconv.Atoi(id)
+	for _, v := range arr {
+		if meid == v.Pid {
+			tid := strconv.Itoa(v.Id)
+			bf.WriteString(tid)
+			bf.WriteString(",")
+			for _, tv := range arr {
+				if v.Id == tv.Pid {
+					sid := strconv.Itoa(tv.Id)
+					bf.WriteString(sid)
+					bf.WriteString(",")
+				}
+			}
+		}
+	}
+	ids := strings.TrimRight(bf.String(), ",")
+	return ids
 }

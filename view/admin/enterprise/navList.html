@@ -13,12 +13,12 @@
     <link rel="stylesheet" href="/static/common/animate/animate.min.css">
 </head>
 <body>
-    <form action="/intendant/site/sortMenu" method="post">
+    <form action="/intendant/enterprise/sortNav" method="post">
         <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
             <table id="hm_menu" region="center"></table>
         </div>
         <div id="hm_toolbar">
-            <a href="javascript:void(0)" onclick="hm.ajaxSort(menuSort,this)" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:sort"></a>
+            <a href="javascript:void(0)" onclick="hm.ajaxSort(navSort,this)" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:sort"></a>
             <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addNav/0" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:addTopMenu"></a>
             <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_menu','treegrid')" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
         </div>
@@ -101,7 +101,7 @@ $('#hm_menu').treegrid({
                         str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addNav/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubNav+'</a>';
                     }
                     str += '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/editNav/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
-                    str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(menuDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/site/delMenuSubmit" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
+                    str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(navDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/enterprise/delNavSubmit" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
                     return str;
                 }
             }
@@ -120,7 +120,7 @@ function disClick(){//菜单不能超过4级
     hm.notice('warn',hm.language.menuLevelConfine ? hm.language.menuLevelConfine : "Sorry,Do not allow the menu more than three!");
     return false;
 }
-function menuSort(data){
+function navSort(data){
     if (data.status == 11) {
         parent.hm.notice("warn", data.info);
     } else if (data.status == 12) {
@@ -136,7 +136,7 @@ function menuSort(data){
         parent.hm.notice("error",hm.language.unknownError);
     }
 }
-function menuDel(data){
+function navDel(data){
     if (data.status == 11) {
         parent.hm.notice("warn", data.info);
     } else if (data.status == 66) {

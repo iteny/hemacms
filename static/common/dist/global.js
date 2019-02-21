@@ -38,5 +38,5 @@ HmObj.prototype.languageRun = function(time) {
 //创建HmMenuTab对象
 var hm = new HmObj();
 //如果后台没有设置语言，JS来设置
-hm.languageSet('en');
+hm.languageSet('cn');
 hm.languageRun();

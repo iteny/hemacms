@@ -4,6 +4,7 @@ import (
 	"hemacms/common"
 	"hemacms/common/sql"
 	"net/http"
+	"strings"
 )
 
 type IndexCtrl struct {
@@ -14,6 +15,7 @@ func IndexCtrlObject() *IndexCtrl {
 	return &IndexCtrl{}
 }
 func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
+	addr := strings.Split(r.RequestURI, "/")
 	nav := []sql.EnterpriseNav{}
 	if rows, found := c.Cache().Get("allnav"); found {
 		nav = rows.([]sql.EnterpriseNav)
@@ -28,6 +30,7 @@ func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	an := sql.RecursiveNavLevel(nav, 0, 0)
 	data["json"] = an
+	data["active"] = addr[2]
 	cookie, err := r.Cookie("stage-language")
 	if err != nil {
 		c.Log().CheckErr("cookie error", err)

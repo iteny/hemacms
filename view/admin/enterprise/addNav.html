@@ -19,7 +19,7 @@
                 <tbody>
                     <tr>
                         <td width="40" language="table:superiorNav"></td>
-                        <td width="160"><input id="menuselect" class="length_3" name="pid" value="{{.pid}}"></td>
+                        <td width="160"><input id="navselect" class="length_3" name="pid" value="{{.pid}}"></td>
                     </tr>
                     <tr>
                         <td width="40" language="table:navChinese"></td>
@@ -69,13 +69,13 @@
 <script type="text/javascript">
 var data = [];
 var menudata = $.parseJSON({{.json}});
-var topdata = '{"id":0,"url":"topMenu","text":"顶级菜单","pid":0,"isshow":1,"en":"Top menu","iconCls":"icon-eject_green"}';
+var topdata = '{"id":0,"url":"topNav","text":"顶级导航","pid":0,"isshow":1,"en":"Top nav","iconCls":"icon-eject_green"}';
 data.push(JSON.parse(topdata));
 $.each(menudata, function(index, obj) {
     data.push(obj);
 });
 var lang = hm.getLanguage('easyui-tree');
-$('#menuselect').combotree({
+$('#navselect').combotree({
     required: true,
     textField: lang,
     data: data,
@@ -97,11 +97,11 @@ $('#isshow').switchbutton({
 });
 function addNavFunc(data){
     if (data.status == 21) {
-        parent.hm.notice("warn", hm.language.menuCheckName + data.info);
+        parent.hm.notice("warn", hm.language.navCheckName + data.info);
     } else if(data.status == 22){
-        parent.hm.notice("warn", hm.language.menuCheckUrl + data.info);
+        parent.hm.notice("warn", hm.language.navCheckUrl + data.info);
     } else if(data.status == 23){
-        parent.hm.notice("warn", hm.language.menuCheckEn + data.info);
+        parent.hm.notice("warn", hm.language.navCheckEn + data.info);
     } else if (data.status == 66) {
         parent.hm.notice("error", hm.language.noAuth);
     } else if(data.status == 11){

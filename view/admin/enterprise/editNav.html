@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title language="html:editNavPage"></title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+</head>
+<body>
+    <form action="/intendant/enterprise/editNavSubmit">
+        <input class="easyui-validatebox" type="hidden" name="id" value="{{.nav.Id}}" data-options="required:true,validType:['numericNoHeadZero','length[1,8]']">
+        <div class="frame_form_table">
+            <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                <tbody>
+                    <tr>
+                        <td width="40" language="table:superiorNav"></td>
+                        <td width="160"><input id="navselect" class="length_3" name="pid" value="{{.nav.Pid}}"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:navChinese"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.nav.Name}}" type="text" name="name" data-options="required:true,validType:['chinese','length[2,50]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:navEnglish"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.nav.En}}" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,50]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:navUrl"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.nav.Url}}" type="text" name="url" data-options="required:true,validType:['menuUrl','length[2,50]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:navSort"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.nav.Sort}}" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:navIcon"></td>
+                        <td>
+                            <input id="hm_menu_icons_input" name="icon" type="hidden" value="{{.nav.Icon}}">
+                            <strong id="hm_menu_icons"><i class='{{.nav.Icon}}'></i></strong>
+                            <a href="#" class="easyui-linkbutton" plain="true" onclick="parent.hm.showMenuIcons(hm.language.selectIcons)" language="html:selectIcons"></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:isshow"></td>
+                        <td width="190"><input id="isshow"></td>
+                        <input type="hidden" name="isshow" value="{{.nav.Isshow}}">
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="hm_toolbar">
+            <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+            <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(editNavFunc,this)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" language="html:ajaxEdit"></a>
+        </div>
+    </form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript">
+var data = [];
+var menudata = $.parseJSON({{.json}});
+var topdata = '{"id":0,"url":"topNav","text":"顶级导航","pid":0,"isshow":1,"en":"Top nav","iconCls":"icon-eject_green"}';
+data.push(JSON.parse(topdata));
+$.each(menudata, function(index, obj) {
+    data.push(obj);
+});
+var lang = hm.getLanguage('easyui-tree');
+$('#navselect').combotree({
+    required: true,
+    textField: lang,
+    data: data,
+    formatter:function(node){
+		return node[lang];
+	}
+});
+var st = hm.switchStatus({{.menu.Isshow}});
+$('#isshow').switchbutton({
+    checked: st,
+    onText: hm.language.on,
+    offText: hm.language.off,
+    onChange: function(checked) {
+        if(checked == true){
+            $('input[name=isshow]').val(1);
+        }else{
+            $('input[name=isshow]').val(0);
+        }
+    }
+});
+function editNavFunc(data){
+    if (data.status == 21) {
+        parent.hm.notice("warn", hm.language.navCheckName + data.info);
+    } else if(data.status == 22){
+        parent.hm.notice("warn", hm.language.navCheckUrl + data.info);
+    } else if(data.status == 23){
+        parent.hm.notice("warn", hm.language.navCheckEn + data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 11){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 15){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 16){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 17){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.addFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.addSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+</script>
+</html>

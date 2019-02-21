@@ -104,7 +104,13 @@ func AdminRoutes() http.Handler {
 		r.Route("/addNav", func(r chi.Router) { //添加导航
 			r.Get("/{navPid}", enterprise.AddNav) //添加导航页面
 		})
-		r.Post("/addNavSubmit", enterprise.AddNavSubmit) //添加导航提交
+		r.Route("/editNav", func(r chi.Router) {
+			r.Get("/{navId}", enterprise.EditNav) //修改导航页面
+		})
+		r.Post("/sortNav", enterprise.SortNav)             //导航排序
+		r.Post("/addNavSubmit", enterprise.AddNavSubmit)   //添加导航提交
+		r.Post("/editNavSubmit", enterprise.EditNavSubmit) //修改导航提交
+		r.Post("/delNavSubmit", enterprise.DelNavSubmit)   //删除导航提交
 	})
 	return r
 }

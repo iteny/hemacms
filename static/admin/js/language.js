@@ -330,6 +330,7 @@ var language = {
         //企业站开始
         navListPage: "Nav List Page",
         addNavPage: "Add Nav Page",
+        editNavPage: "Edit Nav Page",
         superiorNav: "Superior Nav",
         navIcon: "Nav Icon",
         navSort: "Nav Sort",
@@ -341,6 +342,9 @@ var language = {
         addSubNav: "Add Sub Nav",
         navName: "Nav Name",
         navUrl: "Nav Url Address",
+        navCheckName: "Chinese name already exists!",
+        navCheckUrl: "Nav URL already exists!",
+        navCheckEn: "English name already exists!",
         //企业站结束
     },
     //简体中文,chinese
@@ -675,6 +679,7 @@ var language = {
         //企业站开始
         navListPage: "导航列表",
         addNavPage: "添加导航页面",
+        editNavPage: "修改导航页面",
         superiorNav: "上级导航",
         navIcon: "导航图标",
         navSort: "导航排序",
@@ -686,6 +691,9 @@ var language = {
         addSubNav: "添加子导航",
         navName: "导航名称",
         navUrl: "导航网址",
+        navCheckName: "中文名称已存在!",
+        navCheckUrl: "导航网址已存在!",
+        navCheckEn: "英文名称已存在!",
         //企业站结束
     },
 };
