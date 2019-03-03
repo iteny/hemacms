@@ -19,5 +19,6 @@ func HomeRoutes() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/index", index.Index) //首页
 	// r.Use(middle.LoginVerify)
+	r.Get("/{articleSlug:[a-z-]+}", index.Index)
 	return r
 }

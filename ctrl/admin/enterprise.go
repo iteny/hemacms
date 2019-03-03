@@ -52,6 +52,7 @@ func (c *EnterpriseCtrl) GetNav(w http.ResponseWriter, r *http.Request) {
 		}
 		c.Cache().SetAlwaysTime("allnav", nav)
 	}
+	fmt.Println(nav)
 	an := sql.RecursiveNavLevel(nav, 0, 0)
 	fmt.Fprint(w, c.RowsJson(an))
 }
@@ -177,9 +178,9 @@ func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 		nav := sql.EnterpriseNav{}
 		err := c.Sql().Get(&nav, "SELECT * FROM hm_enterprise_nav WHERE name = ? OR url = ? OR en = ?", name, url, en)
 		if err != nil {
-			sqls := "INSERT INTO hm_enterprise_nav(url,name,pid,isshow,sort,icon,level,en) VALUES(?,?,?,?,?,?,?,?)"
+			sqls := "INSERT INTO hm_enterprise_nav(url,name,external_link,dir,type,template,seo_title,seo_keyword,seo_describe,pid,isshow,sort,icon,level,en) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			tx := c.Sql().MustBegin()
-			tx.MustExec(sqls, url, name, pid, isshow, sort, icon, 1, en)
+			tx.MustExec(sqls, url, name, "", "", "", "", "", "", "", pid, isshow, sort, icon, 1, en)
 			err = tx.Commit()
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
@@ -340,4 +341,29 @@ func (c *EnterpriseCtrl) DelNavSubmit(w http.ResponseWriter, r *http.Request) {
 		c.ResponseJson(11, "Invalid menu id", w, r)
 		return
 	}
+}
+
+/**
+ * @description 内容管理
+ * @English	content management page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) ContentManage(w http.ResponseWriter, r *http.Request) {
+	nav := []sql.EnterpriseNav{}
+	if rows, found := c.Cache().Get("allnav"); found {
+		nav = rows.([]sql.EnterpriseNav)
+	} else {
+		sqls := "SELECT * FROM hm_enterprise_nav"
+		err := c.Sql().Select(&nav, sqls)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("allnav", nav)
+	}
+	data := make(map[string]interface{})
+	ar := sql.RecursiveNavLevel(nav, 0, 0)
+	data["json"] = c.RowsJson(ar)
+	c.Template(w, r, data, "./view/admin/enterprise/contentManage.html")
 }

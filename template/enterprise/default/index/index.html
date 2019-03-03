@@ -80,9 +80,9 @@
                                 {{ range .json }}
                                     {{ if .Children }}
                                         {{if eq $ck "cn"}}
-                                            <li class="has-dropdown"><a>{{.Url}}{{ .Name }}</a>
+                                            <li class="has-dropdown"><a>{{ .Name }}</a>
                                         {{else if eq $ck "en"}}
-                                            <li class="has-dropdown"><a>{{.Url}}{{ .En }}</a>
+                                            <li class="has-dropdown"><a>{{ .En }}</a>
                                         {{end}}
                                         <ul class="dropdown">
                                             {{ range .Children }}

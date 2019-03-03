@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"hemacms/common"
 	"hemacms/common/sql"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -17,12 +20,88 @@ import (
 	vali "github.com/iteny/hmgo/validator"
 )
 
+const (
+	upload_path string = "./static/upload/"
+)
+
 type SiteCtrl struct {
 	common.BaseCtrl
 }
 
 func SiteCtrlObject() *SiteCtrl {
 	return &SiteCtrl{}
+}
+
+/**
+ * @description 上传图片管理
+ * @English	uploader images management page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(32 << 20)
+	//接收客户端传来的文件 uploadfile 与客户端保持一致
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	//上传的文件保存在ppp路径下
+	ext := path.Ext(handler.Filename) //获取文件后缀
+	fileNewName := string(time.Now().Format("20060102150405")) + strconv.Itoa(time.Now().Nanosecond()) + ext
+
+	f, err := os.OpenFile(upload_path+fileNewName, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+		return
+	} else {
+		session := c.Sess().Load(r)
+		uid, err := session.GetString("uid")
+		c.Log().CheckErr("Session Get Error", err)
+		pic := sql.Picture{}
+		err = c.Sql().Get(&pic, "SELECT * FROM hm_picture WHERE url = ?", fileNewName)
+		if err != nil {
+			sqls := "INSERT INTO hm_picture(url,time,uid) VALUES(?,?,?)"
+			tx := c.Sql().MustBegin()
+			tx.MustExec(sqls, fileNewName, time.Now().Unix(), uid)
+			err = tx.Commit()
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			} else {
+				c.Cache().Del("allpic")
+				c.ResponseJson(1, fileNewName, w, r)
+			}
+		} else {
+			c.ResponseJson(21, "picture name already exist", w, r)
+			return
+		}
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	// fmt.Fprintln(w, "upload ok!"+fileNewName)
+}
+
+/**
+ * @description 删除图片
+ * @English	delete images file
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) DelImage(w http.ResponseWriter, r *http.Request) {
+	pic := r.PostFormValue("pic")
+	picSql := "DELETE FROM hm_picture WHERE url = ?"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(picSql, pic)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("allpic")
+		c.ResponseJson(1, "", w, r)
+	}
 }
 
 /**

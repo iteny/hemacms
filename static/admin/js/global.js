@@ -994,6 +994,30 @@ HmObj.prototype.selectMenuIcons = function(icon) {
     $('iframe').contents().find("#hm_menu_icons_input").val(icon);
     $('.hm_dialog').dialog('destroy');
 }
+//点击删除图标
+HmObj.prototype.delPicture = function(pic,file,url) {
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            pic: pic
+        },
+        beforeSend: function() {
+            parent.hm.openProgress();
+        },
+        success: function(data) {
+            parent.hm.closeProgress();
+            parent.hm.notice('warn', "删除成功");
+            var $li = $('#'+file.id);
+            $li.off().find('.file-panel').off().end().remove();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
+            parent.hm.closeProgress();
+        }
+    });
+};
 //打开选择图标框
 HmObj.prototype.showMenuIcons = function(title) {
     var iconPach = '/intendant/site/iconsCls';

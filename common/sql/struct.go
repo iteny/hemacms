@@ -48,6 +48,14 @@ type AuthRule struct {
 	Children []AuthRule `json:"children"`
 }
 
+//图片附件表
+type Picture struct {
+	Id   int    `json:"id"`
+	Url  string `json:"url"`
+	Time string `json:"time"`
+	Uid  string `json:"uid"`
+}
+
 //登录日志
 type LoginLog struct {
 	Id        int    `json:"id"`
@@ -86,17 +94,24 @@ type UpdateLog struct {
 
 //企业站导航表 hm_enterprise_nav
 type EnterpriseNav struct {
-	Id       int             `json:"id"`
-	Url      string          `json:"url"`
-	Name     string          `json:"text"`
-	Pid      int             `json:"pid"`
-	Isshow   int             `json:"isshow"`
-	Sort     int             `json:"sort"`
-	Icon     string          `json:"iconCls"`
-	Level    int             `json:"level"`
-	En       string          `json:"en"`
-	Checked  int             `json:"checked"`
-	Children []EnterpriseNav `json:"children"`
+	Id           int             `json:"id"`
+	Url          string          `json:"url"`                              //内部链接
+	Name         string          `json:"text"`                             //中文名称
+	ExternalLink string          `json:"external_link" db:"external_link"` //外部链接
+	Dir          string          `json:"dir"`                              //模板目录
+	Type         string          `json:"type"`                             //模板类型
+	Template     string          `json:"template"`                         //模板文件
+	SeoTitle     string          `json:"seo_title" db:"seo_title"`         //seo标题
+	SeoKeyword   string          `json:"seo_keyword" db:"seo_keyword"`     //seo关键字
+	SeoDescribe  string          `json:"seo_describe" db:"seo_describe"`   //seo描述
+	Pid          int             `json:"pid"`                              //父id
+	Isshow       int             `json:"isshow"`                           //是否在首页显示
+	Sort         int             `json:"sort"`                             //排序
+	Icon         string          `json:"iconCls"`                          //后台图标
+	Level        int             `json:"level"`                            //等级
+	En           string          `json:"en"`                               //英文名称
+	Checked      int             `json:"checked"`
+	Children     []EnterpriseNav `json:"children"`
 }
 
 //递归重新排序无限极分类

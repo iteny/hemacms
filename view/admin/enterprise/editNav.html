@@ -10,7 +10,12 @@
     <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
-    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/webuploader/webuploader.css">
+    <style>
+    
+
+    </style>
 </head>
 <body>
     <form action="/intendant/enterprise/editNavSubmit">
@@ -29,6 +34,12 @@
                     <tr>
                         <td width="40" language="table:navEnglish"></td>
                         <td width="190"><input class="easyui-validatebox length_5" value="{{.nav.En}}" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,50]']"></td>
+                    </tr>
+                    <tr>
+                        <!-- <form id="importFileForm" method="post" enctype="multipart/form-data" style="display:none"> -->
+                            <td width="40" language="table:navEnglish"></td>
+                            <td width="190"><div class="uploader-demo"><div id="fileList" class="uploader-list"></div><div id="filePicker">选择图片</div></div></td>
+                        <!-- </form> -->
                     </tr>
                     <tr>
                         <td width="40" language="table:navUrl"></td>
@@ -65,6 +76,7 @@
 <script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/common/webuploader/webuploader.min.js"></script>
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script type="text/javascript">
@@ -97,6 +109,166 @@ $('#isshow').switchbutton({
         }
     }
 });
+// 初始化Web Uploader
+var uploader = WebUploader.create({
+    //是否允许重复的图片
+        duplicate: true,
+    // 选完文件后，是否自动上传。
+    auto: true,
+
+    // swf文件路径
+    swf: '/static/common/webuploader/Uploader.swf',
+
+    // 文件接收服务端。
+    server: '/intendant/site/uploadImage',
+
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: '#filePicker',
+
+    // 只允许选择图片文件。
+    accept: {
+        title: 'Images',
+        extensions: 'gif,jpg,jpeg,bmp,png',
+        mimeTypes: 'image/*'
+    },
+    //线程数
+    threads: 1,
+    //单个文件大小限制
+    fileSingleSizeLimit: 200000000,
+    //上传文件数量限制
+    fileNumLimit:10,
+    //上传前不压缩
+    compress:false,
+});
+// 当有文件添加进来的时候
+// uploader.on( 'fileQueued', function( file ) {
+//     var $li = $(
+//             '<div id="' + file.id + '" class="file-item thumbnail">' +
+//                 '<img>' +
+//                 '<div class="info">' + file.name + '</div>' +
+//             '</div>'
+//             ),
+//         $img = $li.find('img');
+
+
+//     // $list为容器jQuery实例
+//     var $list = $("#fileList");
+//     var ratio = window.devicePixelRatio || 1,
+//     // 缩略图大小
+//     thumbnailWidth = 240 * ratio,
+//     thumbnailHeight = 240 * ratio;
+//     $list.append( $li );
+
+//     // 创建缩略图
+//     // 如果为非图片文件，可以不用调用此方法。
+//     // thumbnailWidth x thumbnailHeight 为 100 x 100
+//     uploader.makeThumb( file, function( error, src ) {
+//         if ( error ) {
+//             $img.replaceWith('<span>不能预览</span>');
+//             return;
+//         }
+
+//         $img.attr( 'src', src );
+//     }, thumbnailWidth, thumbnailHeight );
+// });
+// 文件上传过程中创建进度条实时显示。
+uploader.on( 'uploadProgress', function( file, percentage ) {
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress span');
+
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<p class="progress"><span></span></p>')
+                .appendTo( $li )
+                .find('span');
+    }
+
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+
+// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+uploader.on( 'uploadSuccess', function( file,data ) {
+    var $li = $(
+            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img style="width:120px;height:"120px">' +
+                '<div class="info">' + data.info + '</div>' +
+            '</div>'
+            ),
+        $img = $li.find('img');
+
+
+    // $list为容器jQuery实例
+    var $list = $("#fileList");
+    var ratio = window.devicePixelRatio || 1,
+    // 缩略图大小
+    thumbnailWidth = 240 * ratio,
+    thumbnailHeight = 240 * ratio;
+    var $btns = $('<div class="file-panel">' +
+            '<span class="cancel" >删除</span>').appendTo($li);
+
+    $list.html( $li );
+    $btns.on('click', 'span', function () {
+        var index = $(this).index();
+        switch (index) {
+            case 0:
+                uploader.removeFile(file);
+                hm.delPicture(data.info,file,"/intendant/site/delImage");
+                return;
+        }
+    });
+    // 创建缩略图
+    // 如果为非图片文件，可以不用调用此方法。
+    // thumbnailWidth x thumbnailHeight 为 100 x 100
+    uploader.makeThumb( file, function( error, src ) {
+        if ( error ) {
+            $img.replaceWith('<span>不能预览</span>');
+            return;
+        }
+        $img.attr( 'src', src );
+    }, thumbnailWidth, thumbnailHeight );
+    $( '#'+file.id ).addClass('upload-state-done');
+});
+
+// 文件上传失败，显示上传出错。
+uploader.on( 'uploadError', function( file ) {
+    var $li = $( '#'+file.id ),
+        $error = $li.find('div.error');
+
+    // 避免重复创建
+    if ( !$error.length ) {
+        $error = $('<div class="error"></div>').appendTo( $li );
+    }
+
+    $error.text('上传失败');
+});
+
+// 完成上传完了，成功或者失败，先删除进度条。
+uploader.on( 'uploadComplete', function( file ) {
+    $( '#'+file.id ).find('.progress').remove();
+});
+// var uploader = new WebUploader.Uploader({
+//     //是否允许重复的图片
+//     duplicate: true,
+//     auto: true, // 选完文件后，是否自动上传
+//     swf: '/static/common/webuploader/Uploader.swf', // swf文件路径
+//     server: "/intendant/enterprise/editNavSubmitd", // 文件接收服务端
+//     pick: { id: "#uploadImage", innerHTML: "本地上传图片" }, // 选择文件的按钮。可选
+//     // 只允许选择图片文件。
+//     accept: {
+//         title: 'Images',
+//         extensions: 'gif,jpg,jpeg,bmp,png',
+//         mimeTypes: 'image/*'
+//     },
+//     //线程数
+//     threads: 1,
+//     //单个文件大小限制
+//     fileSingleSizeLimit: 2000,
+//     //上传文件数量限制
+//     fileNumLimit:10,
+//     //上传前不压缩
+//     compress:false,
+// });
 function editNavFunc(data){
     if (data.status == 21) {
         parent.hm.notice("warn", hm.language.navCheckName + data.info);

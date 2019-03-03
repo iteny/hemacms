@@ -33,6 +33,8 @@ func AdminRoutes() http.Handler {
 	r.Post("/ajaxUpdateLog", index.AjaxUpdateLog) //ajax更新日志
 	r.Post("/tabNoAuth", index.TabNoAuth)         //tab权限
 	r.Route("/site", func(r chi.Router) {
+		r.Post("/uploadImage", site.UploadImage) //图片上传
+		r.Post("/delImage", site.DelImage)       //删除图片
 		r.Get("/system", site.System)            //系统设置
 		r.Post("/editSystem", site.EditSystem)   //系统设置修改
 		r.Get("/menu", site.Menu)                //菜单设置
@@ -111,6 +113,7 @@ func AdminRoutes() http.Handler {
 		r.Post("/addNavSubmit", enterprise.AddNavSubmit)   //添加导航提交
 		r.Post("/editNavSubmit", enterprise.EditNavSubmit) //修改导航提交
 		r.Post("/delNavSubmit", enterprise.DelNavSubmit)   //删除导航提交
+		r.Get("/contentManage", enterprise.ContentManage)  //内容管理页面
 	})
 	return r
 }
