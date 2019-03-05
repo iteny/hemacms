@@ -1664,6 +1664,34 @@ td, th, div {
     padding: 5px 15px;
 }
 /* 时间轴结束 */
+/*内部tab开始*/
+#hm_inside_tab .tabs-header{
+    background-color: none;
+    background: none;
+    border: none;
+    border-bottom: #fff;
+}
+
+#hm_inside_tab .tabs{
+    border-bottom: #fff;
+}
+#hm_inside_tab .tabs li{
+    margin-bottom: 0;
+    margin-right: 8px;
+}
+#hm_inside_tab .tabs li a.tabs-inner{
+    color:#666;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    padding: 15px 10px;
+}
+#hm_inside_tab .tabs li.tabs-selected a.tabs-inner{
+    background-color: #3498db;
+    background: #3498db;
+    color:white;
+    border: 1px solid #bdc3c7;
+}
+/*内部tab结束*/
 /*上传图片样式开始*/
     .webuploader-container {
    position: relative;
@@ -1694,12 +1722,12 @@ td, th, div {
 }
 
 /*demo样式*/
-#uploader-demo .thumbnail {
+#webuploader .thumbnail {
     width: 110px;
     height: 110px;
 }
 
-#uploader-demo .thumbnail img {
+#webuploader .thumbnail img {
     width: 100%;
 }
 
@@ -1780,7 +1808,7 @@ td, th, div {
 
 
 /* 自定义上传样式  用于上传图片可删除   */
-.uploader-demo .uploader-list div.file-panel {
+.webuploader .uploader-list div.file-panel {
     position: absolute;
     height: 0;
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#80000000', endColorstr='#80000000') \0;
@@ -1792,7 +1820,7 @@ td, th, div {
     z-index: 300;
 }
 
-.uploader-demo .uploader-list div.file-panel span {
+.webuploader .uploader-list div.file-panel span {
     width: 24px;
     height: 24px;
     display: inline;
@@ -1804,27 +1832,27 @@ td, th, div {
     cursor: pointer;
 }
 
-.uploader-demo .uploader-list div.file-panel span.rotateLeft {
+.webuploader .uploader-list div.file-panel span.rotateLeft {
     background-position: 0 -24px;
 }
 
-.uploader-demo .uploader-list div.file-panel span.rotateLeft:hover {
+.webuploader .uploader-list div.file-panel span.rotateLeft:hover {
     background-position: 0 0;
 }
 
-.uploader-demo .uploader-list div.file-panel span.rotateRight {
+.webuploader .uploader-list div.file-panel span.rotateRight {
     background-position: -24px -24px;
 }
 
-.uploader-demo .uploader-list div.file-panel span.rotateRight:hover {
+.webuploader .uploader-list div.file-panel span.rotateRight:hover {
     background-position: -24px 0;
 }
 
-.uploader-demo .uploader-list div.file-panel span.cancel {
+.webuploader .uploader-list div.file-panel span.cancel {
     background-position: -48px -24px;
 }
 
-.uploader-demo .uploader-list div.file-panel span.cancel:hover {
+.webuploader .uploader-list div.file-panel span.cancel:hover {
     background-position: -48px 0;
 }
 /*上传图片样式结束*/

@@ -95,7 +95,7 @@ $('#hm_menu').treegrid({
                 width: 180,
                 align: 'center',
                 formatter: function(value, row, index) {
-                    if(row.level > 2){
+                    if(row.level > 1){
                         str = '<a href="javascript:void(0)" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add" onclick="disClick()" disabled>'+hm.language.addSubNav+'</a>';
                     }else{
                         str = '<a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addNav/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-add">'+hm.language.addSubNav+'</a>';

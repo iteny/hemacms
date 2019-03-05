@@ -994,8 +994,8 @@ HmObj.prototype.selectMenuIcons = function(icon) {
     $('iframe').contents().find("#hm_menu_icons_input").val(icon);
     $('.hm_dialog').dialog('destroy');
 }
-//点击删除图标
-HmObj.prototype.delPicture = function(pic,file,url) {
+//点击删除图片
+HmObj.prototype.delImage = function(pic,file,url) {
     $.ajax({
         url: url,
         dataType: 'json',
@@ -1008,7 +1008,7 @@ HmObj.prototype.delPicture = function(pic,file,url) {
         },
         success: function(data) {
             parent.hm.closeProgress();
-            parent.hm.notice('warn', "删除成功");
+            parent.hm.notice('success', "删除成功");
             var $li = $('#'+file.id);
             $li.off().find('.file-panel').off().end().remove();
         },

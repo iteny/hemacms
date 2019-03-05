@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	upload_path string = "./static/upload/"
+	uploadImagesPath string = "./static/upload/images/"
 )
 
 type SiteCtrl struct {
@@ -52,7 +52,7 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 	ext := path.Ext(handler.Filename) //获取文件后缀
 	fileNewName := string(time.Now().Format("20060102150405")) + strconv.Itoa(time.Now().Nanosecond()) + ext
 
-	f, err := os.OpenFile(upload_path+fileNewName, os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(uploadImagesPath+fileNewName, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		c.ResponseJson(4, err.Error(), w, r)
 		return
@@ -60,10 +60,10 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 		session := c.Sess().Load(r)
 		uid, err := session.GetString("uid")
 		c.Log().CheckErr("Session Get Error", err)
-		pic := sql.Picture{}
-		err = c.Sql().Get(&pic, "SELECT * FROM hm_picture WHERE url = ?", fileNewName)
+		pic := sql.Image{}
+		err = c.Sql().Get(&pic, "SELECT * FROM hm_image WHERE url = ?", fileNewName)
 		if err != nil {
-			sqls := "INSERT INTO hm_picture(url,time,uid) VALUES(?,?,?)"
+			sqls := "INSERT INTO hm_image(url,time,uid) VALUES(?,?,?)"
 			tx := c.Sql().MustBegin()
 			tx.MustExec(sqls, fileNewName, time.Now().Unix(), uid)
 			err = tx.Commit()
@@ -92,13 +92,17 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
  */
 func (c *SiteCtrl) DelImage(w http.ResponseWriter, r *http.Request) {
 	pic := r.PostFormValue("pic")
-	picSql := "DELETE FROM hm_picture WHERE url = ?"
+	picSql := "DELETE FROM hm_image WHERE url = ?"
 	tx := c.Sql().MustBegin()
 	tx.MustExec(picSql, pic)
 	err := tx.Commit()
 	if err != nil {
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
+		del := os.Remove(uploadImagesPath + pic)
+		if del != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
 		c.Cache().ScanDel("allpic")
 		c.ResponseJson(1, "", w, r)
 	}

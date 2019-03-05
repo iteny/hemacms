@@ -345,6 +345,11 @@ var language = {
         navCheckName: "Chinese name already exists!",
         navCheckUrl: "Nav URL already exists!",
         navCheckEn: "English name already exists!",
+        navImage: "Nav Image",
+        uploadImage: "Upload Image",
+        uploadFile: "Upload File",
+        baseOption: "Base Option",
+        advanceOption: "Advance Option",
         //企业站结束
     },
     //简体中文,chinese
@@ -694,6 +699,11 @@ var language = {
         navCheckName: "中文名称已存在!",
         navCheckUrl: "导航网址已存在!",
         navCheckEn: "英文名称已存在!",
+        navImage: "导航图片",
+        uploadImage: "上传图片",
+        uploadFile: "上传文件",
+        baseOption: "基础选项",
+        advanceOption: "高级选项",
         //企业站结束
     },
 };
@@ -731,6 +741,9 @@ $('[language]').each(function() {
             me.html(t);
             break;
         case 'val':
+        case 'title':
+            me.attr('title',t);
+            break;
         case 'value':
             me.val(t);
             break;

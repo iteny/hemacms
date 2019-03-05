@@ -49,7 +49,7 @@ type AuthRule struct {
 }
 
 //图片附件表
-type Picture struct {
+type Image struct {
 	Id   int    `json:"id"`
 	Url  string `json:"url"`
 	Time string `json:"time"`
@@ -97,6 +97,7 @@ type EnterpriseNav struct {
 	Id           int             `json:"id"`
 	Url          string          `json:"url"`                              //内部链接
 	Name         string          `json:"text"`                             //中文名称
+	Image        string          `json:"image"`                            //图片
 	ExternalLink string          `json:"external_link" db:"external_link"` //外部链接
 	Dir          string          `json:"dir"`                              //模板目录
 	Type         string          `json:"type"`                             //模板类型
