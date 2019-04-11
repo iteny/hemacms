@@ -450,6 +450,12 @@ HmObj.prototype.easyuiLanguage = function() {
             },
             message: that.language.roleName + that.language.name ? that.language.roleName + that.language.name : "Role name only allows Chinese characters, English letters and spaces, 1-80 characters!",
         },
+        url: { //验证网址
+            validator: function(value) {
+                return /^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*([\?&]\w+=\w*)*$/i.test(value);
+            },
+            message: that.language.valiUrl,
+        },
         // menuUrl: { // 验证后台地址
         //     validator: function(value) {
         //         return /^[A-Za-z/]{2,80}$/i.test(value);

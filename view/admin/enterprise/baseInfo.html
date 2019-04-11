@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title language="html:addNavPage"></title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/webuploader/webuploader.css">
+    <style>
+        #hm_inside_tab td{
+            text-align: left;
+        }
+        input[disabled],input:disabled{
+border:1px solid #DDD;
+background-color:#F5F5F5;
+color:#ACA899;
+}
+    </style>
+</head>
+<body>
+    <form action="/intendant/enterprise/editBaseInfo">
+        <div class="frame_form_table" style="margin-left: 10px;margin-top: 5px;">
+            <div id="hm_inside_tab" class="easyui-tabs" style="width:100%;padding: 0px;">
+                <div language="title:baseSetup" data-options="iconCls:'icon-star_silver'" style="display:none;padding-top: 10px;">
+                	<table cellpadding="0" cellspacing="0" class="table_form" width="100%" height="100%">
+                        <tbody>
+                            <tr>
+                                <td width="16%" language="table:websiteName"></td>
+                                <td width="74%"><input class="easyui-validatebox length_5" value="{{.websiteName}}" type="text" name="websiteName" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:websiteLogo"></td>
+                                <td><div class="webuploader"><div id="fileListOne" class="uploader-list"><div id="WU_FILE_0" class="file-item thumbnail upload-state-done"><img style="width:120px;height:120px;" src="/static/upload/images/{{.websiteLogo}}"><div class="info">{{.websiteLogo}}</div><input type="hidden" name="websiteLogo" value="{{.websiteLogo}}"><div class="file-panel"></div></div></div><div id="uploadImageOne">选择图片</div></div></td>
+                            </tr>
+                            <tr>
+                                <td language="table:urlIco"></td>
+                                <td><div class="webuploader"><div id="fileListTwo" class="uploader-list"><div id="WU_FILE_0" class="file-item thumbnail upload-state-done"><img style="width:120px;height:120px;" src="/static/upload/images/{{.urlIco}}"><div class="info">{{.urlIco}}</div><input type="hidden" name="urlIco" value="{{.urlIco}}"><div class="file-panel"></div></div></div><div id="uploadImageTwo">选择图片</div></div></td>
+                            </tr>
+                            <tr>
+                                <td language="table:websiteAddress"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.websiteAddress}}" type="text" name="websiteAddress" data-options="required:true,validType:['url','length[2,50]']"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:websiteTitle"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.websiteTitle}}" type="text" name="websiteTitle" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:websiteKeyword"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.websiteKeyword}}" type="text" name="websiteKeyword" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:websiteDescribe"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.websiteDescribe}}" type="text" name="websiteDescribe" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:copyrightInfo"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.copyrightInfo}}" type="text" name="copyrightInfo" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:filingNumber"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.filingNumber}}" type="text" name="filingNumber" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:qrcodeDownloadApp"></td>
+                                <td><input class="easyui-validatebox length_5" value="{{.qrcodeDownloadApp}}" type="text" name="qrcodeDownloadApp" data-options="required:false"></td>
+                            </tr>
+                            <!-- <tr>
+                                <td language="table:navSort"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+				<div language="title:sliderSetup" data-options="iconCls:'icon-star'" style="display:none;padding-top: 10px;">
+					<table cellpadding="0" cellspacing="0" class="table_form" width="100%" height="100%">
+                        <tbody>
+                        	<tr>
+                                <td language="table:sliderImage"></td>
+                                <td><div class="webuploader"><div id="fileListThree" class="uploader-list"><div id="WU_FILE_0" class="file-item thumbnail upload-state-done"><img style="width:120px;height:120px;" src="/static/upload/images/{{.sliderImage}}"><div class="info">{{.sliderImage}}</div><input type="hidden" name="sliderImage" value="{{.sliderImage}}"><div class="file-panel"></div></div></div><div id="uploadImageThree">选择图片</div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+				</div>
+            </div>
+		</div>
+		<div id="hm_toolbar">
+            <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+            <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(baseInfoFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:ajaxEdit"></a>
+        </div>
+    </form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/common/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script>
+// 初始化Web Uploader
+var uploader = WebUploader.create({
+    //是否允许重复的图片
+    duplicate: true,
+    // 选完文件后，是否自动上传。
+    auto: true,
+    // swf文件路径
+    swf: '/static/common/webuploader/Uploader.swf',
+    // 文件接收服务端。
+    server: '/intendant/site/uploadImage',
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: { id: "#uploadImageOne", innerHTML: hm.language.uploadImage },
+    // 只允许选择图片文件。
+    accept: {
+        title: 'Images',
+        extensions: 'gif,jpg,jpeg,bmp,png',
+        mimeTypes: 'image/*'
+    },
+    //线程数
+    threads: 1,
+    //单个文件大小限制
+    fileSingleSizeLimit: 200000,
+    //上传文件数量限制
+    fileNumLimit:10,
+    //上传前不压缩
+    compress:false,
+});
+$('#hm_inside_tab').tabs({
+    onSelect: function (title, index) {
+        if (index == 1)
+            uploader.refresh();
+    }
+});
+// 文件上传过程中创建进度条实时显示。
+uploader.on( 'uploadProgress', function( file, percentage ) {
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress span');
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<p class="progress"><span></span></p>')
+                .appendTo( $li )
+                .find('span');
+    }
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+uploader.on( 'uploadSuccess', function( file,data ) {
+    var $li = $(
+            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img style="width:120px;height:"120px">' +
+                '<div class="info">' + data.info + '</div>' +
+                '<input type="hidden" name="websiteLogo" value="'+data.info+'">'+
+            '</div>'
+            ),
+        $img = $li.find('img');
+    // $list为容器jQuery实例
+    var $list = $("#fileListOne");
+    var ratio = window.devicePixelRatio || 1,
+    // 缩略图大小
+    thumbnailWidth = 240 * ratio,
+    thumbnailHeight = 240 * ratio;
+    var $btns = $('<div class="file-panel">' +
+            '<span class="cancel" >删除</span>').appendTo($li);
+    $list.html( $li );
+    $btns.on('click', 'span', function () {
+        var index = $(this).index();
+        switch (index) {
+            case 0:
+                uploader.removeFile(file);
+                hm.delImage(data.info,file,"/intendant/site/delImage");//删除图片提交
+                return;
+        }
+    });
+    // 创建缩略图
+    // 如果为非图片文件，可以不用调用此方法。
+    // thumbnailWidth x thumbnailHeight 为 100 x 100
+    uploader.makeThumb( file, function( error, src ) {
+        if ( error ) {
+            $img.replaceWith('<span>不能预览</span>');
+            return;
+        }
+        $img.attr( 'src', src );
+    }, thumbnailWidth, thumbnailHeight );
+    $( '#'+file.id ).addClass('upload-state-done');
+});
+// 文件上传失败，显示上传出错。
+uploader.on( 'uploadError', function( file ) {
+    var $li = $( '#'+file.id ),
+        $error = $li.find('div.error');
+    // 避免重复创建
+    if ( !$error.length ) {
+        $error = $('<div class="error"></div>').appendTo( $li );
+    }
+    $error.text('上传失败');
+});
+// 完成上传完了，成功或者失败，先删除进度条。
+uploader.on( 'uploadComplete', function( file ) {
+    $( '#'+file.id ).find('.progress').remove();
+});
+
+// 初始化Web Uploader
+var uploaderTwo = WebUploader.create({
+    //是否允许重复的图片
+    duplicate: true,
+    // 选完文件后，是否自动上传。
+    auto: true,
+    // swf文件路径
+    swf: '/static/common/webuploader/Uploader.swf',
+    // 文件接收服务端。
+    server: '/intendant/site/uploadImage',
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: { id: "#uploadImageTwo", innerHTML: hm.language.uploadImage },
+    // 只允许选择图片文件。
+    accept: {
+        title: 'Images',
+        extensions: 'gif,jpg,jpeg,bmp,png',
+        mimeTypes: 'image/*'
+    },
+    //线程数
+    threads: 1,
+    //单个文件大小限制
+    fileSingleSizeLimit: 200000,
+    //上传文件数量限制
+    fileNumLimit:10,
+    //上传前不压缩
+    compress:false,
+});
+$('#hm_inside_tab').tabs({
+    onSelect: function (title, index) {
+        if (index == 1)
+            uploaderTwo.refresh();
+    }
+});
+// 文件上传过程中创建进度条实时显示。
+uploaderTwo.on( 'uploadProgress', function( file, percentage ) {
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress span');
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<p class="progress"><span></span></p>')
+                .appendTo( $li )
+                .find('span');
+    }
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+uploaderTwo.on( 'uploadSuccess', function( file,data ) {
+    var $li = $(
+            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img style="width:120px;height:"120px">' +
+                '<div class="info">' + data.info + '</div>' +
+                '<input type="hidden" name="urlIco" value="'+data.info+'">'+
+            '</div>'
+            ),
+        $img = $li.find('img');
+    // $list为容器jQuery实例
+    var $list = $("#fileListTwo");
+    var ratio = window.devicePixelRatio || 1,
+    // 缩略图大小
+    thumbnailWidth = 240 * ratio,
+    thumbnailHeight = 240 * ratio;
+    var $btns = $('<div class="file-panel">' +
+            '<span class="cancel" >删除</span>').appendTo($li);
+    $list.html( $li );
+    $btns.on('click', 'span', function () {
+        var index = $(this).index();
+        switch (index) {
+            case 0:
+                uploader.removeFile(file);
+                hm.delImage(data.info,file,"/intendant/site/delImage");//删除图片提交
+                return;
+        }
+    });
+    // 创建缩略图
+    // 如果为非图片文件，可以不用调用此方法。
+    // thumbnailWidth x thumbnailHeight 为 100 x 100
+    uploader.makeThumb( file, function( error, src ) {
+        if ( error ) {
+            $img.replaceWith('<span>不能预览</span>');
+            return;
+        }
+        $img.attr( 'src', src );
+    }, thumbnailWidth, thumbnailHeight );
+    $( '#'+file.id ).addClass('upload-state-done');
+});
+// 文件上传失败，显示上传出错。
+uploaderTwo.on( 'uploadError', function( file ) {
+    var $li = $( '#'+file.id ),
+        $error = $li.find('div.error');
+    // 避免重复创建
+    if ( !$error.length ) {
+        $error = $('<div class="error"></div>').appendTo( $li );
+    }
+    $error.text('上传失败');
+});
+// 完成上传完了，成功或者失败，先删除进度条。
+uploaderTwo.on( 'uploadComplete', function( file ) {
+    $( '#'+file.id ).find('.progress').remove();
+});
+// 初始化Web Uploader
+var uploaderThree = WebUploader.create({
+    //是否允许重复的图片
+    duplicate: true,
+    // 选完文件后，是否自动上传。
+    auto: true,
+    // swf文件路径
+    swf: '/static/common/webuploader/Uploader.swf',
+    // 文件接收服务端。
+    server: '/intendant/site/uploadImage',
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: { id: "#uploadImageThree", innerHTML: hm.language.uploadImage },
+    // 只允许选择图片文件。
+    accept: {
+        title: 'Images',
+        extensions: 'gif,jpg,jpeg,bmp,png',
+        mimeTypes: 'image/*'
+    },
+    //线程数
+    threads: 1,
+    //单个文件大小限制
+    fileSingleSizeLimit: 200000,
+    //上传文件数量限制
+    fileNumLimit:10,
+    //上传前不压缩
+    compress:false,
+});
+$('#hm_inside_tab').tabs({
+    onSelect: function (title, index) {
+        if (index == 1)
+            uploaderThree.refresh();
+    }
+});
+// 文件上传过程中创建进度条实时显示。
+uploaderThree.on( 'uploadProgress', function( file, percentage ) {
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress span');
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<p class="progress"><span></span></p>')
+                .appendTo( $li )
+                .find('span');
+    }
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+uploaderThree.on( 'uploadSuccess', function( file,data ) {
+    var $li = $(
+            '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img style="width:120px;height:"120px">' +
+                '<div class="info">' + data.info + '</div>' +
+                '<input type="hidden" name="sliderImage['+file.index+']" value="'+data.info+'">'+
+            '</div>'
+            ),
+        $img = $li.find('img');
+    // $list为容器jQuery实例
+    var $list = $("#fileListThree");
+    var ratio = window.devicePixelRatio || 1,
+    // 缩略图大小
+    thumbnailWidth = 240 * ratio,
+    thumbnailHeight = 240 * ratio;
+    var $btns = $('<div class="file-panel">' +
+            '<span class="cancel" >删除</span>').appendTo($li);
+    $list.append( $li );
+    $btns.on('click', 'span', function () {
+        var index = $(this).index();
+        switch (index) {
+            case 0:
+                uploader.removeFile(file);
+                hm.delImage(data.info,file,"/intendant/site/delImage");//删除图片提交
+                return;
+        }
+    });
+    // 创建缩略图
+    // 如果为非图片文件，可以不用调用此方法。
+    // thumbnailWidth x thumbnailHeight 为 100 x 100
+    uploader.makeThumb( file, function( error, src ) {
+        if ( error ) {
+            $img.replaceWith('<span>不能预览</span>');
+            return;
+        }
+        $img.attr( 'src', src );
+    }, thumbnailWidth, thumbnailHeight );
+    $( '#'+file.id ).addClass('upload-state-done');
+});
+// 文件上传失败，显示上传出错。
+uploaderThree.on( 'uploadError', function( file ) {
+    var $li = $( '#'+file.id ),
+        $error = $li.find('div.error');
+    // 避免重复创建
+    if ( !$error.length ) {
+        $error = $('<div class="error"></div>').appendTo( $li );
+    }
+    $error.text('上传失败');
+});
+// 完成上传完了，成功或者失败，先删除进度条。
+uploaderThree.on( 'uploadComplete', function( file ) {
+    $( '#'+file.id ).find('.progress').remove();
+});
+function baseInfoFunc(data){
+    if (data.status == 21) {
+        parent.hm.notice("warn", hm.language.navCheckName + data.info);
+    } else if(data.status == 22){
+        parent.hm.notice("warn", hm.language.navCheckUrl + data.info);
+    } else if(data.status == 23){
+        parent.hm.notice("warn", hm.language.navCheckEn + data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 11){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 13){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 14){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 15){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 16){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 17){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.addFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.addSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+</script>

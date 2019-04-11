@@ -12,6 +12,16 @@
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
     <link rel="stylesheet" href="/static/common/animate/animate.min.css">
     <link rel="stylesheet" type="text/css" href="/static/common/webuploader/webuploader.css">
+    <style>
+        #hm_inside_tab td{
+            text-align: left;
+        }
+        input[disabled],input:disabled{
+border:1px solid #DDD;
+background-color:#F5F5F5;
+color:#ACA899;
+}
+    </style>
 </head>
 <body>
     <form action="/intendant/enterprise/addNavSubmit">
@@ -21,31 +31,43 @@
                     <table cellpadding="0" cellspacing="0" class="table_form" width="100%" height="100%">
                         <tbody>
                             <tr>
-                                <td width="40" language="table:superiorNav"></td>
-                                <td width="160"><input id="navselect" class="length_3" name="pid" value="{{.pid}}"></td>
+                                <td width="10%" language="table:superiorNav"></td>
+                                <td width="80%"><input id="navselect" class="length_3" name="pid" value="{{.pid}}"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navChinese"></td>
-                                <td width="190"><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true,validType:['chinese','length[2,50]']"></td>
+                                <td language="table:navChinese"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="name" data-options="required:true,validType:['chinese','length[2,50]']"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navEnglish"></td>
-                                <td width="190"><input class="easyui-validatebox length_5" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,50]']"></td>
+                                <td language="table:navEnglish"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,50]']"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navImage"></td>
-                                <td width="190"><div class="webuploader"><div id="fileList" class="uploader-list"></div><div id="uploadImage">选择图片</div></div></td>
+                                <td language="table:externalLink"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="externalLink"  data-options="required:false,validType:['url','length[2,50]']"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navUrl"></td>
-                                <td width="190"><input class="easyui-validatebox length_5" type="text" name="url" data-options="required:true,validType:['menuUrl','length[2,50]']"></td>
+                                <td language="table:navUrl"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="url" data-options="required:false,validType:['menuUrl','length[2,50]']"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navSort"></td>
-                                <td width="190"><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
+                                <td language="table:templateDir"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="templateDir" data-options="required:false"></td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:navIcon"></td>
+                                <td language="table:templateType"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="templateType" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:templateFile"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="templateFile" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:navSort"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:navIcon"></td>
                                 <td>
                                     <input id="hm_menu_icons_input" name="icon" type="hidden" value="icon-2012080404391">
                                     <strong id="hm_menu_icons"><i class='icon-2012080404391'></i></strong>
@@ -53,18 +75,37 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td width="40" language="table:isshow"></td>
-                                <td width="190"><input id="isshow"></td>
+                                <td language="table:isshow"></td>
+                                <td><input id="isshow"></td>
                                 <input type="hidden" name="isshow" value="1">
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div language="title:advanceOption" data-options="iconCls:'icon-star'" style="overflow:auto;display:none;">
-                    tab2
+                <div language="title:advanceOption" data-options="iconCls:'icon-star'" style="padding-top: 10px;">
+                    <table cellpadding="0" cellspacing="0" class="table_form" width="100%" height="100%">
+                        <tbody>
+                            <tr>
+                                <td language="table:seoTitle"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="seoTitle" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:seoKeyword"></td>
+                                <td><input class="easyui-validatebox length_5" type="text" name="seoKeyword" data-options="required:false"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:seoDescribe"></td>
+                                <td><input class="easyui-textbox length_5" type="text" name="seoDescribe" data-options="multiline:true,required:false" style="height:60px;"></td>
+                            </tr>
+                            <tr>
+                                <td language="table:navImage"></td>
+                                <td><div class="webuploader"><div id="fileList" class="uploader-list"></div><div id="uploadImage">选择图片</div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            
+            <!-- <div class="webuploader"><div id="fileList" class="uploader-list"></div><div id="uploadImage">选择图片</div></div> -->
         </div>
         <div id="hm_toolbar">
             <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
@@ -81,6 +122,21 @@
 <script type="text/javascript" src="/static/admin/js/language.js"></script>
 <script type="text/javascript" src="/static/admin/js/global.js"></script>
 <script type="text/javascript">
+  // $("input[name='externalLink']").validatebox({
+  //       required: false,
+  //       validType: 'url',
+  //       missingMessage: '内容不能为空',
+  //       invalidMessage: '内容无效',
+  //       onValidate:function(v) {
+  //           if(v) {
+  //               $("input[name='url']").validatebox({disabled:true,});
+  //               $("input[name='templateDir']").validatebox({disabled:true,});
+  //               $("input[name='templateType']").validatebox({disabled:true,});
+  //               $("input[name='templateFile']").validatebox({disabled:true,});
+  //               // $("input[name='sort']").validatebox({disabled:true,});
+  //           }
+  //       }
+  //   });
 var data = [];
 var menudata = $.parseJSON({{.json}});
 var topdata = '{"id":0,"url":"topNav","text":"顶级导航","pid":0,"isshow":1,"en":"Top nav","iconCls":"icon-eject_green"}';
@@ -136,6 +192,12 @@ var uploader = WebUploader.create({
     fileNumLimit:10,
     //上传前不压缩
     compress:false,
+});
+$('#hm_inside_tab').tabs({
+    onSelect: function (title, index) {
+        if (index == 1)
+            uploader.refresh();
+    }
 });
 // 当有文件添加进来的时候
 // uploader.on( 'fileQueued', function( file ) {

@@ -152,6 +152,8 @@ func (c *EnterpriseCtrl) AddNav(w http.ResponseWriter, r *http.Request) {
 func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow")
+	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("type"), r.PostFormValue("template")
+	seoTitle, seoKeyword, seoDescribe := r.PostFormValue("seoTitle"), r.PostFormValue("seoKeyword"), r.PostFormValue("seoDescribe")
 	switch false {
 	case vali.Numeric(pid) && vali.Length(pid, 1, 8):
 		c.ResponseJson(11, "Invalid nav pid", w, r)
@@ -168,7 +170,7 @@ func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 	case vali.Status(isshow):
 		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case vali.MenuUrl(url) && vali.Length(url, 2, 50):
+	case vali.Url(url) && vali.Length(url, 0, 50):
 		c.ResponseJson(16, "Invalid nav url", w, r)
 		return
 	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
@@ -178,9 +180,9 @@ func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 		nav := sql.EnterpriseNav{}
 		err := c.Sql().Get(&nav, "SELECT * FROM hm_enterprise_nav WHERE name = ? OR url = ? OR en = ?", name, url, en)
 		if err != nil {
-			sqls := "INSERT INTO hm_enterprise_nav(url,name,external_link,dir,type,template,seo_title,seo_keyword,seo_describe,pid,isshow,sort,icon,level,en) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+			sqls := "INSERT INTO hm_enterprise_nav(url,name,image,external_link,dir,type,template,seo_title,seo_keyword,seo_describe,pid,isshow,sort,icon,level,en) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			tx := c.Sql().MustBegin()
-			tx.MustExec(sqls, url, name, "", "", "", "", "", "", "", pid, isshow, sort, icon, 1, en)
+			tx.MustExec(sqls, url, name, image, externalLink, dir, typ, template, seoTitle, seoKeyword, seoDescribe, pid, isshow, sort, icon, 1, en)
 			err = tx.Commit()
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
@@ -248,6 +250,8 @@ func (c *EnterpriseCtrl) EditNav(w http.ResponseWriter, r *http.Request) {
 func (c *EnterpriseCtrl) EditNavSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow, id := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow"), r.PostFormValue("id")
+	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("type"), r.PostFormValue("template")
+	seoTitle, seoKeyword, seoDescribe := r.PostFormValue("seoTitle"), r.PostFormValue("seoKeyword"), r.PostFormValue("seoDescribe")
 	switch false {
 	case vali.Numeric(pid) && vali.Length(pid, 1, 8):
 		c.ResponseJson(11, "Invalid nav pid", w, r)
@@ -264,7 +268,7 @@ func (c *EnterpriseCtrl) EditNavSubmit(w http.ResponseWriter, r *http.Request) {
 	case vali.Status(isshow):
 		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case vali.MenuUrl(url) && vali.Length(url, 2, 50):
+	case vali.Url(url) && vali.Length(url, 0, 50):
 		c.ResponseJson(16, "Invalid nav url", w, r)
 		return
 	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
@@ -277,9 +281,9 @@ func (c *EnterpriseCtrl) EditNavSubmit(w http.ResponseWriter, r *http.Request) {
 		nav := sql.EnterpriseNav{}
 		err := c.Sql().Get(&nav, "SELECT * FROM hm_enterprise_nav WHERE id <> ? AND (name = ? OR url = ? OR en = ?)", id, name, url, en)
 		if err != nil {
-			sqls := "UPDATE hm_enterprise_nav SET url=?,name=?,pid=?,isshow=?,sort=?,icon=?,level=?,en=? WHERE id = ?"
+			sqls := "UPDATE hm_enterprise_nav SET url=?,name=?,image=?,external_link=?,dir=?,type=?,template=?,seo_title=?,seo_keyword=?,seo_describe=?,pid=?,isshow=?,sort=?,icon=?,level=?,en=? WHERE id = ?"
 			tx := c.Sql().MustBegin()
-			tx.MustExec(sqls, url, name, pid, isshow, sort, icon, 1, en, id)
+			tx.MustExec(sqls, url, name, image, externalLink, dir, typ, template, seoTitle, seoKeyword, seoDescribe, pid, isshow, sort, icon, 1, en, id)
 			err := tx.Commit()
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
@@ -366,4 +370,317 @@ func (c *EnterpriseCtrl) ContentManage(w http.ResponseWriter, r *http.Request) {
 	ar := sql.RecursiveNavLevel(nav, 0, 0)
 	data["json"] = c.RowsJson(ar)
 	c.Template(w, r, data, "./view/admin/enterprise/contentManage.html")
+}
+
+/**
+ * @description 基础信息
+ * @English	base info page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) BaseInfo(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{})
+	data["websiteName"] = c.Config().Value("enterpriseSetup", "websiteName")
+	data["websiteLogo"] = c.Config().Value("enterpriseSetup", "websiteLogo")
+	data["urlIco"] = c.Config().Value("enterpriseSetup", "urlIco")
+	data["websiteAddress"] = c.Config().Value("enterpriseSetup", "websiteAddress")
+	data["websiteTitle"] = c.Config().Value("enterpriseSetup", "websiteTitle")
+	data["websiteKeyword"] = c.Config().Value("enterpriseSetup", "websiteKeyword")
+	data["websiteDescribe"] = c.Config().Value("enterpriseSetup", "websiteDescribe")
+	data["copyrightInfo"] = c.Config().Value("enterpriseSetup", "copyrightInfo")
+	data["filingNumber"] = c.Config().Value("enterpriseSetup", "filingNumber")
+	data["qrcodeDownloadApp"] = c.Config().Value("enterpriseSetup", "qrcodeDownloadApp")
+	c.Template(w, r, data, "./view/admin/enterprise/baseInfo.html")
+}
+
+/**
+ * @description 修改基础信息
+ * @English	edit base info
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) EditBaseInfo(w http.ResponseWriter, r *http.Request) {
+	websiteName, websiteLogo := r.PostFormValue("websiteName"), r.PostFormValue("websiteLogo")
+	urlIco, websiteAddress := r.PostFormValue("urlIco"), r.PostFormValue("websiteAddress")
+	websiteTitle, websiteKeyword := r.PostFormValue("websiteTitle"), r.PostFormValue("websiteKeyword")
+	websiteDescribe, copyrightInfo := r.PostFormValue("websiteDescribe"), r.PostFormValue("copyrightInfo")
+	filingNumber, qrcodeDownloadApp := r.PostFormValue("filingNumber"), r.PostFormValue("qrcodeDownloadApp")
+	c.Config().SetValue("enterpriseSetup", "websiteName", websiteName)
+	c.Config().SetValue("enterpriseSetup", "websiteLogo", websiteLogo)
+	c.Config().SetValue("enterpriseSetup", "urlIco", urlIco)
+	c.Config().SetValue("enterpriseSetup", "websiteAddress", websiteAddress)
+	c.Config().SetValue("enterpriseSetup", "websiteTitle", websiteTitle)
+	c.Config().SetValue("enterpriseSetup", "websiteKeyword", websiteKeyword)
+	c.Config().SetValue("enterpriseSetup", "websiteDescribe", websiteDescribe)
+	c.Config().SetValue("enterpriseSetup", "copyrightInfo", copyrightInfo)
+	c.Config().SetValue("enterpriseSetup", "filingNumber", filingNumber)
+	c.Config().SetValue("enterpriseSetup", "qrcodeDownloadApp", qrcodeDownloadApp)
+	err := c.Config().Save("./ini/hemacms.ini")
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		err = c.Config().Reload()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 幻灯片管理页面
+ * @English	slider manage page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) SliderManage(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/enterprise/sliderManage.html")
+}
+
+/**
+ * @description 获取幻灯片
+ * @English	get slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) GetSlider(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 4)
+	name := r.PostFormValue("name")
+	switch {
+	case ((vali.Article(name) && vali.Length(name, 2, 20)) == false) && name != "":
+		data["status"], data["info"] = 11, "Invalid Slider Name"
+	default:
+		addsql := ""
+		if name != "" {
+			addsql = addsql + "name LIKE '%" + name + "%' AND "
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		slides := []sql.EnterpriseSlider{}
+		if rows, found := c.Cache().Get("enterpriseSlider" + name); found {
+			slides = rows.([]sql.EnterpriseSlider)
+		} else {
+			slideSql := "SELECT * FROM hm_enterprise_slider " + addsql + " ORDER BY sort ASC "
+			err := c.Sql().Select(&slides, slideSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("enterpriseSlider"+name, slides)
+		}
+		data["status"] = 1
+		data["rows"] = slides
+	}
+	c.ResponseData(data, w, r)
+}
+
+/**
+ * @description 添加幻灯片
+ * @English	add slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddSlider(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/enterprise/addSlider.html")
+}
+
+/**
+ * @description 添加幻灯片提交
+ * @English	add slider submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddSliderSubmit(w http.ResponseWriter, r *http.Request) {
+	name, url := r.PostFormValue("name"), r.PostFormValue("url")
+	sort, image := r.PostFormValue("sort"), r.PostFormValue("image")
+	// switch false {
+	// case vali.Article(cn) && vali.Length(cn, 2, 255):
+	// 	c.ResponseJson(11, "invalid chinese content", w, r)
+	// 	return
+	// case vali.Article(en) && vali.Length(en, 2, 255):
+	// 	c.ResponseJson(12, "invalid english content", w, r)
+	// 	return
+	// default:
+	sqls := "INSERT INTO hm_enterprise_slider(name,url,sort,image) VALUES(?,?,?,?)"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(sqls, name, url, sort, image)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("enterpriseSlider")
+		c.ResponseJson(1, "", w, r)
+	}
+	// }
+}
+
+/**
+ * @description 修改幻灯片
+ * @English	edit slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) EditSlider(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 2)
+	id := chi.URLParam(r, "sliderId")
+	sliderSingle := sql.EnterpriseSlider{}
+	err := c.Sql().Get(&sliderSingle, "SELECT * FROM hm_enterprise_slider WHERE id = ?", id)
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	}
+	data["slider"] = sliderSingle
+	c.Template(w, r, data, "./view/admin/enterprise/editSlider.html")
+}
+
+/**
+ * @description 修改幻灯片提交
+ * @English	edit slider submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) EditSliderSubmit(w http.ResponseWriter, r *http.Request) {
+	id, name, url := r.PostFormValue("id"), r.PostFormValue("name"), r.PostFormValue("url")
+	sort, image := r.PostFormValue("sort"), r.PostFormValue("image")
+	// switch false {
+	// case vali.Article(cn) && vali.Length(cn, 2, 255):
+	// 	c.ResponseJson(11, "invalid chinese content", w, r)
+	// 	return
+	// case vali.Article(en) && vali.Length(en, 2, 255):
+	// 	c.ResponseJson(12, "invalid english content", w, r)
+	// 	return
+	// case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+	// 	c.ResponseJson(13, "invalid update log id", w, r)
+	// 	return
+	// default:
+	sqls := "UPDATE hm_enterprise_slider SET name=?,url=?,sort=?,image=? WHERE id = ?"
+	tx := c.Sql().MustBegin()
+	tx.MustExec(sqls, name, url, sort, image, id)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("enterpriseSlider")
+		c.ResponseJson(1, "", w, r)
+	}
+	// }
+}
+
+/**
+ * @description 删除单个幻灯
+ * @English	delete single slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) DelSlider(w http.ResponseWriter, r *http.Request) {
+	id := r.PostFormValue("id")
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
+		sliderSql := "DELETE FROM hm_enterprise_slider WHERE id = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sliderSql, id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("enterpriseSlider")
+			c.ResponseJson(1, "", w, r)
+		}
+	} else {
+		c.ResponseJson("11", "Invalid slider id", w, r)
+	}
+}
+
+/**
+ * @description 批量删除幻灯
+ * @English	batch delete slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) BatchDelSlider(w http.ResponseWriter, r *http.Request) {
+	ids := r.PostFormValue("ids")
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid slider id", w, r)
+			return
+		}
+	}
+	sliderSql := fmt.Sprintf("DELETE FROM hm_enterprise_slider WHERE id IN (%v)", ids)
+	tx := c.Sql().MustBegin()
+	tx.MustExec(sliderSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("enterpriseSlider")
+		c.ResponseJson(1, "", w, r)
+	}
+}
+
+/**
+ * @description 幻灯片批量排序
+ * @English	batch sorting slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) SortSlider(w http.ResponseWriter, r *http.Request) {
+	sortNav := make(map[string]string, 0)
+	defer r.Body.Close()
+	result, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		c.ResponseJson(4, ""+err.Error(), w, r)
+	}
+	json.Unmarshal(result, &sortNav)
+	var menuk []string
+	for k := range sortNav {
+		menuk = append(menuk, k)
+	}
+	var bf bytes.Buffer
+	bf.WriteString("UPDATE hm_enterprise_slider SET sort = CASE id ")
+	// nav := make(map[string]string, 0)
+	for _, v := range menuk {
+		mid := vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)
+		msort := vali.NumericNoHeadZero(sortNav[v]) && vali.Length(v, 1, 3)
+		switch false {
+		case mid:
+			c.ResponseJson(11, "Invalid slider id", w, r)
+			return
+		case msort:
+			c.ResponseJson(12, "Invalid sort", w, r)
+			return
+		default:
+			bf.WriteString(fmt.Sprintf("WHEN %v THEN %v ", v, sortNav[v]))
+		}
+	}
+	// fmt.Println(nav)
+	//实现了implode的功能
+	var buffer bytes.Buffer
+	for _, v := range menuk {
+		buffer.WriteString(v)
+		buffer.WriteString(",")
+	}
+	ids := strings.Trim(buffer.String(), ",")
+	bf.WriteString(fmt.Sprintf("END WHERE id IN (%v)", ids))
+	// fmt.Println(ids)
+	// fmt.Println(bf.String())
+	tx := c.Sql().MustBegin()
+	tx.MustExec(bf.String())
+	err = tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, ""+err.Error(), w, r)
+	} else {
+		c.Cache().Del("enterpriseSlider")
+		c.ResponseJson(1, "", w, r)
+	}
 }

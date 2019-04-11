@@ -15,6 +15,7 @@ func IndexCtrlObject() *IndexCtrl {
 	return &IndexCtrl{}
 }
 func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
+	c.SetCookie("stage-language", "cn", 0, w)
 	addr := strings.Split(r.RequestURI, "/")
 	nav := []sql.EnterpriseNav{}
 	if rows, found := c.Cache().Get("allnav"); found {

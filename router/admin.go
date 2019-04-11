@@ -109,11 +109,24 @@ func AdminRoutes() http.Handler {
 		r.Route("/editNav", func(r chi.Router) {
 			r.Get("/{navId}", enterprise.EditNav) //修改导航页面
 		})
-		r.Post("/sortNav", enterprise.SortNav)             //导航排序
-		r.Post("/addNavSubmit", enterprise.AddNavSubmit)   //添加导航提交
-		r.Post("/editNavSubmit", enterprise.EditNavSubmit) //修改导航提交
-		r.Post("/delNavSubmit", enterprise.DelNavSubmit)   //删除导航提交
-		r.Get("/contentManage", enterprise.ContentManage)  //内容管理页面
+		r.Post("/sortNav", enterprise.SortNav)                 //导航排序
+		r.Post("/addNavSubmit", enterprise.AddNavSubmit)       //添加导航提交
+		r.Post("/editNavSubmit", enterprise.EditNavSubmit)     //修改导航提交
+		r.Post("/delNavSubmit", enterprise.DelNavSubmit)       //删除导航提交
+		r.Get("/contentManage", enterprise.ContentManage)      //内容管理页面
+		r.Get("/baseInfo", enterprise.BaseInfo)                //基础信息
+		r.Post("/editBaseInfo", enterprise.EditBaseInfo)       //编辑基础信息
+		r.Get("/sliderManage", enterprise.SliderManage)        //幻灯片管理页面
+		r.Post("/getSlider", enterprise.GetSlider)             //获取幻灯片
+		r.Get("/addSlider", enterprise.AddSlider)              //添加幻灯片
+		r.Post("/addSliderSubmit", enterprise.AddSliderSubmit) //添加幻灯片提交
+		r.Route("/editSlider", func(r chi.Router) {
+			r.Get("/{sliderId}", enterprise.EditSlider) //修改幻灯片页面
+		})
+		r.Post("/editSliderSubmit", enterprise.EditSliderSubmit) //修改幻灯片提交
+		r.Post("/delSlider", enterprise.DelSlider)               //删除单个幻灯片
+		r.Post("/batchDeLSlider", enterprise.BatchDelSlider)     //批量删除幻灯片
+		r.Post("/sortSlider", enterprise.SortSlider)             //幻灯片排序
 	})
 	return r
 }

@@ -56,6 +56,15 @@ type Image struct {
 	Uid  string `json:"uid"`
 }
 
+//企业幻灯片表
+type EnterpriseSlider struct {
+	Id    int    `json:"id"`
+	Name  string `json:"text"`
+	Url   string `json:"url"`
+	Sort  int    `json:"sort"`
+	Image string `json:"image"`
+}
+
 //登录日志
 type LoginLog struct {
 	Id        int    `json:"id"`

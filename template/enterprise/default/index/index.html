@@ -87,17 +87,17 @@
                                         <ul class="dropdown">
                                             {{ range .Children }}
                                                 {{if eq $ck "cn"}}
-                                                    <li><a href="{{.Url}}">{{.Name}}</a></li>
+                                                    <li><a href="{{if .ExternalLink}}{{.ExternalLink}}{{else}}{{.Url}}{{end}}">{{.Name}}</a></li>
                                                 {{else if eq $ck "en"}}
-                                                    <li><a href="{{.Url}}">{{.En}}</a></li>
+                                                    <li><a href="{{if .ExternalLink}}{{.ExternalLink}}{{else}}{{.Url}}{{end}}">{{.En}}</a></li>
                                                {{end}}
                                             {{ end }}
                                         </ul>
                                     {{ else }}
                                         {{if eq $ck "cn"}}
-                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{.Url}}">{{ .Name }}</a>
+                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{if .ExternalLink}}{{.ExternalLink}}{{else}}{{.Url}}{{end}}">{{ .Name }}</a>
                                         {{else if eq $ck "en"}}
-                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{.Url}}">{{ .En }}</a>
+                                            <li {{if eq $active .Url}} class="active" {{end}}><a href="{{if .ExternalLink}}{{.ExternalLink}}{{else}}{{.Url}}{{end}}">{{ .En }}</a>
                                         {{end}}
                                     {{ end }}
                                         </li>

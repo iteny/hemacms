@@ -316,6 +316,7 @@ var language = {
         homeVersionUpdateLog: "<i class='panel-icon icon-group_key'></i>Version update log<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxUpdateLog();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>refresh</a>",
         //首页结束
         //验证数据开始
+        valiUrl: "Please enter valid Url address!",
         valiChinese: "Please enter valid Chinese characters!",
         valiEnglish: "Please enter a valid English letter!(A~Z or a~z)",
         valiEnglishSpace: "Please enter a valid English letter and space!(A~Z,a~z,sapce)",
@@ -350,7 +351,37 @@ var language = {
         uploadFile: "Upload File",
         baseOption: "Base Option",
         advanceOption: "Advance Option",
+        externalLink: "External Link",
+        templateDir: "Template Dir",
+        templateType: "Template Type",
+        templateFile: "Template File",
+        seoTitle: "Seo Title",
+        seoKeyword: "Seo Keyword",
+        seoDescribe: "Seo Describe",
         //企业站结束
+        //企业设置开始
+        websiteName: "Website Name",
+        websiteLogo: "Website Logo",
+        urlIco: "Url Ico",
+        websiteAddress: "Website Address",
+        websiteTitle: "Website Title",
+        websiteKeyword: "Website Keyword",
+        websiteDescribe: "Website Describe",
+        copyrightInfo: "Copyright Info",
+        filingNumber: "Filing Number",
+        qrcodeDownloadApp: "QrcodeDownloadApp",
+        baseSetup: "Base Setup",
+        sliderSetup: "Slider Setup",
+        sliderImage: "Slider Image",
+        enterpriseSliderAdd: "Add Enterprise Slider",
+        sliderManagePage: "Slider Manage Page",
+        addSliderPage: "Add Slider Page",
+        enterpriseSliderName: "Slider Name",
+        enterpriseSliderUrl: "Slider Link",
+        enterpriseSliderSort: "Slider Sort",
+        enterpriseSliderImage: "Slider Image",
+        searchSliderName: "Search Slider Name",
+        //企业设置结束
     },
     //简体中文,chinese
     cn: {
@@ -670,6 +701,7 @@ var language = {
         homeVersionUpdateLog: "<i class='panel-icon icon-group_key'></i>版本更新日志<a style='position:absolute;right:15px;cursor:pointer;' onclick='hm.ajaxUpdateLog();'><i class='panel-icon icon-arrow_refresh' style='position:inherit;'></i>刷新</a>",
         //首页结束
         //验证数据开始
+        valiUrl: "请输入有效的URL地址",
         valiChinese: "请输入有效的汉字!",
         valiEnglish: "请输入有效的英文字母!(A~Z,a~z)",
         valiEnglishSpace: "请输入有效的英文字母和空格!(A~Z,a~z,空格)",
@@ -704,7 +736,37 @@ var language = {
         uploadFile: "上传文件",
         baseOption: "基础选项",
         advanceOption: "高级选项",
+        externalLink: "外部链接",
+        templateDir: "模板目录",
+        templateType: "模板类型",
+        templateFile: "模板文件",
+        seoTitle: "seo标题",
+        seoKeyword: "seo关键字",
+        seoDescribe: "seo描述",
         //企业站结束
+        //企业设置开始
+        websiteName: "网站名称",
+        websiteLogo: "网站LOGO",
+        urlIco: "地址栏图标",
+        websiteAddress: "网站地址",
+        websiteTitle: "网站标题",
+        websiteKeyword: "网站关键词",
+        websiteDescribe: "网站描述",
+        copyrightInfo: "版权信息",
+        filingNumber: "备案号",
+        qrcodeDownloadApp: "二维码下载App",
+        baseSetup: "基础设置",
+        sliderSetup: "幻灯片设置",
+        sliderImage: "幻灯片图片",
+        enterpriseSliderAdd: "添加幻灯片",
+        sliderManagePage: "幻灯管理页面",
+        addSliderPage: "添加幻灯页面",
+        enterpriseSliderName: "幻灯名称",
+        enterpriseSliderUrl: "幻灯链接",
+        enterpriseSliderSort: "幻灯排序",
+        enterpriseSliderImage: "幻灯图片",
+        searchSliderName: "查询幻灯名称",
+        //企业设置结束
     },
 };
 $('[language]').each(function() {

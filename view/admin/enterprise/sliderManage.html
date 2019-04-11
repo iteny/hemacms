@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title language="html:sliderManagePage"></title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+    <style>
+    	.datagrid-header, .datagrid-toolbar, .datagrid-pager, .datagrid-footer-inner{
+    		border-color: #fff;
+    	}
+    </style>
+</head>
+<body onkeydown="hm.searchKey();">
+<form action="/intendant/enterprise/sortSlider" method="post">
+    <div class="easyui-layout" style="padding:10px 0px 10px 10px;">
+        <table id="hm_data" region="center"></table>
+    </div>
+    <div id="hm_toolbar">
+        <a href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/addSlider" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:enterpriseSliderAdd"></a>
+        <a href="javascript:void(0)" onclick="hm.ajaxSort(nameSort,this)" class="easyui-linkbutton" iconCls="icon-arrow_ns" plain="true" language="html:sort"></a>
+        <a href="javascript:void(0)" onclick="hm.ajaxBatchDel(nameDel,this)" data-url="/intendant/enterprise/batchDelSlider" class="easyui-linkbutton" iconCls="icon-delete" plain="true" language="html:updateLogBatchDel"></a>
+        <a href="javascript:void(0)" onclick="hm.datagridReload('#hm_data','datagrid',nameSearch,this)" class="easyui-linkbutton" iconCls="icon-2013040601125064_easyicon_net_16" plain="true" language="html:reloadDatagrid"></a>
+    </div>
+</form>
+<div id="hm_menu_tools">
+    <form name="hm_search">
+        <div class="hm_search">
+        	<span language="html:searchSliderName"></span>:&nbsp;<input type="text" name="name" class="easyui-validatebox length_3"  data-options="required:false"></input>&nbsp;&nbsp;
+            <a href="#" onclick="hm.ajaxSearch(nameSearch,this)" class="easyui-linkbutton" id="hm_search_submit" iconCls="icon-zoom" plain="true" language="html:search"></a>
+            <a href="#" onclick="hm.clearSearch(this)" class="easyui-linkbutton" iconCls="icon-arrow_nw_ne_sw_se" plain="true" language="html:clearSearch"></a>
+        </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script>
+var mehigh = document.documentElement.clientHeight-80;
+$('#hm_data').datagrid({
+    height: mehigh,
+    nowrap: false, //数据列是否显示为一行
+    emptyMsg: hm.language.noData,
+    url:'/intendant/enterprise/getSlider',
+    fitColumns: true, //宽度自适应窗口
+    rownumbers: false, //是否显示行号
+    singleSelect: false,
+    scrollbarSize: 0, //去除滚动条，否则右边最后一列会自动多处一块
+    remoteSort: false, //不以服务器端排序
+    queryParams: null,//额外提交参数
+    showHeader: true, //显示行头
+    showFooter: true, //显示行尾
+    pagination: false,
+    toolbar: '#hm_menu_tools',
+    columns:[[
+        {
+            field: 'ck',
+            checkbox: true,
+            width: 10,//百分比
+            align: 'center',
+        },{
+            field: 'id',
+            title: 'ID',
+            width: 20,
+            align: 'center',
+            sortable: true,
+        },{
+            field: 'sort',
+            title: hm.language.sort,
+            width: 40,
+            align: 'center',
+            formatter: function(value, row, index) {
+                return '<input name="' + row.id + '" value="' + value + '" class="easyui-validatebox" style="width:30px;text-align:center;border-radius:4px;">';
+            }
+        },{
+	        field: 'text',
+	        title: hm.language.enterpriseSliderName,
+	        width: 60,
+	        align: 'center',
+            // formatter: function(value, row, index) {
+            //     var lang = hm.getLanguage('datagird',value,row);
+            //     return lang;
+            // }
+        },{
+            field: 'image',
+            title: hm.language.enterpriseSliderImage,
+            width: 60,
+            align: 'center',
+            styler: function(value,row,index){
+				return {style:'padding:3px;padding-top:6px;'}
+			},
+            formatter: function(value, row, index) {
+                var str = '<img src="/static/upload/images/'+value+'" style="height:40px;width:60px;">';
+                return str;
+            }
+        },{
+            field: 'cz',
+            title: hm.language.manageOperat,
+            width: 80,
+            align: 'center',
+            formatter: function(value, row, index) {
+                var str = '';
+                str += '<a  href="javascript:void(0)" onclick="hm.getVerify(this)" data-url="/intendant/enterprise/editSlider/' + row.id + '" class="easyui-linkbutton hm-op-btn hm-blue" iconCls="icon-bookmark_edit">'+hm.language.ajaxEdit+'</a>';
+                str += '<a href="javascript:void(0)" onclick="hm.ajaxDel(nameDel,this)" class="easyui-linkbutton hm-op-btn hm-red" iconCls="icon-delete" data-url="/intendant/enterprise/delSlider" data-id="' + row.id + '">'+hm.language.ajaxDel+'</a>';
+                return str;
+            }
+        }
+    ]],
+    onLoadSuccess: function(data) {
+        if (data.status == 66) {
+            window.location = '/intendant/auth';
+        } else {
+            $('.easyui-linkbutton').linkbutton();
+            $('.easyui-tooltip').tooltip({
+                position: 'bottom',
+                onShow: function(){
+                    $(this).tooltip('tip').css({
+                        backgroundColor: '#f39c12',
+                        borderColor: '#f39c12',
+                        color: '#fff',
+                        size: '18px',
+                    });
+                }
+            });
+        }
+    }
+});
+hm.datagridResize("#hm_data",'datagrid'); //让treegrid宽度自动适应
+function nameSort(data){
+    if (data.status == 11) {
+        parent.hm.notice("warn", data.info);
+    } else if (data.status == 12) {
+        parent.hm.notice("warn", data.info);
+    } else if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.menuSortInfoFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.menuSortInfoSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+function nameDel(data){
+    if (data.status == 11) {
+        parent.hm.notice("error", data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("error", hm.language.userAdminNoDel);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.delFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.delSuccess );
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error", hm.language.unknownError);
+    }
+}
+function nameSearch(data){
+    if (data.status == 11) {
+        parent.hm.notice("warn",  data.info);
+    } else if(data.status == 54){
+        parent.hm.notice("warn", hm.language.noFoundData);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.searchFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.searchSuccess );
+        $('.easyui-linkbutton').linkbutton();
+        $('.easyui-tooltip').tooltip({
+            position: 'bottom',
+            onShow: function() {
+                $(this).tooltip('tip').css({
+                    backgroundColor: '#f39c12',
+                    borderColor: '#f39c12',
+                    color: '#fff',
+                    size: '18px',
+                });
+            }
+        });
+    }else{
+        parent.hm.notice("error", hm.language.unknownError);
+    }
+}
+</script>
+</html>
