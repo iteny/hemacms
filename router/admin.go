@@ -33,15 +33,17 @@ func AdminRoutes() http.Handler {
 	r.Post("/ajaxUpdateLog", index.AjaxUpdateLog) //ajax更新日志
 	r.Post("/tabNoAuth", index.TabNoAuth)         //tab权限
 	r.Route("/site", func(r chi.Router) {
-		r.Post("/uploadImage", site.UploadImage) //图片上传
-		r.Post("/delImage", site.DelImage)       //删除图片
-		r.Get("/system", site.System)            //系统设置
-		r.Post("/editSystem", site.EditSystem)   //系统设置修改
-		r.Get("/menu", site.Menu)                //菜单设置
-		r.Post("/getMenu", site.GetMenu)         //获取菜单
-		r.Post("/iconsCls", site.IconsCls)       //获取图标
-		r.Post("/sortMenu", site.SortMenu)       //菜单排序
-		r.Route("/addMenu", func(r chi.Router) { //添加菜单
+		r.Post("/uploadImage", site.UploadImage)     //图片单个上传
+		r.Post("/uploadImages", site.UploadImages)   //图片多个上传
+		r.Post("/delImage", site.DelImage)           //删除图片
+		r.Post("/batchDelImage", site.BatchDelImage) //删除多个图片
+		r.Get("/system", site.System)                //系统设置
+		r.Post("/editSystem", site.EditSystem)       //系统设置修改
+		r.Get("/menu", site.Menu)                    //菜单设置
+		r.Post("/getMenu", site.GetMenu)             //获取菜单
+		r.Post("/iconsCls", site.IconsCls)           //获取图标
+		r.Post("/sortMenu", site.SortMenu)           //菜单排序
+		r.Route("/addMenu", func(r chi.Router) {     //添加菜单
 			r.Get("/{menuPid}", site.AddMenu) //添加菜单页面
 		})
 		r.Route("/editMenu", func(r chi.Router) {
@@ -75,11 +77,15 @@ func AdminRoutes() http.Handler {
 		})
 		r.Post("/editRoleSubmit", site.EditRoleSubmit) //修改角色提交
 
-		r.Get("/colorSchemes", site.ColorSchemes) //配色方案
-
-		r.Get("/loginLog", site.LoginLog)        //登录日志页面
-		r.Post("/getLoginLog", site.GetLoginLog) //获取登录日志
-		r.Post("/delLoginLog", site.DelLoginLog) //删除一个月前的登录日志
+		r.Get("/colorSchemes", site.ColorSchemes)       //配色方案
+		r.Get("/imageManage", site.ImageManage)         //图片管理页面
+		r.Get("/fileManage", site.FileManage)           //文件管理页面
+		r.Post("/getImage", site.GetImage)              //获取图片数据
+		r.Get("/uploadImagePage", site.UploadImagePage) //上传图片页面
+		r.Post("/getFile", site.GetFile)                //获取文件数据
+		r.Get("/loginLog", site.LoginLog)               //登录日志页面
+		r.Post("/getLoginLog", site.GetLoginLog)        //获取登录日志
+		r.Post("/delLoginLog", site.DelLoginLog)        //删除一个月前的登录日志
 
 		r.Get("/oprateLog", site.OprateLog)              //操作日志页面
 		r.Post("/getOprateLog", site.GetOprateLog)       //获取操作日志

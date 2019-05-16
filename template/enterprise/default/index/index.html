@@ -131,7 +131,16 @@
             <div class="row animate-box">
                 <div class="featured-wrap">
                     <div class="owl-carousel">
-                        <div class="item">
+                        {{ range .slider}}
+                            <div class="item">
+                                <div class="col-md-8 col-md-offset-2">
+                                    <div class="featured-entry">
+                                        <a href="{{.Url}}" title="{{.Name}}"><img class="img-responsive" src="/static/upload/images/{{.Image}}" alt=""></a>
+                                    </div>
+                                </div>
+                            </div>
+                        {{ end }}
+                        <!-- <div class="item">
                             <div class="col-md-8 col-md-offset-2">
                                 <div class="featured-entry">
                                     <img class="img-responsive" src="/static/enterprise/images/dashboard_full_1.jpg" alt="">
@@ -151,7 +160,7 @@
                                     <img class="img-responsive" src="/static/enterprise/images/dashboard_full_3.jpg" alt="">
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

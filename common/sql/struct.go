@@ -50,10 +50,14 @@ type AuthRule struct {
 
 //图片附件表
 type Image struct {
-	Id   int    `json:"id"`
-	Url  string `json:"url"`
-	Time string `json:"time"`
-	Uid  string `json:"uid"`
+	Id       int    `json:"id"`
+	Url      string `json:"url"`
+	Time     string `json:"time"`
+	Username string `json:"username"`
+	Width    int    `json:"width"`
+	Height   int    `json:"height"`
+	Type     string `json:"type"`
+	Size     int    `json:"size"`
 }
 
 //企业幻灯片表

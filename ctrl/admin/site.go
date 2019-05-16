@@ -24,6 +24,9 @@ const (
 	uploadImagesPath string = "./static/upload/images/"
 )
 
+type Sizer interface {
+	Size() int64
+}
 type SiteCtrl struct {
 	common.BaseCtrl
 }
@@ -33,8 +36,19 @@ func SiteCtrlObject() *SiteCtrl {
 }
 
 /**
- * @description 上传图片管理
- * @English	uploader images management page
+ * @description 上传图片页面
+ * @English	upload image page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) UploadImagePage(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/uploadImagePage.html")
+}
+
+/**
+ * @description 上传单个图片
+ * @English	uploader single image
  * @homepage http://www.hemacms.com/
  * @author Nicholas Mars
  * @date 2018-03-24
@@ -42,10 +56,13 @@ func SiteCtrlObject() *SiteCtrl {
 func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
 	//接收客户端传来的文件 uploadfile 与客户端保持一致
-	file, handler, err := r.FormFile("file")
+	file, handler, err := r.FormFile("uploadImage")
 	if err != nil {
-		fmt.Println(err)
-		return
+		c.ResponseJson(4, err, w, r)
+	}
+	fsize := file.(Sizer).Size()
+	if fsize > 200000 {
+		c.ResponseJson(5, "image file too big!", w, r)
 	}
 	defer file.Close()
 	//上传的文件保存在ppp路径下
@@ -58,19 +75,19 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		session := c.Sess().Load(r)
-		uid, err := session.GetString("uid")
+		username, err := session.GetString("username")
 		c.Log().CheckErr("Session Get Error", err)
 		pic := sql.Image{}
 		err = c.Sql().Get(&pic, "SELECT * FROM hm_image WHERE url = ?", fileNewName)
 		if err != nil {
-			sqls := "INSERT INTO hm_image(url,time,uid) VALUES(?,?,?)"
+			sqls := "INSERT INTO hm_image(url,time,username,width,height,type,size) VALUES(?,?,?,?,?,?,?)"
 			tx := c.Sql().MustBegin()
-			tx.MustExec(sqls, fileNewName, time.Now().Unix(), uid)
+			tx.MustExec(sqls, fileNewName, time.Now().Unix(), username, 120, 120, strings.TrimLeft(ext, "."), fsize)
 			err = tx.Commit()
 			if err != nil {
 				c.ResponseJson(4, err.Error(), w, r)
 			} else {
-				c.Cache().Del("allpic")
+				c.Cache().ScanDel("allImage")
 				c.ResponseJson(1, fileNewName, w, r)
 			}
 		} else {
@@ -80,7 +97,62 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 	io.Copy(f, file)
+
 	// fmt.Fprintln(w, "upload ok!"+fileNewName)
+}
+
+/**
+ * @description 上传多个图片
+ * @English	batch uploader images
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) UploadImages(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(32 << 20)
+	//获取上传的文件组
+	for i := 0; i < 10; i++ {
+		file, handler, err := r.FormFile("uploadImages[" + strconv.Itoa(i) + "]")
+		if file != nil {
+			if err != nil {
+				c.ResponseJson(4, err, w, r)
+			}
+			fsize := file.(Sizer).Size()
+			if fsize > 200000 {
+				c.ResponseJson(5, "image file too big!", w, r)
+			}
+			ext := path.Ext(handler.Filename) //获取文件后缀
+			fileNewName := string(time.Now().Format("20060102150405")) + strconv.Itoa(time.Now().Nanosecond()) + ext
+			f, err := os.OpenFile(uploadImagesPath+fileNewName, os.O_WRONLY|os.O_CREATE, 0666)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+				return
+			} else {
+				session := c.Sess().Load(r)
+				username, err := session.GetString("username")
+				c.Log().CheckErr("Session Get Error", err)
+				pic := sql.Image{}
+				err = c.Sql().Get(&pic, "SELECT * FROM hm_image WHERE url = ?", fileNewName)
+				if err != nil {
+					sqls := "INSERT INTO hm_image(url,time,username,width,height,type,size) VALUES(?,?,?,?,?,?,?)"
+					tx := c.Sql().MustBegin()
+					tx.MustExec(sqls, fileNewName, time.Now().Unix(), username, 120, 120, strings.TrimLeft(ext, "."), fsize)
+					err = tx.Commit()
+					if err != nil {
+						c.ResponseJson(4, err.Error(), w, r)
+					} else {
+						c.Cache().ScanDel("allImage")
+						c.ResponseJson(1, fileNewName, w, r)
+					}
+				} else {
+					c.ResponseJson(21, "picture name already exist", w, r)
+					return
+				}
+			}
+			defer f.Close()
+			io.Copy(f, file)
+		}
+	}
 }
 
 /**
@@ -91,21 +163,200 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
  * @date 2018-03-24
  */
 func (c *SiteCtrl) DelImage(w http.ResponseWriter, r *http.Request) {
-	pic := r.PostFormValue("pic")
-	picSql := "DELETE FROM hm_image WHERE url = ?"
+	pic := r.PostFormValue("image")
+	id := r.PostFormValue("id")
+	if pic != "" {
+		picSql := "DELETE FROM hm_image WHERE url = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(picSql, pic)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			del := os.Remove(uploadImagesPath + pic)
+			if del != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().ScanDel("allImage")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+	if id != "" {
+		picSql := "DELETE FROM hm_image WHERE url = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(picSql, id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			del := os.Remove(uploadImagesPath + id)
+			if del != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().ScanDel("allImage")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 批量删除图片
+ * @English	Batch delete images
+ * @homepage    http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) BatchDelImage(w http.ResponseWriter, r *http.Request) {
+	ids, urls := r.PostFormValue("ids"), r.PostFormValue("images")
+	idSplit := strings.Split(ids, ",")
+	urlSplit := strings.Split(urls, ",")
+	for _, v := range idSplit {
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid update log id", w, r)
+			return
+		}
+	}
+	imageSql := fmt.Sprintf("DELETE FROM hm_image WHERE id IN (%v)", ids)
 	tx := c.Sql().MustBegin()
-	tx.MustExec(picSql, pic)
+	tx.MustExec(imageSql)
 	err := tx.Commit()
 	if err != nil {
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
-		del := os.Remove(uploadImagesPath + pic)
-		if del != nil {
-			c.ResponseJson(4, err.Error(), w, r)
+		for _, v := range urlSplit {
+			del := os.Remove(uploadImagesPath + v)
+			if del != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			// if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			// 	c.ResponseJson(11, "Invalid update log id", w, r)
+			// 	return
+			// }
 		}
-		c.Cache().ScanDel("allpic")
+		c.Cache().ScanDel("allImage")
 		c.ResponseJson(1, "", w, r)
 	}
+}
+
+/**
+ * @description 图片管理页面
+ * @English	image manage page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) ImageManage(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/imageManage.html")
+}
+
+/**
+ * @description 获取图片数据
+ * @English	get images data
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) GetImage(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 4)
+	page, row := r.PostFormValue("page"), r.PostFormValue("rows")
+	username, dateFrom, dateTo := r.PostFormValue("username"), r.PostFormValue("dateFrom"), r.PostFormValue("dateTo")
+	size := r.PostFormValue("size")
+	data["total"], data["rows"] = 0, []string{}
+	switch {
+	case ((vali.English(username) && vali.Length(username, 5, 20)) == false) && username != "":
+		data["status"], data["info"] = 11, "Invalid account"
+	case vali.Time(dateFrom, vali.RF3339Js) == false && dateFrom != "":
+		data["status"], data["info"] = 13, "Invalid dateFrom"
+	case vali.Time(dateTo, vali.RF3339Js) == false && dateTo != "":
+		data["status"], data["info"] = 14, "Invalid dateTo"
+	case ((vali.Numeric(size) && vali.Length(size, 1, 8)) == false) && size != "":
+		data["status"], data["info"] = 15, "Invalid excuteTime"
+	case (vali.NumericNoHeadZero(page) && vali.Length(page, 1, 5) && vali.NumericNoHeadZero(row) && vali.Length(row, 2, 2)) == false:
+		data["status"], data["info"] = 16, "Invalid pagination"
+	default:
+		pageNum := c.Pagination(page, row)
+		fromTime, toTime := c.DateToTimestamp(dateFrom, vali.RF3339Js), c.DateToTimestamp(dateTo, vali.RF3339Js)
+		addsql := ""
+		if username != "" {
+			addsql = addsql + "username LIKE '%" + username + "%' AND "
+		}
+		if size != "" {
+			addsql = addsql + "size >= '" + size + "' AND "
+		}
+		if dateFrom != "" {
+			addsql = addsql + fmt.Sprintf("time>='%v' AND ", fromTime)
+		}
+		if dateTo != "" {
+			addsql = addsql + fmt.Sprintf("time<='%v' AND ", toTime)
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		count := 0
+		if rows, found := c.Cache().Get("allImageCount" + username + dateFrom + dateTo + size + page + row); found {
+			count = rows.(int)
+		} else {
+			totalSql := "SELECT id FROM hm_image " + addsql
+			total := []sql.Image{}
+			err := c.Sql().Select(&total, totalSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			count = len(total)
+			c.Cache().SetAlwaysTime("allImageCount"+username+dateFrom+dateTo+size+page+row, count)
+		}
+		log := []sql.Image{}
+		if rows, found := c.Cache().Get("allImage" + username + dateFrom + dateTo + size + page + row); found {
+			log = rows.([]sql.Image)
+		} else {
+			logSql := "SELECT * FROM hm_image " + addsql + " ORDER BY id DESC Limit ?,?"
+			err := c.Sql().Select(&log, logSql, pageNum, row)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("allImage"+username+dateFrom+dateTo+size+page+row, log)
+		}
+		if count != 0 {
+			data["total"], data["rows"] = strconv.Itoa(count), log
+		} else {
+			data["status"], data["info"], data["rows"] = 54, "no found data", log
+		}
+	}
+	c.ResponseData(data, w, r)
+}
+
+/**
+ * @description 文件管理页面
+ * @English	file manage page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) FileManage(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/site/fileManage.html")
+}
+
+/**
+ * @description 获取文件数据
+ * @English	get files data
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) GetFile(w http.ResponseWriter, r *http.Request) {
+	rule := []sql.AuthRule{}
+	if rows, found := c.Cache().Get("allmenu"); found {
+		rule = rows.([]sql.AuthRule)
+	} else {
+		sqls := "SELECT * FROM hm_auth_rule ORDER BY sort ASC"
+		err := c.Sql().Select(&rule, sqls)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("allmenu", rule)
+	}
+	ar := sql.RecursiveMenu(rule, 0, 0)
+	fmt.Fprint(w, c.RowsJson(ar))
 }
 
 /**

@@ -1001,13 +1001,13 @@ HmObj.prototype.selectMenuIcons = function(icon) {
     $('.hm_dialog').dialog('destroy');
 }
 //点击删除图片
-HmObj.prototype.delImage = function(pic,file,url) {
+HmObj.prototype.delImage = function(image,url) {
     $.ajax({
         url: url,
         dataType: 'json',
         type: 'POST',
         data: {
-            pic: pic
+            image: image
         },
         beforeSend: function() {
             parent.hm.openProgress();
@@ -1015,8 +1015,8 @@ HmObj.prototype.delImage = function(pic,file,url) {
         success: function(data) {
             parent.hm.closeProgress();
             parent.hm.notice('success', "删除成功");
-            var $li = $('#'+file.id);
-            $li.off().find('.file-panel').off().end().remove();
+            // var $li = $('#'+file.id);
+            // $li.off().find('.file-panel').off().end().remove();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             parent.hm.notice("error", 'status:' + XMLHttpRequest.status + ',readyState:' + XMLHttpRequest.readyState + ',textStatus:' + textStatus);
@@ -1600,10 +1600,13 @@ HmObj.prototype.ajaxBatchDel = function(externalFunc, me) {
         var checkedItems = $('#hm_data').datagrid('getChecked'),
             param = [],
             name = [];
+            image = [];
         $.each(checkedItems, function(k, v) {
             param.push(v.id);
+            image.push(v.url);
         });
         var ids = param.join(",");
+        var images = image.join(",");
         if (param.length == 0) {
             hm.notice('warn', "你没有选择任何");
             that.linkbutton('enable');
@@ -1621,7 +1624,8 @@ HmObj.prototype.ajaxBatchDel = function(externalFunc, me) {
                         dataType: 'json',
                         type: 'POST',
                         data: {
-                            'ids': ids
+                            ids: ids,
+                            images: images
                         },
                         beforeSend: function() {
                             parent.hm.openProgress();

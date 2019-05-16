@@ -328,6 +328,22 @@ var language = {
         valiIconCss: "Please enter valid English letters, numbers,-,_,space",
         valiMenuUrl: "Please enter valid English letters,/",
         //验证数据结束
+        //上传管理开始
+        imageManagePage: "Image Manage Page",
+        fileManagePage: "File Manage Page",
+        preview: "Preview",
+        imgpath: "Path",
+        width: "Width",
+        height: "Height",
+        type: "Type",
+        size: "Size",
+        byte: "byte",
+        uploadImage: "Upload Image",
+        batchDelImage: "Batch delete Image",
+        uploadToLocal: "Upload To Local",
+        uploadToThirdParty: "Upload To Third Party",
+        uploadPrompt: "Drag the file to it (or click here)",
+        //上传管理结束
         //企业站开始
         navListPage: "Nav List Page",
         addNavPage: "Add Nav Page",
@@ -713,6 +729,22 @@ var language = {
         valiIconCss: "请输入有效的英文字母,数字,-,_,空格",
         valiMenuUrl: "请输入有效的英文字母,/",
         //验证数据结束
+        //上传管理开始
+        imageManagePage: "图片管理页面",
+        fileManagePage: "文件管理页面",
+        preview: "预览",
+        imgpath: "图片路径",
+        width: "宽度",
+        height: "高度",
+        type: "类型",
+        size: "大小",
+        byte: "字节",
+        uploadImage: "上传图片",
+        batchDelImage: "批量删除图片",
+        uploadToLocal: "上传到本地",
+        uploadToThirdParty: "上传到第三方",
+        uploadPrompt: "拖动文件至该处(或点击此处)",
+        //上传管理结束
         //企业站开始
         navListPage: "导航列表",
         addNavPage: "添加导航页面",

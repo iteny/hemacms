@@ -38,5 +38,18 @@ func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	} else {
 		data["cookie"] = cookie.Value
 	}
+	//获取幻灯信息
+	slides := []sql.EnterpriseSlider{}
+	if rows, found := c.Cache().Get("enterpriseSlider"); found {
+		slides = rows.([]sql.EnterpriseSlider)
+	} else {
+		slideSql := "SELECT * FROM hm_enterprise_slider ORDER BY sort ASC "
+		err := c.Sql().Select(&slides, slideSql)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("enterpriseSlider", slides)
+	}
+	data["slider"] = slides
 	c.Template(w, r, data, "./template/enterprise/default/index/index.html")
 }
