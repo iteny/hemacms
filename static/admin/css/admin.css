@@ -1856,3 +1856,15 @@ td, th, div {
     background-position: -48px 0;
 }
 /*上传图片样式结束*/
+/*fileupload开始*/
+.hm_fileupload{
+    width: 100%;
+}
+.hm_fileupload .fileinput-button{
+    background: #27ae60;
+    color:white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+/*fileupload结束*/

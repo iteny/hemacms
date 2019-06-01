@@ -43,14 +43,19 @@ $('#hm-west').tree({
     formatter:function(node){
 		return node[lang];
 	},
-	onClick: function(node){
-		alert(node.id);  // alert node text property when clicked
-		$('#hm-center').panel({
-		    href:'content_url.php',
-		    onLoad:function(){
-				alert('loaded successfully');
-		    }
-		});
+	onClick: function(data){
+		// alert(node.id);  // alert node text property when clicked
+        if(data.external_link){
+            hm.notice("warn", "外部链接请去导航列表里设置，链接地址！");
+        }else{
+
+        }
+		// $('#hm-center').panel({
+		//     href:'content_url.php',
+		//     onLoad:function(){
+		// 		alert('loaded successfully');
+		//     }
+		// });
 	}
 });
 </script>

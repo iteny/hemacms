@@ -23,6 +23,271 @@ func EnterpriseCtrlObject() *EnterpriseCtrl {
 }
 
 /**
+ * @description 企业模板类型
+ * @English	enterprise template type page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) TemplateType(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/enterprise/templateType.html")
+}
+
+/**
+ * @description 获取幻灯片
+ * @English	get slider
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) GetTemplateType(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 4)
+	name := r.PostFormValue("name")
+	switch {
+	case ((vali.EnglishSpace(name) || vali.Chinese(name)) && vali.Length(name, 2, 30) == false) && name != "":
+		data["status"], data["info"] = 11, "Invalid Template Type Name"
+	default:
+		addSql := ""
+		if name != "" {
+			cookie, err := r.Cookie("back-language")
+			if err != nil {
+				c.Log().CheckErr("cookie error", err)
+				value := c.Config().Value("cookie", "language")
+				if vali.MultiLanguage(value) {
+					c.SetCookie("back-language", value, 0, w)
+				} else {
+					c.SetCookie("back-language", "en", 0, w)
+				}
+			} else {
+				addSql = c.MultiLanguage(cookie.Value, name, "en")
+			}
+		}
+		if addSql != "" {
+			addSql = "WHERE " + strings.Trim(addSql, "AND ")
+		}
+		fmt.Println(addSql)
+		tptypes := []sql.EnterpriseTptype{}
+		if rows, found := c.Cache().Get("allTemplateType" + name); found {
+			tptypes = rows.([]sql.EnterpriseTptype)
+		} else {
+			slideSql := "SELECT * FROM hm_enterprise_tptype " + addSql + " ORDER BY sort ASC "
+			err := c.Sql().Select(&tptypes, slideSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("allTemplateType"+name, tptypes)
+		}
+		data["status"] = 1
+		data["rows"] = tptypes
+	}
+	c.ResponseData(data, w, r)
+}
+
+/**
+ * @description 添加模板类型页面
+ * @English	add template type page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddTemplateType(w http.ResponseWriter, r *http.Request) {
+	c.Template(w, r, nil, "./view/admin/enterprise/addTemplateType.html")
+}
+
+/**
+ * @description 添加模板类型提交
+ * @English	add template type submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddTemplateTypeSubmit(w http.ResponseWriter, r *http.Request) {
+	cn, en, sort := r.PostFormValue("cn"), r.PostFormValue("en"), r.PostFormValue("sort")
+	switch false {
+	case vali.Chinese(cn) && vali.Length(cn, 2, 30):
+		c.ResponseJson(11, "invalid chinese content", w, r)
+		return
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 30):
+		c.ResponseJson(12, "invalid english content", w, r)
+		return
+	default:
+		sqls := "INSERT INTO hm_enterprise_tptype(cn,en,sort) VALUES(?,?,?)"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sqls, cn, en, sort)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("allTemplateType")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 修改模板类型页面
+ * @English	edit template type page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) EditTemplateType(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]interface{}, 2)
+	id := chi.URLParam(r, "tptypeId")
+	tptypeSingle := sql.EnterpriseTptype{}
+	err := c.Sql().Get(&tptypeSingle, "SELECT * FROM hm_enterprise_tptype WHERE id = ?", id)
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	}
+	data["tptype"] = tptypeSingle
+	c.Template(w, r, data, "./view/admin/enterprise/editTemplateType.html")
+}
+
+/**
+ * @description 修改模板类型提交
+ * @English	edit template type submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) EditTemplateTypeSubmit(w http.ResponseWriter, r *http.Request) {
+	id, cn, en, sort := r.PostFormValue("id"), r.PostFormValue("cn"), r.PostFormValue("en"), r.PostFormValue("sort")
+	switch false {
+	case vali.Chinese(cn) && vali.Length(cn, 2, 30):
+		c.ResponseJson(11, "invalid chinese content", w, r)
+		return
+	case vali.EnglishSpace(en) && vali.Length(en, 2, 30):
+		c.ResponseJson(12, "invalid english content", w, r)
+		return
+	case vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8):
+		c.ResponseJson(13, "invalid update log id", w, r)
+		return
+	default:
+		sqls := "UPDATE hm_enterprise_tptype SET cn=?,en=?,sort=? WHERE id = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sqls, cn, en, sort, id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("allTemplateType")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 删除单个模板类型
+ * @English	delete single template type
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) DelTemplateType(w http.ResponseWriter, r *http.Request) {
+	id := r.PostFormValue("id")
+	if vali.NumericNoHeadZero(id) && vali.Length(id, 1, 8) {
+		tptypeSql := "DELETE FROM hm_enterprise_tptype WHERE id = ?"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(tptypeSql, id)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("allTemplateType")
+			c.ResponseJson(1, "", w, r)
+		}
+	} else {
+		c.ResponseJson("11", "Invalid template type id", w, r)
+	}
+}
+
+/**
+ * @description 批量删除模板类型
+ * @English	batch delete template type
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) BatchDelTemplateType(w http.ResponseWriter, r *http.Request) {
+	ids := r.PostFormValue("ids")
+	idSplit := strings.Split(ids, ",")
+	for _, v := range idSplit {
+		if (vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)) == false {
+			c.ResponseJson(11, "Invalid template type id", w, r)
+			return
+		}
+	}
+	tptypeSql := fmt.Sprintf("DELETE FROM hm_enterprise_tptype WHERE id IN (%v)", ids)
+	tx := c.Sql().MustBegin()
+	tx.MustExec(tptypeSql)
+	err := tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("allTemplateType")
+		c.ResponseJson(1, "", w, r)
+	}
+}
+
+/**
+ * @description 模板类型批量排序
+ * @English	batch sorting template type
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) SortTemplateType(w http.ResponseWriter, r *http.Request) {
+	sortNav := make(map[string]string, 0)
+	defer r.Body.Close()
+	result, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		c.ResponseJson(4, ""+err.Error(), w, r)
+	}
+	json.Unmarshal(result, &sortNav)
+	var menuk []string
+	for k := range sortNav {
+		menuk = append(menuk, k)
+	}
+	var bf bytes.Buffer
+	bf.WriteString("UPDATE hm_enterprise_tptype SET sort = CASE id ")
+	// nav := make(map[string]string, 0)
+	for _, v := range menuk {
+		mid := vali.NumericNoHeadZero(v) && vali.Length(v, 1, 8)
+		msort := vali.NumericNoHeadZero(sortNav[v]) && vali.Length(v, 1, 3)
+		switch false {
+		case mid:
+			c.ResponseJson(11, "Invalid template type id", w, r)
+			return
+		case msort:
+			c.ResponseJson(12, "Invalid sort", w, r)
+			return
+		default:
+			bf.WriteString(fmt.Sprintf("WHEN %v THEN %v ", v, sortNav[v]))
+		}
+	}
+	// fmt.Println(nav)
+	//实现了implode的功能
+	var buffer bytes.Buffer
+	for _, v := range menuk {
+		buffer.WriteString(v)
+		buffer.WriteString(",")
+	}
+	ids := strings.Trim(buffer.String(), ",")
+	bf.WriteString(fmt.Sprintf("END WHERE id IN (%v)", ids))
+	// fmt.Println(ids)
+	// fmt.Println(bf.String())
+	tx := c.Sql().MustBegin()
+	tx.MustExec(bf.String())
+	err = tx.Commit()
+	if err != nil {
+		c.ResponseJson(4, ""+err.Error(), w, r)
+	} else {
+		c.Cache().ScanDel("allTemplateType")
+		c.ResponseJson(1, "", w, r)
+	}
+}
+
+/**
  * @description 导航列表
  * @English	nav management page
  * @homepage http://www.hemacms.com/
@@ -680,7 +945,7 @@ func (c *EnterpriseCtrl) SortSlider(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		c.ResponseJson(4, ""+err.Error(), w, r)
 	} else {
-		c.Cache().Del("enterpriseSlider")
+		c.Cache().ScanDel("enterpriseSlider")
 		c.ResponseJson(1, "", w, r)
 	}
 }

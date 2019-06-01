@@ -107,9 +107,20 @@ func AdminRoutes() http.Handler {
 		r.Get("/columnList", content.ColumnList) //栏目列表页面
 	})
 	r.Route("/enterprise", func(r chi.Router) {
-		r.Get("/navList", enterprise.NavList)   //导航列表页面
-		r.Post("/getNav", enterprise.GetNav)    //获取导航
-		r.Route("/addNav", func(r chi.Router) { //添加导航
+		r.Get("/templateType", enterprise.TemplateType)                    //企业模板类型
+		r.Post("/getTemplateType", enterprise.GetTemplateType)             //获取模板类型
+		r.Get("/addTemplateType", enterprise.AddTemplateType)              //添加模板类型
+		r.Post("/addTemplateTypeSubmit", enterprise.AddTemplateTypeSubmit) //添加模板类型提交
+		r.Route("/editTemplateType", func(r chi.Router) {
+			r.Get("/{tptypeId}", enterprise.EditTemplateType) //修改模板类型页面
+		})
+		r.Post("/editTemplateTypeSubmit", enterprise.EditTemplateTypeSubmit) //修改模板类型提交
+		r.Post("/delTemplateType", enterprise.DelTemplateType)               //删除单个模板类型
+		r.Post("/batchDelTemplateType", enterprise.BatchDelTemplateType)     //批量删除模板类型
+		r.Post("/sortTemplateType", enterprise.SortTemplateType)             //模板类型排序
+		r.Get("/navList", enterprise.NavList)                                //导航列表页面
+		r.Post("/getNav", enterprise.GetNav)                                 //获取导航
+		r.Route("/addNav", func(r chi.Router) {                              //添加导航
 			r.Get("/{navPid}", enterprise.AddNav) //添加导航页面
 		})
 		r.Route("/editNav", func(r chi.Router) {
@@ -131,8 +142,9 @@ func AdminRoutes() http.Handler {
 		})
 		r.Post("/editSliderSubmit", enterprise.EditSliderSubmit) //修改幻灯片提交
 		r.Post("/delSlider", enterprise.DelSlider)               //删除单个幻灯片
-		r.Post("/batchDeLSlider", enterprise.BatchDelSlider)     //批量删除幻灯片
+		r.Post("/batchDelSlider", enterprise.BatchDelSlider)     //批量删除幻灯片
 		r.Post("/sortSlider", enterprise.SortSlider)             //幻灯片排序
+
 	})
 	return r
 }

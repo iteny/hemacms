@@ -343,6 +343,8 @@ var language = {
         uploadToLocal: "Upload To Local",
         uploadToThirdParty: "Upload To Third Party",
         uploadPrompt: "Drag the file to it (or click here)",
+        uploadSuccess: "Upload Success!",
+        uploadFail: "Upload Fail!",
         //上传管理结束
         //企业站开始
         navListPage: "Nav List Page",
@@ -392,11 +394,21 @@ var language = {
         enterpriseSliderAdd: "Add Enterprise Slider",
         sliderManagePage: "Slider Manage Page",
         addSliderPage: "Add Slider Page",
+        batchDelSlider: "Batch Delete Slider",
         enterpriseSliderName: "Slider Name",
         enterpriseSliderUrl: "Slider Link",
         enterpriseSliderSort: "Slider Sort",
         enterpriseSliderImage: "Slider Image",
         searchSliderName: "Search Slider Name",
+        addTemplateType: "Add Template Type",
+        batchDelTptype: "Batch Delete Template Type",
+        templateTypeName: "Template Type Name",
+        searchTptypeName: "Search Template Type Name",
+        tptypeManagePage: "Template Type Page",
+        addTemplateTypePage: "Add Template Type Page",
+        editTemplateTypePage: "Edit Template Type Page",
+        englishName: "English Name",
+        chineseName: "Chinese Name",
         //企业设置结束
     },
     //简体中文,chinese
@@ -744,6 +756,8 @@ var language = {
         uploadToLocal: "上传到本地",
         uploadToThirdParty: "上传到第三方",
         uploadPrompt: "拖动文件至该处(或点击此处)",
+        uploadSuccess: "上传成功!",
+        uploadFail: "上传失败!",
         //上传管理结束
         //企业站开始
         navListPage: "导航列表",
@@ -793,11 +807,21 @@ var language = {
         enterpriseSliderAdd: "添加幻灯片",
         sliderManagePage: "幻灯管理页面",
         addSliderPage: "添加幻灯页面",
+        batchDelSlider: "批量删除幻灯片",
         enterpriseSliderName: "幻灯名称",
         enterpriseSliderUrl: "幻灯链接",
         enterpriseSliderSort: "幻灯排序",
         enterpriseSliderImage: "幻灯图片",
         searchSliderName: "查询幻灯名称",
+        addTemplateType: "添加模板类型",
+        batchDelTptype: "批量删除模板类型",
+        templateTypeName: "模板类型名称",
+        searchTptypeName: "查询模板类型名称",
+        tptypeManagePage: "模板类型页面",
+        addTemplateTypePage: "添加模板类型页面",
+        editTemplateTypePage: "修改模板类型页面",
+        englishName: "英文名称",
+        chineseName: "中文名称",
         //企业设置结束
     },
 };

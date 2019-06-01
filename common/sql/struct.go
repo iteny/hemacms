@@ -128,6 +128,14 @@ type EnterpriseNav struct {
 	Children     []EnterpriseNav `json:"children"`
 }
 
+//企业站模板类型表
+type EnterpriseTptype struct {
+	Id   int    `json:"id"`
+	Cn   string `json:"cn"`
+	En   string `json:"en"`
+	Sort int    `json:"sort"`
+}
+
 //递归重新排序无限极分类
 func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	array := make([]AuthRule, 0)

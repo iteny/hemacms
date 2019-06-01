@@ -61,7 +61,7 @@ func (c *SiteCtrl) UploadImage(w http.ResponseWriter, r *http.Request) {
 		c.ResponseJson(4, err, w, r)
 	}
 	fsize := file.(Sizer).Size()
-	if fsize > 200000 {
+	if fsize > 300000 {
 		c.ResponseJson(5, "image file too big!", w, r)
 	}
 	defer file.Close()
@@ -118,7 +118,7 @@ func (c *SiteCtrl) UploadImages(w http.ResponseWriter, r *http.Request) {
 				c.ResponseJson(4, err, w, r)
 			}
 			fsize := file.(Sizer).Size()
-			if fsize > 200000 {
+			if fsize > 300000 {
 				c.ResponseJson(5, "image file too big!", w, r)
 			}
 			ext := path.Ext(handler.Filename) //获取文件后缀

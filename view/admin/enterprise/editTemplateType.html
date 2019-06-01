@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title language="html:editTemplateTypePage"></title>
+    <link rel="stylesheet" type="text/css" href="/static/common/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/bootstrap/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/common/easyui/themes/IconExtension.css">
+    <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
+    <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+</head>
+<body>
+    <form action="/intendant/enterprise/editTemplateTypeSubmit">
+    	<input class="easyui-validatebox" type="hidden" name="id" value="{{.tptype.Id}}" data-options="required:true,validType:['numericNoHeadZero','length[1,8]']">
+        <div class="frame_form_table">
+            <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+                <tbody>
+                    <tr>
+                        <td width="40" language="table:chineseName"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.tptype.Cn}}" type="text" name="cn" data-options="required:true,validType:['chinese','length[2,30]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:englishName"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.tptype.En}}" type="text" name="en" data-options="required:true,validType:['englishSpace','length[2,30]']"></td>
+                    </tr>
+                    <tr>
+                        <td width="40" language="table:sort"></td>
+                        <td width="190"><input class="easyui-validatebox length_5" value="{{.tptype.Sort}}" type="text" name="sort" data-options="required:true,validType:['numeric','length[1,3]']"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="hm_toolbar">
+            <a onclick="javascript:history.back(-1);" class="easyui-linkbutton" iconCls="icon-arrow_turn_left" plain="true" language="html:goback"></a>
+            <a id="btn" href="" class="easyui-linkbutton" iconCls="icon-arrow_refresh" plain="true" language="html:refreshCurrent"></a>
+            <a id="btn" href="javascript:void(0)" onclick="hm.ajaxAddEdit(editTemplateTypeFunc,this)" class="easyui-linkbutton" iconCls="icon-add" plain="true" language="html:ajaxEdit"></a>
+        </div>
+    </form>
+</body>
+<script type="text/javascript" src="/static/common/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/common/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/common/pnotify/pnotify.custom.min.js"></script>
+<script type="text/javascript" src="/static/admin/js/language.js"></script>
+<script type="text/javascript" src="/static/admin/js/global.js"></script>
+<script type="text/javascript">
+function editTemplateTypeFunc(data){
+    if (data.status == 66) {
+        parent.hm.notice("error", hm.language.noAuth);
+    } else if(data.status == 11){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 12){
+        parent.hm.notice("warn", data.info);
+    } else if(data.status == 4){
+        parent.hm.notice("error", hm.language.addFailed + data.info);
+    } else if(data.status == 1){
+        parent.hm.notice("success", hm.language.addSuccess);
+        parent.hm.refreshTab();
+    }else{
+        parent.hm.notice("error",hm.language.unknownError);
+    }
+}
+</script>
+</html>

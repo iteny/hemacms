@@ -270,3 +270,18 @@ func (c *BaseCtrl) MultiLanguageAddSql(str string, value string, field ...string
 	}
 	return addSql
 }
+
+//多语言
+func (c *BaseCtrl) MultiLanguage(str string, value string, field ...string) string {
+	var addSql string = ""
+	if str == "cn" {
+		addSql = addSql + "cn LIKE '%" + value + "%' AND "
+	} else {
+		for _, v := range field {
+			if str == v {
+				addSql = addSql + v + " LIKE '%" + value + "%' AND "
+			}
+		}
+	}
+	return addSql
+}
