@@ -11,14 +11,40 @@
     <link rel="stylesheet" href="/static/common/pnotify/pnotify.custom.min.css" media="all" type="text/css" />
     <link rel="stylesheet" type="text/css" href="/static/admin/css/admin.css">
     <link rel="stylesheet" href="/static/common/animate/animate.min.css">
+    <style>
+        #hm_two_ac #hm-west{
+            border:1px solid #D4D4D4;
+            border-top: none;
+            border-bottom: none;
+            border-left: none;
+            background-color: #F2F2F2;
+            background: -webkit-linear-gradient(top,#F2F2F2 0,#F2F2F2 100%);
+            background: -moz-linear-gradient(top,#F2F2F2 0,#F2F2F2 100%);
+            background: -o-linear-gradient(top,#F2F2F2 0,#F2F2F2 100%);
+            background: linear-gradient(to bottom,#F2F2F2 0,#F2F2F2 100%);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F2F2F2,endColorstr=#F2F2F2,GradientType=0);
+        }
+        #hm_two_ac .tree-title{
+            color: #666;
+        }
+        #hm_two_ac .tree-node:hover,#hm_two_ac .tree-node-selected{
+            background: #7f8c8d;
+            border-radius: 4px;
+        }
+        #hm_two_ac .tree-node:hover .tree-title,#hm_two_ac .tree-node-selected .tree-title{
+            color:#fff;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body id="hm-layout" class="hm_style_default">
-    <div class="easyui-layout" data-options="fit:true">
+    <div class="easyui-layout" data-options="fit:true" id="hm_two_ac">
     		 <!-- 左侧手风琴菜单 -->
-        <div id="hm-west" data-options="region:'west'" style="width:230px;background: white;padding: 5px 5px 0px 5px">
+        <div id="hm-west" data-options="region:'west'" style="width:210px;padding: 5px 5px 0px 5px;">
         	sadfasd
         </div>
-        <div id="hm-center" data-options="region:'center'" style="background:#eee;">
+        <div id="hm-center" class="hm-dialog-ic" data-options="region:'center'" style="background:#fff;">
             <a id="ddddd" href=""></a>
         </div>
     </div>
@@ -48,7 +74,15 @@ $('#hm-west').tree({
         if(data.external_link){
             hm.notice("warn", "外部链接请去导航列表里设置，链接地址！");
         }else{
-
+            if(data.type == 4){
+                $('#hm-center').panel({
+                    // href:'/intendant/enterprise/textModel',
+                    content: '<iframe name="hm_tab_icon" scrolling="auto" src="/intendant/enterprise/textModel/'+data.id+'" frameborder="0" style="width:100%;height:100%;"></iframe>',
+                    onLoad:function(){
+                        alert('loaded successfully');
+                    }
+                });
+            }
         }
 		// $('#hm-center').panel({
 		//     href:'content_url.php',

@@ -409,6 +409,16 @@ var language = {
         editTemplateTypePage: "Edit Template Type Page",
         englishName: "English Name",
         chineseName: "Chinese Name",
+        addText: "Add Text",
+        batchDelText: "Batch Delete Text",
+        searchText: "Search Text",
+        textPage: "Text Page",
+        cnTitle: "Chinese Title",
+        cnText: "Chinese Text",
+        enTitle: "English Title",
+        enText: "English Text",
+        icon: "Icon",
+        iconColor: "Icon Color",
         //企业设置结束
     },
     //简体中文,chinese
@@ -822,6 +832,16 @@ var language = {
         editTemplateTypePage: "修改模板类型页面",
         englishName: "英文名称",
         chineseName: "中文名称",
+        addText: "添加文本",
+        batchDelText: "批量删除文本",
+        searchText: "查询文本",
+        textPage: "文本页面",
+        cnTitle: "中文标题",
+        cnText: "中文文本",
+        enTitle: "英文标题",
+        enText: "英文文本",
+        icon: "图标",
+        iconColor: "图标颜色",
         //企业设置结束
     },
 };

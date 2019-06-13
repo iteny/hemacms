@@ -913,6 +913,30 @@ HmObj.prototype.getLanguage = function(type, value, row) {
                 lang = value;
         }
     }
+    if (type == "title") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = value;
+                break;
+            case 'en':
+                lang = row.en_title;
+                break;
+            default:
+                lang = value;
+        }
+    }
+    if (type == "text") {
+        switch ($.cookie('back-language')) {
+            case 'cn':
+                lang = value;
+                break;
+            case 'en':
+                lang = row.en_text;
+                break;
+            default:
+                lang = value;
+        }
+    }
     return lang;
 };
 //刷新当前tab页面
@@ -926,6 +950,13 @@ HmObj.prototype.refreshTab = function() {
         }
     });
     currentTab.panel('refresh');
+}
+//刷新当前panel页面
+HmObj.prototype.refreshPanel = function() {
+    var current = $('#hm-center');
+    console.info($(current.panel('options')).attr('href'));
+    var url = $(current.panel('options')).attr('href');
+    current.panel('refresh',url);
 }
 //刷新当前页面
 HmObj.prototype.reloadPage = function() {
@@ -1000,6 +1031,12 @@ HmObj.prototype.selectMenuIcons = function(icon) {
     $('iframe').contents().find("#hm_menu_icons_input").val(icon);
     $('.hm_dialog').dialog('destroy');
 }
+//点击选择图标
+HmObj.prototype.selectFontIcons = function(icon) {
+    $("#hm_menu_icons").html("<svg class='icon' aria-hidden='true'><use xlink:href='" + icon + "'></use></svg>");
+    $("#hm_menu_icons_input").val(icon);
+    $('.hm_dialog_icon').dialog('destroy');
+}
 //点击删除图片
 HmObj.prototype.delImage = function(image,url) {
     $.ajax({
@@ -1052,6 +1089,42 @@ HmObj.prototype.showMenuIcons = function(title) {
             }
             $('.hm_dialog').addClass('hm_icons');
             $('.hm_dialog').html("<div style='padding:15px;'>" + content.join(" ") + "</div>");
+        } else {
+            $('.layui-layer-content').html("<div style='padding:10px;color: #FFD700;'>图标加载失败，请联系管理员！</div>");
+        }
+    }, 'json').error(function() {
+        $('.layui-layer-content').html("<div style='padding:10px;color: #FFD700;'>图标加载失败，请联系管理员！3秒后自动关闭...</div>");
+    });
+
+};
+//打开选择图标框
+HmObj.prototype.showFontIcons = function(title) {
+    var iconPach = '/intendant/site/fontIcons';
+    $('<div class="hm_dialog_icon" style="position:relative"/>').dialog({
+        title: '&nbsp;&nbsp;&nbsp;&nbsp;' + title,
+        width: 750,
+        height: 500,
+        closable: true, //去除右上角的X关闭按钮
+        draggable: false, //禁止拖动窗口
+        cache: false,
+        href: '',
+        modal: true,
+        buttons: [{
+            text: this.language.close ? this.language.close : "Close",
+            handler: function() {
+                $('.hm_dialog_icon').dialog('destroy');
+            }
+        }]
+    });
+    $('.hm_dialog_icon').html('正在加载图标中...');
+    $.post(iconPach, "", function(data) {
+        if (typeof data == 'object') {
+            var content = [];
+            for (x in data) {
+                content[x] = "<a title='点击选择' onclick=\"hm.selectFontIcons('" + data[x] + "')\"><svg class='icon' aria-hidden='true'><use xlink:href='" + data[x] + "'></use></svg></a>";
+            }
+            $('.hm_dialog_icon').addClass('hm_icons');
+            $('.hm_dialog_icon').html("<div style='padding:15px;'>" + content.join(" ") + "</div>");
         } else {
             $('.layui-layer-content').html("<div style='padding:10px;color: #FFD700;'>图标加载失败，请联系管理员！</div>");
         }

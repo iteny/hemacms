@@ -42,6 +42,7 @@ func AdminRoutes() http.Handler {
 		r.Get("/menu", site.Menu)                    //菜单设置
 		r.Post("/getMenu", site.GetMenu)             //获取菜单
 		r.Post("/iconsCls", site.IconsCls)           //获取图标
+		r.Post("/fontIcons", site.FontIcons)         //获取字体图标
 		r.Post("/sortMenu", site.SortMenu)           //菜单排序
 		r.Route("/addMenu", func(r chi.Router) {     //添加菜单
 			r.Get("/{menuPid}", site.AddMenu) //添加菜单页面
@@ -126,11 +127,21 @@ func AdminRoutes() http.Handler {
 		r.Route("/editNav", func(r chi.Router) {
 			r.Get("/{navId}", enterprise.EditNav) //修改导航页面
 		})
-		r.Post("/sortNav", enterprise.SortNav)                 //导航排序
-		r.Post("/addNavSubmit", enterprise.AddNavSubmit)       //添加导航提交
-		r.Post("/editNavSubmit", enterprise.EditNavSubmit)     //修改导航提交
-		r.Post("/delNavSubmit", enterprise.DelNavSubmit)       //删除导航提交
-		r.Get("/contentManage", enterprise.ContentManage)      //内容管理页面
+		r.Post("/sortNav", enterprise.SortNav)             //导航排序
+		r.Post("/addNavSubmit", enterprise.AddNavSubmit)   //添加导航提交
+		r.Post("/editNavSubmit", enterprise.EditNavSubmit) //修改导航提交
+		r.Post("/delNavSubmit", enterprise.DelNavSubmit)   //删除导航提交
+		r.Get("/contentManage", enterprise.ContentManage)  //内容管理页面
+		r.Route("/textModel", func(r chi.Router) {         //文本模型
+			r.Get("/{navId}", enterprise.TextModel)
+		})
+		r.Route("/addTextData", func(r chi.Router) { //添加文本数据
+			r.Get("/{navId}", enterprise.AddTextData)
+		})
+		r.Post("/addTextDataSubmit", enterprise.AddTextDataSubmit) //添加文本数据提交
+		r.Route("/getTextData", func(r chi.Router) {               //获取文本数据
+			r.Post("/{navId}", enterprise.GetTextData)
+		})
 		r.Get("/baseInfo", enterprise.BaseInfo)                //基础信息
 		r.Post("/editBaseInfo", enterprise.EditBaseInfo)       //编辑基础信息
 		r.Get("/sliderManage", enterprise.SliderManage)        //幻灯片管理页面

@@ -476,6 +476,30 @@ func (c *SiteCtrl) IconsCls(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
+ * @description 获取字体图标
+ * @English	get font icons
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *SiteCtrl) FontIcons(w http.ResponseWriter, r *http.Request) {
+	dat, err := ioutil.ReadFile("./static/common/font-icon/icons.css")
+	if err != nil {
+		c.Log().Debug().Err(err).Msg("Error")
+	}
+	var ss []string
+	s := string(dat)
+	for _, v := range strings.Split(s, "\n") {
+		v = strings.TrimSpace(v)
+		if v == "" {
+			continue
+		}
+		ss = append(ss, v)
+	}
+	fmt.Fprint(w, c.RowsJson(ss))
+}
+
+/**
  * @description 添加菜单页面
  * @English	add menu page
  * @homepage http://www.hemacms.com/

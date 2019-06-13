@@ -34,8 +34,8 @@ func (c *EnterpriseCtrl) TemplateType(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
- * @description 获取幻灯片
- * @English	get slider
+ * @description 获取模板类型
+ * @English	get template type
  * @homepage http://www.hemacms.com/
  * @author Nicholas Mars
  * @date 2018-03-24
@@ -399,9 +399,21 @@ func (c *EnterpriseCtrl) AddNav(w http.ResponseWriter, r *http.Request) {
 		}
 		c.Cache().SetAlwaysTime("allnav", nav)
 	}
+	tptype := []sql.EnterpriseTptype{}
+	if rows, found := c.Cache().Get("allTemplateType"); found {
+		tptype = rows.([]sql.EnterpriseTptype)
+	} else {
+		tptypeSqls := "SELECT * FROM hm_enterprise_tptype"
+		err := c.Sql().Select(&tptype, tptypeSqls)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("allTemplateType", tptype)
+	}
 	data := make(map[string]interface{})
 	ar := sql.RecursiveNavLevel(nav, 0, 0)
 	data["json"] = c.RowsJson(ar)
+	data["tptype"] = tptype
 	pid := chi.URLParam(r, "navPid")
 	data["pid"] = pid
 	c.Template(w, r, data, "./view/admin/enterprise/addNav.html")
@@ -417,7 +429,7 @@ func (c *EnterpriseCtrl) AddNav(w http.ResponseWriter, r *http.Request) {
 func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow")
-	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("type"), r.PostFormValue("template")
+	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("templateType"), r.PostFormValue("template")
 	seoTitle, seoKeyword, seoDescribe := r.PostFormValue("seoTitle"), r.PostFormValue("seoKeyword"), r.PostFormValue("seoDescribe")
 	switch false {
 	case vali.Numeric(pid) && vali.Length(pid, 1, 8):
@@ -500,8 +512,20 @@ func (c *EnterpriseCtrl) EditNav(w http.ResponseWriter, r *http.Request) {
 		}
 		c.Cache().SetAlwaysTime("allnav", allnav)
 	}
+	tptype := []sql.EnterpriseTptype{}
+	if rows, found := c.Cache().Get("allTemplateType"); found {
+		tptype = rows.([]sql.EnterpriseTptype)
+	} else {
+		tptypeSqls := "SELECT * FROM hm_enterprise_tptype"
+		err := c.Sql().Select(&tptype, tptypeSqls)
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		}
+		c.Cache().SetAlwaysTime("allTemplateType", tptype)
+	}
 	ar := sql.RecursiveNavLevel(allnav, 0, 0)
 	data["json"] = c.RowsJson(ar)
+	data["tptype"] = tptype
 	c.Template(w, r, data, "./view/admin/enterprise/editNav.html")
 }
 
@@ -515,7 +539,7 @@ func (c *EnterpriseCtrl) EditNav(w http.ResponseWriter, r *http.Request) {
 func (c *EnterpriseCtrl) EditNavSubmit(w http.ResponseWriter, r *http.Request) {
 	pid, name, url, en := r.PostFormValue("pid"), r.PostFormValue("name"), r.PostFormValue("url"), r.PostFormValue("en")
 	sort, icon, isshow, id := r.PostFormValue("sort"), r.PostFormValue("icon"), r.PostFormValue("isshow"), r.PostFormValue("id")
-	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("type"), r.PostFormValue("template")
+	image, externalLink, dir, typ, template := r.PostFormValue("image"), r.PostFormValue("externalLink"), r.PostFormValue("dir"), r.PostFormValue("templateType"), r.PostFormValue("template")
 	seoTitle, seoKeyword, seoDescribe := r.PostFormValue("seoTitle"), r.PostFormValue("seoKeyword"), r.PostFormValue("seoDescribe")
 	switch false {
 	case vali.Numeric(pid) && vali.Length(pid, 1, 8):
@@ -635,6 +659,128 @@ func (c *EnterpriseCtrl) ContentManage(w http.ResponseWriter, r *http.Request) {
 	ar := sql.RecursiveNavLevel(nav, 0, 0)
 	data["json"] = c.RowsJson(ar)
 	c.Template(w, r, data, "./view/admin/enterprise/contentManage.html")
+}
+
+/**
+ * @description 文本模型页面
+ * @English	text model page
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) TextModel(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "navId")
+	data := make(map[string]interface{})
+	data["nid"] = id
+	c.Template(w, r, data, "./view/admin/enterprise/textModel.html")
+}
+
+/**
+ * @description 添加文本数据
+ * @English	add text data
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddTextData(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "navId")
+	data := make(map[string]interface{})
+	data["nid"] = id
+	c.Template(w, r, data, "./view/admin/enterprise/textModel/addTextData.html")
+}
+
+/**
+ * @description 添加文本数据提交
+ * @English	add text data submit
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) AddTextDataSubmit(w http.ResponseWriter, r *http.Request) {
+	cnTitle, cnText := r.PostFormValue("cn_title"), r.PostFormValue("cn_text")
+	enTitle, enText := r.PostFormValue("en_title"), r.PostFormValue("en_text")
+	icon, nid, sort := r.PostFormValue("icon"), r.PostFormValue("nid"), r.PostFormValue("sort")
+	switch false {
+	case vali.Article(cnTitle) && vali.Length(cnTitle, 2, 255):
+		c.ResponseJson(11, "invalid chinese title", w, r)
+		return
+	case vali.Article(cnText) && vali.Length(cnText, 2, 255):
+		c.ResponseJson(12, "invalid chinese text", w, r)
+		return
+	case vali.Article(enTitle) && vali.Length(enTitle, 2, 255):
+		c.ResponseJson(13, "invalid english title", w, r)
+		return
+	case vali.Article(enText) && vali.Length(enText, 2, 255):
+
+		c.ResponseJson(14, "invalid english text", w, r)
+		return
+	case vali.NumericNoHeadZero(nid) && vali.Length(nid, 1, 6):
+		c.ResponseJson(13, "invalid nav id", w, r)
+		return
+	default:
+		sqls := "INSERT INTO hm_enterprise_textmodel(cn_title,cn_text,en_title,en_text,icon,nid,sort) VALUES(?,?,?,?,?,?,?)"
+		tx := c.Sql().MustBegin()
+		tx.MustExec(sqls, cnTitle, cnText, enTitle, enText, icon, nid, sort)
+		err := tx.Commit()
+		if err != nil {
+			c.ResponseJson(4, err.Error(), w, r)
+		} else {
+			c.Cache().ScanDel("alltextmodel")
+			c.ResponseJson(1, "", w, r)
+		}
+	}
+}
+
+/**
+ * @description 获取文本数据
+ * @English	get text data
+ * @homepage http://www.hemacms.com/
+ * @author Nicholas Mars
+ * @date 2018-03-24
+ */
+func (c *EnterpriseCtrl) GetTextData(w http.ResponseWriter, r *http.Request) {
+	// nav := []sql.EnterpriseTextmodel{}
+	// if rows, found := c.Cache().Get("alltextmodel"); found {
+	// 	nav = rows.([]sql.EnterpriseTextmodel)
+	// } else {
+	// 	sqls := "SELECT * FROM hm_enterprise_textmodel ORDER BY sort ASC"
+	// 	err := c.Sql().Select(&nav, sqls)
+	// 	if err != nil {
+	// 		c.ResponseJson(4, err.Error(), w, r)
+	// 	}
+	// 	c.Cache().SetAlwaysTime("alltextmodel", nav)
+	// }
+	// fmt.Println(nav)
+	// // an := sql.RecursiveNavLevel(nav, 0, 0)
+	// fmt.Fprint(w, c.RowsJson(an))
+	data := make(map[string]interface{}, 4)
+	name := r.PostFormValue("name")
+	switch {
+	case ((vali.Article(name) && vali.Length(name, 2, 20)) == false) && name != "":
+		data["status"], data["info"] = 11, "Invalid Slider Name"
+	default:
+		addsql := ""
+		if name != "" {
+			addsql = addsql + "cn_title LIKE '%" + name + "%' AND "
+		}
+		if addsql != "" {
+			addsql = "WHERE " + strings.Trim(addsql, "AND ")
+		}
+		slides := []sql.EnterpriseTextmodel{}
+		if rows, found := c.Cache().Get("alltextmodel" + name); found {
+			slides = rows.([]sql.EnterpriseTextmodel)
+		} else {
+			slideSql := "SELECT * FROM hm_enterprise_textmodel " + addsql + " ORDER BY sort ASC "
+			err := c.Sql().Select(&slides, slideSql)
+			if err != nil {
+				c.ResponseJson(4, err.Error(), w, r)
+			}
+			c.Cache().SetAlwaysTime("alltextmodel"+name, slides)
+		}
+		data["status"] = 1
+		data["rows"] = slides
+	}
+	c.ResponseData(data, w, r)
 }
 
 /**

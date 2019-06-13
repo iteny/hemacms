@@ -56,7 +56,7 @@ color:#ACA899;
                             </tr>
                             <tr>
                                 <td language="table:templateType"></td>
-                                <td><input class="easyui-validatebox length_5" type="text" name="templateType" data-options="required:false"></td>
+                                <td><input id="templateType" class="length_3" name="templateType" value="1"></td>
                             </tr>
                             <tr>
                                 <td language="table:templateFile"></td>
@@ -145,6 +145,7 @@ $.each(menudata, function(index, obj) {
     data.push(obj);
 });
 var lang = hm.getLanguage('easyui-tree');
+var langto = hm.getLanguage('fieldtwo');
 $('#navselect').combotree({
     required: true,
     textField: lang,
@@ -153,6 +154,17 @@ $('#navselect').combotree({
 		return node[lang];
 	}
 });
+$('#templateType').combobox({
+    required: true,
+    valueField:'id',
+    textField: langto,
+    data: {{.tptype}},
+    formatter:function(node){
+        return node[langto];
+    }
+});
+console.info(data);
+console.info({{.tptype}});
 $('#isshow').switchbutton({
     checked: true,
     onText: hm.language.on,

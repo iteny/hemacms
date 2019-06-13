@@ -136,6 +136,18 @@ type EnterpriseTptype struct {
 	Sort int    `json:"sort"`
 }
 
+//企业站文本模型数据表
+type EnterpriseTextmodel struct {
+	Id      int    `json:"id"`
+	CnTitle string `json:"cn_title" db:"cn_title"`
+	CnText  string `json:"cn_text" db:"cn_text"`
+	EnTitle string `json:"en_title" db:"en_title"`
+	EnText  string `json:"en_text" db:"en_text"`
+	Icon    string `json:"icon"`
+	Nid     int    `json:"nid"`
+	Sort    int    `json:"sort"`
+}
+
 //递归重新排序无限极分类
 func RecursiveMenu(arr []AuthRule, pid int, level int) (ar []AuthRule) {
 	array := make([]AuthRule, 0)

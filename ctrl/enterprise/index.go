@@ -21,7 +21,7 @@ func (c *IndexCtrl) Index(w http.ResponseWriter, r *http.Request) {
 	if rows, found := c.Cache().Get("allnav"); found {
 		nav = rows.([]sql.EnterpriseNav)
 	} else {
-		sqls := "SELECT * FROM hm_enterprise_nav"
+		sqls := "SELECT * FROM hm_enterprise_nav WHERE isshow = 1"
 		err := c.Sql().Select(&nav, sqls)
 		if err != nil {
 			c.ResponseJson(4, err.Error(), w, r)

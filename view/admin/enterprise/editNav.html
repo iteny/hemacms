@@ -51,7 +51,8 @@
                             </tr>
                             <tr>
                                 <td language="table:templateType"></td>
-                                <td><input class="easyui-validatebox length_5" value="{{.nav.Type}}" type="text" name="type" data-options="required:false"></td>
+                                <!-- <td><input class="easyui-validatebox length_5" value="{{.nav.Type}}" type="text" name="type" data-options="required:false"></td> -->
+                                <td><input id="templateType" class="length_3" name="templateType" value="{{.nav.Type}}"></td>
                             </tr>
                             <tr>
                                 <td language="table:templateFile"></td>
@@ -125,6 +126,7 @@ $.each(menudata, function(index, obj) {
     data.push(obj);
 });
 var lang = hm.getLanguage('easyui-tree');
+var langto = hm.getLanguage('fieldtwo');
 $('#navselect').combotree({
     required: true,
     textField: lang,
@@ -132,6 +134,15 @@ $('#navselect').combotree({
     formatter:function(node){
 		return node[lang];
 	}
+});
+$('#templateType').combobox({
+    required: true,
+    valueField:'id',
+    textField: langto,
+    data: {{.tptype}},
+    formatter:function(node){
+        return node[langto];
+    }
 });
 var st = hm.switchStatus({{.menu.Isshow}});
 $('#isshow').switchbutton({
@@ -297,9 +308,9 @@ function editNavFunc(data){
     } else if(data.status == 17){
         parent.hm.notice("warn", data.info);
     } else if(data.status == 4){
-        parent.hm.notice("error", hm.language.addFailed + data.info);
+        parent.hm.notice("error", hm.language.editFailed + data.info);
     } else if(data.status == 1){
-        parent.hm.notice("success", hm.language.addSuccess);
+        parent.hm.notice("success", hm.language.editSuccess);
         parent.hm.refreshTab();
     }else{
         parent.hm.notice("error",hm.language.unknownError);
