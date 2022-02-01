@@ -1624,10 +1624,12 @@ func (c *SiteCtrl) GetLoginLog(w http.ResponseWriter, r *http.Request) {
 			logSql := "SELECT * FROM hm_login_log " + addsql + " ORDER BY id DESC Limit ?,?"
 			err := c.Sql().Select(&log, logSql, pageNum, row)
 			if err != nil {
+				fmt.Println(err.Error())
 				c.ResponseJson(4, err.Error(), w, r)
 			}
 			c.Cache().SetAlwaysTime("loginLog"+username+dateFrom+dateTo+page+row, log)
 		}
+		fmt.Println(log)
 		if count != 0 {
 			data["total"], data["rows"] = strconv.Itoa(count), log
 		} else {

@@ -2,6 +2,7 @@ package sql
 
 import (
 	"bytes"
+	"database/sql"
 	"strconv"
 	"strings"
 )
@@ -93,7 +94,7 @@ type OprateLog struct {
 	Info       string `json:"info"`
 	Url        string `json:"url"`
 	Method     string `json:"method"`
-	ExcuteTime string `json:"excute_time" db:"excute_time"`
+	ExcuteTime int    `json:"excute_time" db:"excute_time"`
 	Status     int    `json:"status"`
 }
 
@@ -105,19 +106,19 @@ type UpdateLog struct {
 	En   string `json:"en"`
 }
 
-//企业站导航表 hm_enterprise_nav
+//企业站导航表 hm_enterprise_nav2222
 type EnterpriseNav struct {
 	Id           int             `json:"id"`
 	Url          string          `json:"url"`                              //内部链接
 	Name         string          `json:"text"`                             //中文名称
-	Image        string          `json:"image"`                            //图片
-	ExternalLink string          `json:"external_link" db:"external_link"` //外部链接
-	Dir          string          `json:"dir"`                              //模板目录
-	Type         string          `json:"type"`                             //模板类型
-	Template     string          `json:"template"`                         //模板文件
-	SeoTitle     string          `json:"seo_title" db:"seo_title"`         //seo标题
-	SeoKeyword   string          `json:"seo_keyword" db:"seo_keyword"`     //seo关键字
-	SeoDescribe  string          `json:"seo_describe" db:"seo_describe"`   //seo描述
+	Image        sql.NullString  `json:"image"`                            //图片
+	ExternalLink sql.NullString  `json:"external_link" db:"external_link"` //外部链接
+	Dir          sql.NullString  `json:"dir"`                              //模板目录
+	Type         sql.NullInt64   `json:"type"`                             //模板类型
+	Template     sql.NullString  `json:"template"`                         //模板文件
+	SeoTitle     sql.NullString  `json:"seo_title" db:"seo_title"`         //seo标题
+	SeoKeyword   sql.NullString  `json:"seo_keyword" db:"seo_keyword"`     //seo关键字
+	SeoDescribe  sql.NullString  `json:"seo_describe" db:"seo_describe"`   //seo描述
 	Pid          int             `json:"pid"`                              //父id
 	Isshow       int             `json:"isshow"`                           //是否在首页显示
 	Sort         int             `json:"sort"`                             //排序

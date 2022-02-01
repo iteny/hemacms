@@ -2,7 +2,8 @@ package common
 
 import (
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var DB *sqlx.DB
@@ -15,7 +16,10 @@ func (c *BaseCtrl) Sql() *sqlx.DB {
 }
 func init() {
 	var err error
-	DB, err = sqlx.Connect("sqlite3", "./sql/hemacms.db")
+	dsn := "root:123456@tcp(127.0.0.1:3306)/hemacms"
+	DB, err = sqlx.Connect("mysql", dsn)
+	// DB, err = sqlx.Connect("sqlite3", "./sql/hemacms.db")
+
 	Log().CheckErr("Database Error", err)
 	// db.MustExec(schema)
 

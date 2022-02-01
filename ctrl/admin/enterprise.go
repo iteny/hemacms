@@ -447,9 +447,9 @@ func (c *EnterpriseCtrl) AddNavSubmit(w http.ResponseWriter, r *http.Request) {
 	case vali.Status(isshow):
 		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case vali.Url(url) && vali.Length(url, 0, 50):
-		c.ResponseJson(16, "Invalid nav url", w, r)
-		return
+	// case vali.Url(url) && vali.Length(url, 0, 50):
+	// 	c.ResponseJson(16, "Invalid nav url", w, r)
+	// 	return
 	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
 		c.ResponseJson(17, "Invalid english nav name", w, r)
 		return
@@ -557,9 +557,9 @@ func (c *EnterpriseCtrl) EditNavSubmit(w http.ResponseWriter, r *http.Request) {
 	case vali.Status(isshow):
 		c.ResponseJson(15, "Invalid status", w, r)
 		return
-	case vali.Url(url) && vali.Length(url, 0, 50):
-		c.ResponseJson(16, "Invalid nav url", w, r)
-		return
+	// case vali.Url(url) && vali.Length(url, 0, 50):
+	// 	c.ResponseJson(16, "Invalid nav url", w, r)
+	// 	return
 	case vali.EnglishSpace(en) && vali.Length(en, 2, 50):
 		c.ResponseJson(17, "Invalid english nav name", w, r)
 		return
@@ -884,9 +884,11 @@ func (c *EnterpriseCtrl) GetSlider(w http.ResponseWriter, r *http.Request) {
 			}
 			c.Cache().SetAlwaysTime("enterpriseSlider"+name, slides)
 		}
+
 		data["status"] = 1
 		data["rows"] = slides
 	}
+	fmt.Println(data)
 	c.ResponseData(data, w, r)
 }
 
@@ -927,7 +929,7 @@ func (c *EnterpriseCtrl) AddSliderSubmit(w http.ResponseWriter, r *http.Request)
 		c.ResponseJson(4, err.Error(), w, r)
 	} else {
 		c.Cache().ScanDel("enterpriseSlider")
-		c.ResponseJson(1, "", w, r)
+		c.ResponseJson(1, "safasdf", w, r)
 	}
 	// }
 }

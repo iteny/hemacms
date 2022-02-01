@@ -43,6 +43,7 @@ func main() {
 	r.Get("/", index.Skip) //跳转到登录页面
 	r.Mount("/enterprise", router.HomeRoutes())
 	r.Mount("/intendant", router.AdminRoutes())
+	r.Mount("/app", router.ApiRoutes())
 	//Easily serve static files
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "static")

@@ -79,6 +79,7 @@ func (c *LoginCtrl) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 					tx := c.Sql().MustBegin()
 					tx.MustExec(sqls, userone.Username, time.Now().Unix(), ip, 1, r.UserAgent(), userone.Id)
 					tx.Commit()
+					c.Cache().ScanDel("loginLog")
 					session := c.Sess().Load(r)
 					// session, _ := common.Sess.Get(r, "hm-back-stage")
 					// session.Values["uid"] = userone.Id
